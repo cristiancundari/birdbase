@@ -2,10 +2,12 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import {getSession, useSession } from "next-auth/react"
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const dataSession = useSession()
   return (
     <>
       <Head>
@@ -120,4 +122,20 @@ export default function Home() {
       </main>
     </>
   )
+}
+
+export async function getServerSideProps({ req }) {
+  const session = await getSession({ req })
+  if (!session) {
+      return {
+          redirect: {
+              destination: "/login",
+              permanent: false
+          }
+      }
+  }
+  
+  return {
+      props: { session }
+  }
 }
