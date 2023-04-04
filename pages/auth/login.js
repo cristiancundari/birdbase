@@ -1,5 +1,9 @@
-import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
+import { useRouter } from "next/router";
+import { IconLogin, IconAlertCircle } from '@tabler/icons-react';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+
 import {
   TextInput,
   PasswordInput,
@@ -11,27 +15,35 @@ import {
   Image,
   Anchor,
   Stack,
+  Alert,
 } from '@mantine/core';
 
 export default function Login(props) {
-  const [type, toggle] = useToggle(['login', 'registrati']);
+  const router = useRouter()
+  const [ isLoading, setIsLoading ] = useState(false)
+  const [ error, setError ] = useState("")
   const form = useForm({
     validateInputOnBlur: true,
     initialValues: {
       email: '',
-      name: '',
       password: '',
-    },
-
-    validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
   });
     
   const onFormSubmit = form.onSubmit(
-    (values) => {
-        console.log(values)
+    async (values) => {
+      setIsLoading(true)
+      const result = await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        callbackUrl: '/',
+        redirect: false
+      })
+      if (result.ok) {
+        router.push(result.url)
+      }
+      setError(result.error)
+      setIsLoading(false)
     }
   )
   
@@ -45,16 +57,8 @@ export default function Login(props) {
             <Image width={80} mx="auto" src="/logo.jpeg" mt="md" mb="3rem" />
         </Stack>
 
-        <form onSubmit={ onFormSubmit }>
+        <form onSubmit={ (onFormSubmit) }>
             <Stack>
-                {type === 'registrati' && (
-                    <TextInput
-                    label="Name"
-                    { ...form.getInputProps('name') }
-                    radius="md"
-                    />
-                )}
-
                 <TextInput
                     required
                     label="Email"
@@ -72,20 +76,24 @@ export default function Login(props) {
                 />
             </Stack>
 
+            { error &&
+                <Alert icon={<IconAlertCircle size="1rem" />} color="red" variant="filled" mt="xl">
+                    { error }
+                </Alert>
+            }
+
             <Group position="apart" mt="xl">
                 <Anchor
                     component="button"
                     type="button"
                     color="dimmed"
-                    onClick={() => toggle()}
+                    onClick={() => { router.push('/auth/register') }}
                     size="xs"
                 >
-                    {type === 'registrati'
-                    ? 'Hai già un account? effettua il Login'
-                    : "Non hai un account? Registrati"}
+                    Non hai un account? Registrati
                 </Anchor>
-                <Button type="submit" radius="xl">
-                    {upperFirst(type)}
+                <Button type="submit" radius="xl" leftIcon={<IconLogin />} loading={ isLoading }>
+                    Login
                 </Button>
             </Group>
         </form>
