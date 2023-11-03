@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Card,
@@ -8,20 +9,84 @@ import {
   Group,
   Stack,
   Divider,
+  Box,
+  Menu,
+  ActionIcon,
 } from "@mantine/core";
 import Flag from "react-world-flags";
 import { GaraWithNazione } from "@/types/types";
 import { differenceInDays, format, formatDistanceToNow } from "date-fns";
-import { it } from "date-fns/locale";
+import {
+  IconDotsVertical,
+  IconEye,
+  IconPencil,
+  IconTrash,
+} from "@tabler/icons-react";
+import { useSupabase } from "@/providers/supabaseProvider";
 
-function gara({ gara }: { gara: GaraWithNazione }) {
+function Gara({ gara }: { gara: GaraWithNazione }) {
   const newGara = differenceInDays(Date.now(), gara.createdAt);
   const inScadenza = differenceInDays(gara.dataEvento, Date.now());
+
+  // recupero utente loggato, verifico se è un admin o un utente
+  const supabase = useSupabase();
+
+  //TODO controllare che la logica sia corretta
+  const isAdmin = supabase.session?.user.role != "admin";
+
+  function onEdit() {}
+  function onDelete() {}
+  function onDetails() {}
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
-        <Image src={gara.immagine} height={160} alt="Norway" />
+        <Box pos="relative">
+          <Image src={gara.immagine} height={160} alt={gara.titolo} />
+          {isAdmin && (
+            <Menu shadow="md">
+              <Menu.Target>
+                <ActionIcon
+                  variant="white"
+                  radius="xl"
+                  color="gray"
+                  pos="absolute"
+                  top="10px"
+                  right="10px"
+                >
+                  <IconDotsVertical size="14" />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconEye size="14" />}
+                  onClick={() => {
+                    onDetails();
+                  }}
+                >
+                  Dettagli
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconPencil size="14" />}
+                  onClick={() => {
+                    onEdit();
+                  }}
+                >
+                  Modifica
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconTrash size="14" />}
+                  color="red"
+                  onClick={() => {
+                    onDelete();
+                  }}
+                >
+                  Elimina
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
+        </Box>
       </Card.Section>
 
       <Group justify="space-between" mt="md" mb="xs" wrap="nowrap">
@@ -88,19 +153,21 @@ function gara({ gara }: { gara: GaraWithNazione }) {
         </Group>
       </Stack>
 
-      <Button
-        component="a"
-        href={`/app/gare/${gara.id}`}
-        variant="light"
-        color="blue"
-        fullWidth
-        mt="md"
-        radius="md"
-      >
-        Iscriviti
-      </Button>
+      {!isAdmin && (
+        <Button
+          component="a"
+          href={`/app/gare/${gara.id}`}
+          variant="light"
+          color="blue"
+          fullWidth
+          mt="md"
+          radius="md"
+        >
+          Iscriviti
+        </Button>
+      )}
     </Card>
   );
 }
 
-export default gara;
+export default Gara;

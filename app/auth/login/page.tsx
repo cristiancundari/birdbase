@@ -1,11 +1,16 @@
 import React from "react";
 import Login from "./login";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 async function LoginPage() {
-  const session = await getServerSession(authOptions);
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   if (session) {
     return redirect("/app/home");
   }

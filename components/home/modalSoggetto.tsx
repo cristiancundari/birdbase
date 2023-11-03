@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
 import { Sesso } from "@/types/types";
 import { Soggetto } from ".prisma/client";
-import { dateParser } from "@/utils/DateParser";
+import { dateParser } from "@/lib/DateParser";
 import Upload from "../upload";
 import { FileWithPath } from "@mantine/dropzone";
 import { notifications } from "@mantine/notifications";

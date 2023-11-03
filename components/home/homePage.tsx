@@ -18,17 +18,18 @@ import SoggettoComp from "../soggetto";
 import { Soggetto } from "@prisma/client";
 import { IconDeviceFloppy, IconPlus, IconX } from "@tabler/icons-react";
 import errorNotificationClasses from "@/styles/errorNotification.module.css";
-import ModalSoggetto from "./modal";
+import ModalSoggetto from "./modalSoggetto";
 import { Sesso } from "@/types/types";
 import { ModalsProvider, modals } from "@mantine/modals";
 import { IconTrash } from "@tabler/icons-react";
 import NessunSoggetto from "./nessunSoggetto";
 import { FileWithPath } from "@mantine/dropzone";
-import supabase from "@/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { useSetState } from "@mantine/hooks";
+import { createClient } from "@/lib/supabase/client";
 
 function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
+  const supabase = createClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDelete, setModalDelete] = useSetState({
     loading: false,
@@ -46,7 +47,7 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
   };
 
   const aggiungi = async (values: any) => {
-    const avatar: FileWithPath = values.avatar;
+    const avatar: FileWithPath = values.avatarFile;
     let imgName = null;
     if (avatar) {
       imgName = uuidv4();

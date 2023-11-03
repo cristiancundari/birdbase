@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { Sesso } from "@/types/types";
 import {z} from "zod"
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 export async function DELETE(request: Request) {
     const dati = await request.json();
@@ -20,7 +20,6 @@ export async function DELETE(request: Request) {
     
     return NextResponse.json({ error: false, result: result }, { status: 200 });
 }
-
 
 export async function PATCH(request: Request) {
     const dati = await request.json();
@@ -62,7 +61,13 @@ export async function PATCH(request: Request) {
 
 interface PostDataType { rna: string; numero: string; dataNascita: Date; sesso: string; gabbia: number | string; avatar: string | undefined }
 export async function POST(request: Request) {
-    const session = await getServerSession(authOptions);
+    const cookieStore = cookies()
+    const supabase = createClient(cookieStore);
+    const session = await supabase.auth.getSession()
+    const user = session.data.session?.user
+
+    if (!user)
+        return NextResponse.json({error: true, result:"è necessaria l'autenticazione"})
 
     const dati: PostDataType = await request.json();
 
@@ -96,7 +101,7 @@ export async function POST(request: Request) {
             sesso: dati.sesso == Sesso.Maschio ? true : dati.sesso == Sesso.Femmina ? false : null,
             gabbia: test.data.gabbia,
             dataNascita: new Date(test.data.dataNascita),
-            profileId: session?.user.id || "",
+            profileId: user.id || "",
             avatar: dati.avatar
         }
     })

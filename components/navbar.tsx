@@ -6,6 +6,7 @@ import {
   IconBat,
   IconFlag,
   IconHome,
+  IconTrophy,
 } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import "@/styles/navLink.css";
@@ -32,7 +33,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       url: "/app/gabbie",
     },
     {
-      icon: <IconFlag />,
+      icon: <IconTrophy />,
       label: "Gare",
       url: "/app/gare",
     },

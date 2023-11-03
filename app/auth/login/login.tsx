@@ -14,10 +14,11 @@ import {
 import { IconExclamationCircle } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import React, { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 function Login() {
+  const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/app/home";
@@ -39,7 +40,10 @@ function Login() {
   const handleSignIn = form.onSubmit(async (values) => {
     try {
       setIsLoading(true);
-      const res = await signIn("credentials", { ...values, redirect: false });
+      const res = await supabase.auth.signInWithPassword({
+        email: `${values.username}@gmail.com`,
+        password: values.password,
+      });
       if (!res?.error) {
         return router.push(callbackUrl);
       } else {
@@ -75,7 +79,7 @@ function Login() {
                 <TextInput
                   size="md"
                   label="Username"
-                  placeholder="nome.cognome"
+                  placeholder="MarioRossi"
                   {...form.getInputProps("username")}
                 />
                 <PasswordInput
