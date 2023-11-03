@@ -40,7 +40,6 @@ function Login() {
     try {
       setIsLoading(true);
       const res = await signIn("credentials", { ...values, redirect: false });
-      console.log(res);
       if (!res?.error) {
         return router.push(callbackUrl);
       } else {

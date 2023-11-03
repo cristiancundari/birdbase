@@ -22,6 +22,7 @@ model Profile {
   user     User       @relation(fields: [id], references: [id])
   name     String
   Soggetto Soggetto[]
+  isAdmin  Boolean    @default(false)
 }
 
 model Soggetto {
@@ -29,9 +30,29 @@ model Soggetto {
   sesso       Boolean?
   dataNascita DateTime @db.Date
   gabbia      Int?
-  anelletto   String
+  numero      String
+  rna         String
   preferito   Boolean  @default(false)
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  profileId   String   @db.Uuid
+  avatar      String?
+}
 
-  profile   Profile @relation(fields: [profileId], references: [id])
-  profileId String  @db.Uuid
+model Nazione {
+  id    Int    @id @default(autoincrement())
+  nome  String
+  sigla String
+  gare  Gara[]
+}
+
+model Gara {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titolo     String
+  dataEvento DateTime @db.Date
+  tipologia  String
+  citta      String
+  immagine   String?
+  nazione    Nazione  @relation(fields: [nazioneId], references: [id])
+  nazioneId  Int
+  createdAt  DateTime @default(now())
 }

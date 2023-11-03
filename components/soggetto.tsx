@@ -1,73 +1,161 @@
 "use client";
-import { ActionIcon, Box, Group, Paper, Stack, Text } from "@mantine/core";
+import { format, formatDistance, formatDistanceToNow } from "date-fns";
+import { it } from "date-fns/locale";
 import {
+  ActionIcon,
+  Anchor,
+  Avatar,
+  Box,
+  Card,
+  Center,
+  Container,
+  Divider,
+  Group,
+  Menu,
+  Stack,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import { Soggetto } from "@prisma/client";
+import {
+  IconBarrel,
+  IconDotsVertical,
+  IconGenderAgender,
   IconGenderFemale,
   IconGenderMale,
-  IconMail,
+  IconHeart,
+  IconHeartFilled,
+  IconPencil,
   IconStar,
   IconStarFilled,
+  IconTrash,
 } from "@tabler/icons-react";
-import { Soggetto } from "@prisma/client";
 import React, { useState } from "react";
-import { prisma } from "@/lib/prisma";
+import { useRouter } from "next/navigation";
 
-type PropsType = {
-  dati: Soggetto;
-};
-function SoggettoComp({ dati }: PropsType) {
-  const [dato, setdato] = useState(dati);
-  const [isloading, setisloading] = useState(false);
-  const preferito = async () => {
-    setisloading(true);
-    const res = await fetch("/api/soggetto", {
-      method: "PATCH",
+function SoggettoComp({
+  sogg,
+  onEdit,
+  onDelete,
+}: {
+  sogg: Soggetto;
+  onEdit: (soggetto: Soggetto) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [isFavourite, setIsFavourite] = useState(sogg.preferito);
+  const [isFavouriteLoading, setIsFavouriteLoading] = useState(false);
+
+  const handleFavourite = async () => {
+    setIsFavouriteLoading(true);
+
+    const result = await fetch("/api/soggetto", {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(dato),
+      method: "PATCH",
+      body: JSON.stringify({ ...sogg, preferito: !isFavourite }),
     });
-    if (res.status == 200) {
-      console.log("OK");
-      const setpreferito = await res.json();
-      setdato({ ...dato, preferito: setpreferito.result.preferito });
-    } else {
-      console.log("errore");
-    }
-    setisloading(false);
+    const resJson = await result.json();
+    setIsFavouriteLoading(false);
+    setIsFavourite(resJson.result.preferito);
   };
 
   return (
-    <Paper shadow="sm" p="lg" withBorder>
-      <Group justify="space-between" gap="xs">
-        <Group gap="xs">
-          {dati.sesso ? (
-            <IconGenderMale />
-          ) : (
-            dati.sesso == false && <IconGenderFemale />
-          )}
-          <Text>{dati.anelletto}</Text>
-          <Text>{dati.gabbia}</Text>
-          <Text>{dati.dataNascita.toDateString()}</Text>
-        </Group>
-        <Group>
+    <Card shadow="sm" withBorder>
+      <Group gap="xs" justify="space-between">
+        {sogg.sesso && <IconGenderMale color="#256ceb" size="25" />}
+        {sogg.sesso == false && <IconGenderFemale color="#f92f8e" size="25" />}
+        {sogg.sesso == null && <IconGenderAgender color="#d6d6d6" size="25" />}
+        <Text>
+          <Anchor href="https://mantine.dev/" target="_blank" c="dark">
+            {sogg.rna}-{sogg.numero}
+          </Anchor>
+        </Text>
+        <Menu shadow="md">
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray">
+              <IconDotsVertical size="14" />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={<IconPencil size="14" />}
+              onClick={() => {
+                onEdit(sogg);
+              }}
+            >
+              Modifica
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<IconTrash size="14" />}
+              color="red"
+              onClick={() => {
+                onDelete(sogg.id);
+              }}
+            >
+              Elimina
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+      <Divider my="sm" />
+      <Group>
+        <Box pos="relative">
+          <Avatar
+            variant="filled"
+            size="xl"
+            src={
+              sogg.avatar
+                ? `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/${sogg.avatar}`
+                : `https://images.placeholders.dev/?width=50&height=50&text=${
+                    sogg.rna + "-" + sogg.numero
+                  }`
+            }
+          />
           <ActionIcon
-            loading={isloading}
             color="dark"
-            variant="transparent"
-            size="lg"
-            onClick={() => {
-              preferito();
-            }}
+            onClick={handleFavourite}
+            loading={isFavouriteLoading}
+            variant="white"
+            radius="xl"
+            pos="absolute"
+            bottom="0"
+            left="0"
+            style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
           >
-            {dato.preferito ? (
-              <IconStarFilled size="1.625rem" style={{ color: "#f9ce36" }} />
+            {isFavourite ? (
+              <IconHeartFilled size="20" style={{ color: "#e83d2e" }} />
             ) : (
-              <IconStar size="1.625rem" />
+              <IconHeart size="20" color="#555" />
             )}
           </ActionIcon>
-        </Group>
+        </Box>
+
+        <Stack gap="0" justify="space-evenly" style={{ alignSelf: "stretch" }}>
+          <Stack gap="0">
+            <Group gap="xs">
+              <Text size="xs" c="dimmed">
+                Data:
+              </Text>
+              <Text size="xs">{format(sogg.dataNascita, "dd/MM/yyyy")}</Text>
+            </Group>
+            <Text size="xs" c="dimmed">
+              {formatDistanceToNow(sogg.dataNascita, { locale: it })}
+            </Text>
+          </Stack>
+          {sogg.gabbia && (
+            <Group>
+              <Tooltip label={`Gabbia #${sogg.gabbia}`} position="bottom">
+                <Group gap="3">
+                  <IconBarrel size="16" />
+                  <Text size="sm">{sogg.gabbia}</Text>
+                </Group>
+              </Tooltip>
+            </Group>
+          )}
+        </Stack>
       </Group>
-    </Paper>
+    </Card>
   );
 }
 
