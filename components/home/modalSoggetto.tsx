@@ -23,9 +23,9 @@ import { Soggetto } from ".prisma/client";
 import { dateParser } from "@/lib/DateParser";
 import Upload from "../upload";
 import { FileWithPath } from "@mantine/dropzone";
-import { notifications } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
 
-interface FormValues {
+export interface FormValues {
   rna: string;
   numero: string;
   dataNascita: Date | null;
@@ -57,42 +57,39 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
     },
     validate: {
       rna: (value) => (value.length == 0 ? "Inserire RNA" : null),
+      numero: (value) =>
+        value.length == 0 ? "Inserire numero anelletto" : null,
     },
   });
 
   useEffect(() => {
-    form.setFieldValue("rna", modalData?.rna || "");
-    form.setFieldValue("numero", modalData?.numero || "");
-    form.setFieldValue("gabbia", modalData?.gabbia || null);
-    const sesso = modalData?.sesso;
-    form.setFieldValue(
-      "sesso",
-      sesso == true
-        ? Sesso.Maschio
-        : sesso == false
-        ? Sesso.Femmina
-        : Sesso.InAttesa
-    );
-    form.setFieldValue("dataNascita", modalData?.dataNascita || null);
-    form.setFieldValue("avatar", modalData?.avatar || null);
-    setFiles([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalData]);
-
-  useEffect(() => {
-    if (isOpen && !modalData) {
-      form.reset();
+    if (isOpen) {
+      if (modalData) {
+        const sesso =
+          modalData.sesso == true
+            ? Sesso.Maschio
+            : modalData.sesso == false
+            ? Sesso.Femmina
+            : Sesso.InAttesa;
+        form.setValues({
+          rna: modalData.rna,
+          numero: modalData.numero,
+          gabbia: modalData.gabbia,
+          dataNascita: modalData.dataNascita,
+          sesso: sesso,
+          avatar: modalData.avatar,
+        });
+      } else {
+        form.reset();
+      }
       setFiles([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [modalData, isOpen]);
 
-  const previews = files.map((file) => URL.createObjectURL(file));
+  let preview = files.length > 0 ? URL.createObjectURL(files[0]) : null;
 
-  let preview = null;
-  if (previews.length > 0) {
-    preview = previews[0];
-  } else if (form.values.avatar !== null) {
+  if (preview == null && form.values.avatar !== null) {
     preview = `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/${form.values.avatar}`;
   }
 
@@ -106,7 +103,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
       <form
         onSubmit={form.onSubmit(async () => {
           setIsLoading(true);
-          await submit({ ...form.values, avatarFile: files?.[0] });
+          await submit({ form: form.values, avatarFile: files?.[0] });
           setIsLoading(false);
           annulla();
         })}
@@ -136,11 +133,9 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
               multiple={false}
               onDrop={setFiles}
               onReject={() => {
-                notifications.show({
+                showNotification({
                   title: "Errore Upload",
                   message: "Impossibile utilizzare il file selezionato",
-                  withBorder: true,
-                  classNames: errorNotificationClasses,
                 });
               }}
               w="100%"

@@ -8,7 +8,7 @@ import { createContext, useContext, useState } from "react";
 type MaybeSession = Session | null;
 
 type SupabaseContext = {
-  supabase: SupabaseClient;
+  client: SupabaseClient;
   session: MaybeSession;
 };
 
@@ -22,10 +22,10 @@ export default function SupabaseProvider({
   children: React.ReactNode;
   session: MaybeSession;
 }) {
-  const [supabase] = useState(() => createClient());
+  const [client] = useState(() => createClient());
 
   return (
-    <Context.Provider value={{ supabase, session }}>
+    <Context.Provider value={{ client, session }}>
       <>{children}</>
     </Context.Provider>
   );

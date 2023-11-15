@@ -18,8 +18,8 @@ import SoggettoComp from "../soggetto";
 import { Soggetto } from "@prisma/client";
 import { IconDeviceFloppy, IconPlus, IconX } from "@tabler/icons-react";
 import errorNotificationClasses from "@/styles/errorNotification.module.css";
-import ModalSoggetto from "./modalSoggetto";
-import { Sesso } from "@/types/types";
+import ModalSoggetto, { FormValues } from "./modalSoggetto";
+import { ApiResponse, Sesso } from "@/types/types";
 import { ModalsProvider, modals } from "@mantine/modals";
 import { IconTrash } from "@tabler/icons-react";
 import NessunSoggetto from "./nessunSoggetto";
@@ -27,15 +27,13 @@ import { FileWithPath } from "@mantine/dropzone";
 import { v4 as uuidv4 } from "uuid";
 import { useSetState } from "@mantine/hooks";
 import { createClient } from "@/lib/supabase/client";
+import { showNotification } from "@/lib/helper";
+import ModalCancellazione from "../modalCancellazione";
 
 function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
   const supabase = createClient();
+  const [modalDeleteOpen, setModalDeleteOpen] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalDelete, setModalDelete] = useSetState({
-    loading: false,
-    open: false,
-    id: "",
-  });
 
   const [modalData, setModalData] = useState<Soggetto | null>(null);
   const router = useRouter();
@@ -46,89 +44,75 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
     setModalOpen(true);
   };
 
-  const aggiungi = async (values: any) => {
-    const avatar: FileWithPath = values.avatarFile;
-    let imgName = null;
-    if (avatar) {
-      imgName = uuidv4();
-      const upload = await supabase.storage.from("img").upload(imgName, avatar);
-      if (upload.error) {
-        notifications.show({
-          title: "Errore Upload",
-          message: upload.error.message,
-          withBorder: true,
-          classNames: errorNotificationClasses,
-        });
-        return null;
-      }
+  const aggiungi = async ({
+    form,
+    avatarFile,
+  }: {
+    form: FormValues;
+    avatarFile: FileWithPath;
+  }) => {
+    let sesso = null;
+    if (form.sesso == Sesso.Maschio) {
+      sesso = true;
+    } else if (form.sesso == Sesso.Femmina) {
+      sesso = false;
     }
-    const result = await fetch("/api/soggetto", {
-      headers: { "Content-Type": "application/json" },
+    const formData = new FormData();
+
+    formData.append("form", JSON.stringify({ ...form, sesso: sesso }));
+    if (avatarFile) {
+      formData.append("imgFile", avatarFile);
+    }
+
+    const result = await fetch("/api/soggetti", {
       method: "POST",
-      body: JSON.stringify({
-        ...values,
-        avatar: imgName,
-      }),
+      body: formData,
     });
-    setModalOpen(false);
-    if (result.ok) {
-      router.refresh();
+    const res: ApiResponse = await result.json();
+    if (res.error) {
+      showNotification({ message: res.message });
     } else {
-      const res = await result.json();
-      notifications.show({
-        title: "Errore",
-        message: res.result,
-        withBorder: true,
-        classNames: errorNotificationClasses,
+      showNotification({
+        message: "Il soggetto è stato inserito correttamente",
+        success: true,
       });
+      router.refresh();
     }
   };
 
-  const modifica = async (values: any) => {
-    console.log("modifica", values);
-    if (values.sesso == Sesso.Maschio) {
-      values.sesso = true;
-    } else if (values.sesso == Sesso.Femmina) {
-      values.sesso = false;
-    } else {
-      values.sesso = null;
+  const modifica = async ({
+    form,
+    avatarFile,
+  }: {
+    form: FormValues;
+    avatarFile: FileWithPath;
+  }) => {
+    let sesso = null;
+    if (form.sesso == Sesso.Maschio) {
+      sesso = true;
+    } else if (form.sesso == Sesso.Femmina) {
+      sesso = false;
     }
-    values.id = modalData?.id;
+    const id = modalData?.id;
 
-    // Se il soggetto ha già un avatar e non è stato sovrascritto dall'utente impostiamo undefined così che Prisma non alteri il campo sul DB. Altrimenti lo impostiamo a null
-    let imgName: any = values.avatar ? undefined : null;
-
-    const avatar: FileWithPath = values.avatarFile;
-    if (avatar) {
-      imgName = uuidv4();
-      const upload = await supabase.storage.from("img").upload(imgName, avatar);
-
-      if (upload.error) {
-        notifications.show({
-          title: "Errore Upload",
-          message: upload.error.message,
-          withBorder: true,
-          classNames: errorNotificationClasses,
-        });
-        return null;
-      }
+    const values = new FormData();
+    values.append("form", JSON.stringify({ ...form, sesso: sesso }));
+    if (avatarFile) {
+      values.append("imgFile", avatarFile);
     }
-
-    const result = await fetch("/api/soggetto", {
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch(`/api/soggetti/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ ...values, avatar: imgName }),
+      body: values,
     });
-    if (result.ok) {
-      router.refresh();
+    const result: ApiResponse = await response.json();
+    if (result.error) {
+      showNotification({ message: result.message });
     } else {
-      const res = await result.json();
-      notifications.show({
-        title: "Errore",
-        message: res.result,
-        withBorder: true,
-        classNames: errorNotificationClasses,
+      showNotification({
+        message: "Soggetto modificato correttamente",
+        success: true,
       });
+      router.refresh();
     }
   };
 
@@ -150,31 +134,42 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
   };
 
   const deleteSogg = async (id: string) => {
-    const result = await fetch("/api/soggetto", {
-      headers: { "Content-Type": "application/json" },
+    if (id == "") {
+      return null;
+    }
+    const result = await fetch(`/api/soggetti/${id}`, {
       method: "DELETE",
-      body: JSON.stringify({ id }),
     });
     if (result.ok) {
       router.refresh();
     } else {
       const res = await result.json();
-      notifications.show({
-        title: "Errore",
+      showNotification({
         message: res.result,
-        withBorder: true,
-        classNames: errorNotificationClasses,
       });
     }
   };
 
   const deleteHandler = (id: string) => {
-    setModalDelete({ id: id, open: true });
+    setModalDeleteOpen(id);
+  };
+
+  const handlerPreferito = async (id: string) => {
+    const response = await fetch(`/api/soggetti/${id}`, {
+      method: "PUT",
+    });
+    const result: ApiResponse = await response.json();
+    if (result.error) {
+      showNotification({ message: result.message });
+      return null;
+    } else {
+      return result.result;
+    }
   };
 
   return (
     <>
-      <Box>
+      <Box mb="md">
         <Group justify={"flex-end"}>
           <Button
             onClick={btnAggiungi}
@@ -184,7 +179,7 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
             Aggiungi
           </Button>
         </Group>
-        <Box mt="md">
+        <Box>
           {soggetti.length == 0 && <NessunSoggetto />}
           <ScrollArea>
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 5 }}>
@@ -194,6 +189,7 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
                   sogg={soggetto}
                   onEdit={editHandler}
                   onDelete={deleteHandler}
+                  handlerPreferito={handlerPreferito}
                 />
               ))}
             </SimpleGrid>
@@ -208,43 +204,15 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
         />
       </Box>
 
-      <Modal
-        opened={modalDelete.open}
-        onClose={() => {
-          setModalDelete({ open: false });
+      <ModalCancellazione
+        isOpen={modalDeleteOpen != null}
+        titolo="Elimina Soggetto"
+        onDelete={async () => {
+          await deleteSogg(modalDeleteOpen || "");
+          setModalDeleteOpen(null);
         }}
-        title={"Elimina Soggetto"}
-      >
-        <Stack gap="xs" align="center">
-          <Text size="sm">Sei sicuro di voler eliminare il soggetto?</Text>
-          <Text size="sm">Questa azione non potrà essere annullata.</Text>
-        </Stack>
-
-        <Group mt={"lg"} gap="md" justify="flex-end">
-          <Button
-            variant="outline"
-            color="gray"
-            onClick={() => {
-              setModalDelete({ open: false });
-            }}
-            leftSection={<IconX size={14} />}
-          >
-            Annulla
-          </Button>
-          <Button
-            color="red"
-            leftSection={<IconTrash size={14} />}
-            loading={modalDelete.loading}
-            onClick={async () => {
-              setModalDelete({ loading: true });
-              await deleteSogg(modalDelete.id);
-              setModalDelete({ loading: false, open: false });
-            }}
-          >
-            Elimina
-          </Button>
-        </Group>
-      </Modal>
+        onClose={() => setModalDeleteOpen(null)}
+      ></ModalCancellazione>
     </>
   );
 }

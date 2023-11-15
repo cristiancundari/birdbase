@@ -37,27 +37,23 @@ function SoggettoComp({
   sogg,
   onEdit,
   onDelete,
+  handlerPreferito,
 }: {
   sogg: Soggetto;
   onEdit: (soggetto: Soggetto) => void;
   onDelete: (id: string) => void;
+  handlerPreferito: (id: string) => Promise<Soggetto | null>;
 }) {
   const [isFavourite, setIsFavourite] = useState(sogg.preferito);
   const [isFavouriteLoading, setIsFavouriteLoading] = useState(false);
 
   const handleFavourite = async () => {
     setIsFavouriteLoading(true);
-
-    const result = await fetch("/api/soggetto", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "PATCH",
-      body: JSON.stringify({ ...sogg, preferito: !isFavourite }),
-    });
-    const resJson = await result.json();
+    const result = await handlerPreferito(sogg.id);
+    if (result) {
+      setIsFavourite(result.preferito);
+    }
     setIsFavouriteLoading(false);
-    setIsFavourite(resJson.result.preferito);
   };
 
   return (

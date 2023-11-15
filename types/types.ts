@@ -1,11 +1,20 @@
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@prisma/client";
 
 export enum Sesso {
   Maschio = "Maschio",
   Femmina = "Femmina",
-  InAttesa = "In Attesa"
-};
+  InAttesa = "In Attesa",
+}
 
 export type GaraWithNazione = Prisma.GaraGetPayload<{
-  include: {nazione:true}
-}>
+  include: { nazione: true };
+}>;
+
+export enum Ruolo {
+  Admin = "admin",
+  User = "authenticated",
+}
+
+export type ApiResponse =
+  | { error: true; message: string }
+  | { error: false; result: any };

@@ -55,4 +55,7 @@ model Gara {
   nazione    Nazione  @relation(fields: [nazioneId], references: [id])
   nazioneId  Int
   createdAt  DateTime @default(now())
+  prezzo     Float    @default(0)
+  capienza   Int
+  isDeleted  Boolean  @default(false)
 }

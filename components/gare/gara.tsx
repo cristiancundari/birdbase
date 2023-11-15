@@ -14,7 +14,7 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import Flag from "react-world-flags";
-import { GaraWithNazione } from "@/types/types";
+import { GaraWithNazione, Ruolo } from "@/types/types";
 import { differenceInDays, format, formatDistanceToNow } from "date-fns";
 import {
   IconDotsVertical,
@@ -24,7 +24,15 @@ import {
 } from "@tabler/icons-react";
 import { useSupabase } from "@/providers/supabaseProvider";
 
-function Gara({ gara }: { gara: GaraWithNazione }) {
+function Gara({
+  gara,
+  onDelete,
+  onEdit,
+}: {
+  gara: GaraWithNazione;
+  onDelete: (id: string) => void;
+  onEdit: (gara: GaraWithNazione) => void;
+}) {
   const newGara = differenceInDays(Date.now(), gara.createdAt);
   const inScadenza = differenceInDays(gara.dataEvento, Date.now());
 
@@ -32,17 +40,21 @@ function Gara({ gara }: { gara: GaraWithNazione }) {
   const supabase = useSupabase();
 
   //TODO controllare che la logica sia corretta
-  const isAdmin = supabase.session?.user.role != "admin";
-
-  function onEdit() {}
-  function onDelete() {}
-  function onDetails() {}
+  const isAdmin = supabase.session?.user.role != Ruolo.Admin;
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
         <Box pos="relative">
-          <Image src={gara.immagine} height={160} alt={gara.titolo} />
+          <Image
+            src={
+              gara.immagine
+                ? `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/${gara.immagine}`
+                : `https://images.placeholders.dev/?width=200&height=90&fontSize=8&text=${gara.titolo}`
+            }
+            height={160}
+            alt={gara.titolo}
+          />
           {isAdmin && (
             <Menu shadow="md">
               <Menu.Target>
@@ -60,16 +72,15 @@ function Gara({ gara }: { gara: GaraWithNazione }) {
               <Menu.Dropdown>
                 <Menu.Item
                   leftSection={<IconEye size="14" />}
-                  onClick={() => {
-                    onDetails();
-                  }}
+                  component="a"
+                  href={`/app/gare/${gara.id}`}
                 >
                   Dettagli
                 </Menu.Item>
                 <Menu.Item
                   leftSection={<IconPencil size="14" />}
                   onClick={() => {
-                    onEdit();
+                    onEdit(gara);
                   }}
                 >
                   Modifica
@@ -78,7 +89,7 @@ function Gara({ gara }: { gara: GaraWithNazione }) {
                   leftSection={<IconTrash size="14" />}
                   color="red"
                   onClick={() => {
-                    onDelete();
+                    onDelete(gara.id);
                   }}
                 >
                   Elimina
@@ -92,12 +103,17 @@ function Gara({ gara }: { gara: GaraWithNazione }) {
       <Group justify="space-between" mt="md" mb="xs" wrap="nowrap">
         <Text fw={500}>{gara.titolo}</Text>
         <Stack gap="xs">
-          {newGara > 0 && newGara < 7 && (
+          {gara.isDeleted && (
+            <Badge color="red" variant="light" style={{ flexShrink: 0 }}>
+              Eliminata
+            </Badge>
+          )}
+          {!gara.isDeleted && newGara >= 0 && newGara < 7 && (
             <Badge color="green" variant="light" style={{ flexShrink: 0 }}>
               Nuovo
             </Badge>
           )}
-          {inScadenza > 0 && inScadenza < 7 && (
+          {!gara.isDeleted && inScadenza >= 0 && inScadenza < 7 && (
             <Badge color="pink" variant="light" style={{ flexShrink: 0 }}>
               In scadenza
             </Badge>
@@ -142,13 +158,19 @@ function Gara({ gara }: { gara: GaraWithNazione }) {
             <Text size="xs" c="dimmed">
               Prezzo iscrizione
             </Text>
-            <Text size="xl">€ 35,00</Text>
+            <Text size="xl">
+              €
+              {gara.prezzo.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })}
+            </Text>
           </Stack>
           <Stack gap={0}>
             <Text size="xs" c="dimmed">
               Posti disponibili
             </Text>
-            <Text size="xs">58/100</Text>
+            <Text size="xs">58/{gara.capienza}</Text>
           </Stack>
         </Group>
       </Stack>
