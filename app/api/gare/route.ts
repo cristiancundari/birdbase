@@ -1,4 +1,5 @@
 import { FormValues } from "@/components/gare/modalGara";
+import { checkAdmin } from "@/lib/checkAdmin";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { FileWithPath } from "@mantine/dropzone";
@@ -13,13 +14,15 @@ export async function POST(request: NextRequest) {
     citta: z.string().min(1),
     dataEvento: z.coerce.date(),
     tipologia: z.string(),
-    nazione: z.coerce.number(),
+    nazioneId: z.coerce.number(),
     prezzo: z.coerce.number().min(0),
     capienza: z.coerce.number().min(1),
   });
 
   try {
     const cookieStore = cookies();
+    await checkAdmin(cookieStore);
+
     const supabase = createClient(cookieStore);
 
     const data: FormData = await request.formData();
@@ -33,16 +36,7 @@ export async function POST(request: NextRequest) {
 
     const result = await prisma.$transaction(async (tx) => {
       const res = await tx.gara.create({
-        data: {
-          titolo: values.titolo,
-          citta: values.citta,
-          dataEvento: values.dataEvento,
-          tipologia: values.tipologia,
-          nazioneId: values.nazione,
-          prezzo: values.prezzo,
-          immagine: imgName,
-          capienza: values.capienza,
-        },
+        data: { ...values, immagine: imgFile ? imgName : null },
       });
       const upload = await supabase.storage
         .from("img")
@@ -66,27 +60,5 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  const datiSchema = z.object({
-    id: z.string().min(1),
-  });
-  try {
-    const dati = await request.json();
-    const values = datiSchema.parse(dati);
-
-    const result = await prisma.gara.update({
-      data: { isDeleted: true },
-      where: { id: values.id },
-    });
-
-    return NextResponse.json({ result, error: false }, { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json(
-      { result: err.message, error: true },
-      { status: 500 }
-    );
   }
 }

@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
+import { Ruolo } from "@/types/types";
+import { checkAdmin } from "@/lib/checkAdmin";
 
 export async function PATCH(
   request: NextRequest,
@@ -23,6 +25,9 @@ export async function PATCH(
   });
 
   try {
+    const cookieStore = cookies();
+    await checkAdmin(cookieStore);
+
     const dati = await request.formData();
     const form = JSON.parse(dati.get("form") as string);
     const img = dati.get("imgFile") as FileWithPath;
@@ -42,7 +47,6 @@ export async function PATCH(
       });
       // effettuiamo l'update dell'immagine
       if (img) {
-        const cookieStore = cookies();
         const supabase = createClient(cookieStore);
         const uploadImg = await supabase.storage
           .from("img")
@@ -58,6 +62,32 @@ export async function PATCH(
     return NextResponse.json(
       { message: error.message, error: true },
       { status: 400 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const datiSchema = z.object({
+    id: z.string().min(1),
+  });
+  try {
+    const cookieStore = cookies();
+    await checkAdmin(cookieStore);
+
+    const values = datiSchema.parse(params);
+    const result = await prisma.gara.update({
+      data: { isDeleted: true },
+      where: { id: values.id },
+    });
+
+    return NextResponse.json({ result, error: false }, { status: 200 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { message: err.message, error: true },
+      { status: 500 }
     );
   }
 }

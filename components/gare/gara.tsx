@@ -77,49 +77,51 @@ function Gara({
                 >
                   Dettagli
                 </Menu.Item>
-                <Menu.Item
-                  leftSection={<IconPencil size="14" />}
-                  onClick={() => {
-                    onEdit(gara);
-                  }}
-                >
-                  Modifica
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<IconTrash size="14" />}
-                  color="red"
-                  onClick={() => {
-                    onDelete(gara.id);
-                  }}
-                >
-                  Elimina
-                </Menu.Item>
+                {!gara.isDeleted && (
+                  <>
+                    <Menu.Item
+                      leftSection={<IconPencil size="14" />}
+                      onClick={() => {
+                        onEdit(gara);
+                      }}
+                    >
+                      Modifica
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<IconTrash size="14" />}
+                      color="red"
+                      onClick={() => {
+                        onDelete(gara.id);
+                      }}
+                    >
+                      Elimina
+                    </Menu.Item>
+                  </>
+                )}
               </Menu.Dropdown>
             </Menu>
           )}
         </Box>
       </Card.Section>
 
-      <Group justify="space-between" mt="md" mb="xs" wrap="nowrap">
-        <Text fw={500}>{gara.titolo}</Text>
-        <Stack gap="xs">
-          {gara.isDeleted && (
-            <Badge color="red" variant="light" style={{ flexShrink: 0 }}>
-              Eliminata
-            </Badge>
-          )}
-          {!gara.isDeleted && newGara >= 0 && newGara < 7 && (
-            <Badge color="green" variant="light" style={{ flexShrink: 0 }}>
-              Nuovo
-            </Badge>
-          )}
-          {!gara.isDeleted && inScadenza >= 0 && inScadenza < 7 && (
-            <Badge color="pink" variant="light" style={{ flexShrink: 0 }}>
-              In scadenza
-            </Badge>
-          )}
-        </Stack>
+      <Group justify="start" mt="md" mb="xs">
+        {gara.isDeleted && (
+          <Badge color="red" variant="light">
+            Eliminata
+          </Badge>
+        )}
+        {!gara.isDeleted && newGara >= 0 && newGara < 7 && (
+          <Badge color="green" variant="light">
+            Nuovo
+          </Badge>
+        )}
+        {!gara.isDeleted && inScadenza >= 0 && inScadenza < 7 && (
+          <Badge color="pink" variant="light">
+            In scadenza
+          </Badge>
+        )}
       </Group>
+      <Text fw={500}>{gara.titolo}</Text>
 
       <Stack gap={"xs"}>
         <Group gap={"xs"}>

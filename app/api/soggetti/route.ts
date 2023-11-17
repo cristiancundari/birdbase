@@ -7,22 +7,13 @@ import { cookies } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
 import { FileWithPath } from "@mantine/dropzone";
 import Result from "postcss/lib/result";
+import assert from "assert";
 
 export async function POST(request: Request) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
   const session = await supabase.auth.getSession();
   const user = session.data.session?.user;
-
-  if (!user) {
-    return NextResponse.json(
-      {
-        error: true,
-        message: "è necessaria l'autenticazione",
-      },
-      { status: 401 }
-    );
-  }
 
   const datiSchema = z.object({
     preferito: z.boolean().optional(),
@@ -35,6 +26,7 @@ export async function POST(request: Request) {
   });
 
   try {
+    assert(user, "E' necessaria l'autenticazione");
     const dati = await request.formData();
     const img = dati.get("imgFile") as FileWithPath;
     const form = JSON.parse(dati.get("form") as string);

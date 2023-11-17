@@ -18,13 +18,13 @@ async function Gare() {
   if (true) {
     gare = await prisma.gara.findMany({
       include: { nazione: true },
-      orderBy: [{ isDeleted: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ isDeleted: "asc" }, { dataEvento: "asc" }],
     });
   } else {
     gare = await prisma.gara.findMany({
       include: { nazione: true },
       where: { isDeleted: false },
-      orderBy: [{ isDeleted: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ isDeleted: "asc" }, { dataEvento: "asc" }],
     });
   }
   return <GarePage gare={gare}></GarePage>;

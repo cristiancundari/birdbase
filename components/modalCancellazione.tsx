@@ -40,6 +40,7 @@ function ModalCancellazione({
             setIsLoading(true);
             await onDelete();
             setIsLoading(false);
+            onClose();
           }}
         >
           Elimina

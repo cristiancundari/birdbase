@@ -73,7 +73,9 @@ function GarePage({ gare }: { gare: GaraWithNazione[] }) {
     const formData = new FormData();
 
     formData.append("form", JSON.stringify(form));
-    formData.append("imgFile", imgFile);
+    if (imgFile) {
+      formData.append("imgFile", imgFile);
+    }
 
     const response = await fetch("/api/gare", {
       body: formData,
@@ -104,14 +106,9 @@ function GarePage({ gare }: { gare: GaraWithNazione[] }) {
     setModalDeleteOpen(id);
   }
 
-  async function eliminaGara(id: string) {
-    if (id == "") {
-      return null;
-    }
-    const response = await fetch("/api/gare", {
-      body: JSON.stringify({ id }),
+  async function eliminaGara(id: string | null) {
+    const response = await fetch(`/api/gare/${id}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
     });
     const result: ApiResponse = await response.json();
     if (result.error) {
@@ -174,7 +171,7 @@ function GarePage({ gare }: { gare: GaraWithNazione[] }) {
         isOpen={modalDeleteOpen != null}
         titolo="Elimina Gara"
         onDelete={async () => {
-          await eliminaGara(modalDeleteOpen || "");
+          await eliminaGara(modalDeleteOpen);
         }}
         onClose={() => setModalDeleteOpen(null)}
       ></ModalCancellazione>
