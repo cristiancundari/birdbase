@@ -7,6 +7,7 @@ import {
   IconFlag,
   IconHome,
   IconTrophy,
+  IconWallet,
 } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import "@/styles/navLink.css";
@@ -23,9 +24,9 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       url: "/app/home",
     },
     {
-      icon: <IconBat />,
-      label: "Soggetti",
-      url: "/app/soggetti",
+      icon: <IconWallet />,
+      label: "Portafoglio",
+      url: "/app/portafoglio",
     },
     {
       icon: <IconBarrel />,
@@ -44,6 +45,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       header={{ height: 60 }}
       navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }}
       padding="md"
+      bg="gray.0"
     >
       <AppShell.Header>
         <Group h="100%" px="md">

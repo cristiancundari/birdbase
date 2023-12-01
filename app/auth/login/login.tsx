@@ -21,7 +21,7 @@ function Login() {
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/app/home";
+  const callbackUrl = searchParams.get("callback") || "/app/home";
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");

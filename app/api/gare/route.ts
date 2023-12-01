@@ -1,5 +1,5 @@
 import { FormValues } from "@/components/gare/modalGara";
-import { checkAdmin } from "@/lib/checkAdmin";
+import { checkAdmin } from "@/lib/supabase/helper";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { FileWithPath } from "@mantine/dropzone";

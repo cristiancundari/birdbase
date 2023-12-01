@@ -15,7 +15,7 @@ import {
 
 import errorNotificationClasses from "@/styles/errorNotification.module.css";
 import { DateInput } from "@mantine/dates";
-import { IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import { IconCalendar, IconDeviceFloppy, IconX } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
 import { Sesso } from "@/types/types";
@@ -154,6 +154,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             {...form.getInputProps("dataNascita")}
             valueFormat="DD/MM/YYYY"
             dateParser={dateParser}
+            leftSection={<IconCalendar size={16} />}
           ></DateInput>
           <Select
             {...form.getInputProps("sesso")}

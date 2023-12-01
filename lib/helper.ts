@@ -1,6 +1,16 @@
 import { notifications } from "@mantine/notifications";
 import errorNotificationClasses from "@/styles/errorNotification.module.css";
 import successNotificationClasses from "@/styles/successNotification.module.css";
+import { format } from "date-fns";
+import {
+  IconBarrel,
+  IconBat,
+  IconLayoutGrid,
+  IconToolsKitchen2,
+  IconVaccine,
+  TablerIconsProps,
+} from "@tabler/icons-react";
+import React from "react";
 
 interface ShowNotificationType {
   message: string;
@@ -31,3 +41,33 @@ export function showNotification({
 
 export const imgPath =
   "https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/";
+
+export function formatValuta(value: number) {
+  return (
+    value.toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+    }) + " €"
+  );
+}
+
+export function formatData(value: Date | string) {
+  if (typeof value == "string") {
+    value = new Date(value);
+  }
+
+  return format(value, "dd/MM/yyyy");
+}
+
+export const transazioniIconColor: {
+  [key: string]: {
+    icon: React.FunctionComponent<TablerIconsProps>;
+    color: string;
+  };
+} = {
+  Gabbie: { icon: IconBarrel, color: "pink" },
+  Alimenti: { icon: IconToolsKitchen2, color: "violet" },
+  Medicine: { icon: IconVaccine, color: "yellow" },
+  Soggetti: { icon: IconBat, color: "blue" },
+  Altro: { icon: IconLayoutGrid, color: "gray" },
+};

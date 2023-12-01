@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,19 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username String   @unique
-  password String
-  profile  Profile?
-}
-
 model Profile {
-  id       String     @id @db.Uuid
-  user     User       @relation(fields: [id], references: [id])
-  name     String
-  Soggetto Soggetto[]
-  isAdmin  Boolean    @default(false)
+  id          String        @id @db.Uuid
+  name        String
+  budget      Float         @default(0)
+  Soggetto    Soggetto[]
+  Transazione Transazione[]
 }
 
 model Soggetto {
@@ -33,9 +23,9 @@ model Soggetto {
   numero      String
   rna         String
   preferito   Boolean  @default(false)
-  profile     Profile  @relation(fields: [profileId], references: [id])
   profileId   String   @db.Uuid
   avatar      String?
+  profile     Profile  @relation(fields: [profileId], references: [id])
 }
 
 model Nazione {
@@ -52,10 +42,29 @@ model Gara {
   tipologia  String
   citta      String
   immagine   String?
-  nazione    Nazione  @relation(fields: [nazioneId], references: [id])
   nazioneId  Int
   createdAt  DateTime @default(now())
+  isDeleted  Boolean  @default(false)
   prezzo     Float    @default(0)
   capienza   Int
-  isDeleted  Boolean  @default(false)
+  nazione    Nazione  @relation(fields: [nazioneId], references: [id])
+}
+
+model Transazione {
+  id           Int             @id @default(autoincrement())
+  created_at   DateTime        @default(now()) @db.Timestamptz(6)
+  categoriaId  Int
+  data         DateTime        @db.Date
+  prezzo       Float
+  descrizione  String?         @db.VarChar
+  modificabile Boolean         @default(true)
+  user_id      String          @db.Uuid
+  categoria    categorie_spese @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user         Profile         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model categorie_spese {
+  id          Int           @id @default(autoincrement())
+  nome        String
+  Transazione Transazione[]
 }

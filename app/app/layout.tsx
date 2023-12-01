@@ -6,7 +6,9 @@ function layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar>
-        <Container size="xl">{children}</Container>
+        <Container size="xl" p={0}>
+          {children}
+        </Container>
       </Navbar>
     </>
   );

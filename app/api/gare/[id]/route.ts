@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { Ruolo } from "@/types/types";
-import { checkAdmin } from "@/lib/checkAdmin";
+import { checkAdmin } from "@/lib/supabase/helper";
 
 export async function PATCH(
   request: NextRequest,

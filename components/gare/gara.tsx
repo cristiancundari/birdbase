@@ -12,6 +12,7 @@ import {
   Box,
   Menu,
   ActionIcon,
+  Tooltip,
 } from "@mantine/core";
 import Flag from "react-world-flags";
 import { GaraWithNazione, Ruolo } from "@/types/types";
@@ -23,6 +24,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useSupabase } from "@/providers/supabaseProvider";
+import { formatValuta } from "@/lib/helper";
 
 function Gara({
   gara,
@@ -35,6 +37,37 @@ function Gara({
 }) {
   const newGara = differenceInDays(Date.now(), gara.createdAt);
   const inScadenza = differenceInDays(gara.dataEvento, Date.now());
+
+  const badges = [
+    {
+      condizione: !gara.isDeleted && newGara >= 0 && newGara < 7,
+      titolo: "Nuovo",
+      color: "green",
+      variant: "filled",
+    },
+    {
+      condizione: !gara.isDeleted && inScadenza >= 0 && inScadenza < 7,
+      titolo: "In Scadenza",
+      color: "yellow",
+    },
+    {
+      //verificare condizione
+      condizione: true,
+      titolo: "Completato",
+      color: "green",
+    },
+    {
+      //verificare condizione
+      condizione: true,
+      titolo: "Da Valutare",
+      color: "blue",
+    },
+    {
+      condizione: gara.isDeleted,
+      titolo: "Eliminata",
+      color: "red",
+    },
+  ];
 
   // recupero utente loggato, verifico se è un admin o un utente
   const supabase = useSupabase();
@@ -105,68 +138,61 @@ function Gara({
       </Card.Section>
 
       <Group justify="start" mt="md" mb="xs">
-        {gara.isDeleted && (
-          <Badge color="red" variant="light">
-            Eliminata
-          </Badge>
-        )}
-        {!gara.isDeleted && newGara >= 0 && newGara < 7 && (
-          <Badge color="green" variant="light">
-            Nuovo
-          </Badge>
-        )}
-        {!gara.isDeleted && inScadenza >= 0 && inScadenza < 7 && (
-          <Badge color="pink" variant="light">
-            In scadenza
-          </Badge>
-        )}
+        {badges.map((badge) => {
+          return (
+            badge.condizione && (
+              <Badge color={badge.color} variant={badge.variant || "light"}>
+                {badge.titolo}
+              </Badge>
+            )
+          );
+        })}
       </Group>
-      <Text fw={500}>{gara.titolo}</Text>
 
-      <Stack gap={"xs"}>
+      <Stack gap={"xs"} h="100%">
+        <Text fw={500} size="lg">
+          {gara.titolo}
+        </Text>
         <Group gap={"xs"}>
           <Text size="sm">Tipologia:</Text>
           <Text size="sm" c="dimmed">
             {gara.tipologia}
           </Text>
         </Group>
-        <Group gap={"xs"}>
-          <Text size="sm">Data:</Text>
-          <Text size="sm" c="dimmed">
-            {format(gara.dataEvento, "dd/MM/yyyy")}
-          </Text>
-        </Group>
-        <Group justify="space-between">
+        <Group justify="space-between" gap={"xs"}>
+          <Group gap={"xs"}>
+            <Text size="sm">Data:</Text>
+            <Text size="sm" c="dimmed">
+              {format(gara.dataEvento, "dd/MM/yyyy")}
+            </Text>
+          </Group>
           <Group gap={"xs"}>
             <Text size="sm">Città:</Text>
             <Text size="sm" c="dimmed">
               {gara.citta}
             </Text>
           </Group>
-          <Group gap={"xs"}>
-            <Flag
-              code={gara.nazione.sigla}
-              height={16}
-              style={{ boxShadow: "0px 0px 5px 0px #00000047" }}
-            />
-            <Text size="sm" c="dimmed">
-              {gara.nazione.nome}
-            </Text>
-          </Group>
+          <Tooltip label={gara.nazione.nome}>
+            <Group gap={"xs"} align="center">
+              <Flag
+                code={gara.nazione.sigla}
+                height={16}
+                style={{ boxShadow: "0px 0px 5px 0px #00000047" }}
+              />
+              <Text size="xs" c="dimmed">
+                {gara.nazione.sigla}
+              </Text>
+            </Group>
+          </Tooltip>
         </Group>
+        <Box style={{ flexGrow: 1 }}></Box>
         <Divider my="md" variant="dashed" />
         <Group justify="space-between">
           <Stack gap={0}>
             <Text size="xs" c="dimmed">
               Prezzo iscrizione
             </Text>
-            <Text size="xl">
-              €
-              {gara.prezzo.toLocaleString(undefined, {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2,
-              })}
-            </Text>
+            <Text size="xl">{formatValuta(gara.prezzo)}</Text>
           </Stack>
           <Stack gap={0}>
             <Text size="xs" c="dimmed">

@@ -14,7 +14,12 @@ import {
 
 import errorNotificationClasses from "@/styles/errorNotification.module.css";
 import { DateInput } from "@mantine/dates";
-import { IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconCurrencyEuro,
+  IconDeviceFloppy,
+  IconX,
+} from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
 import { dateParser } from "@/lib/DateParser";
@@ -180,6 +185,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
             {...form.getInputProps("dataEvento")}
             valueFormat="DD/MM/YYYY"
             dateParser={dateParser}
+            leftSection={<IconCalendar size={16} />}
           ></DateInput>
 
           <TextInput label="Città" {...form.getInputProps("citta")} />
@@ -199,8 +205,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
             hideControls
             decimalScale={2}
             fixedDecimalScale
-            decimalSeparator=","
-            leftSection="€"
+            leftSection={<IconCurrencyEuro size={16} />}
             {...form.getInputProps("prezzo")}
           />
           <NumberInput
