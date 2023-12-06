@@ -53,7 +53,7 @@ function TransazioneComp({
               <Text fw={500} c={myColor}>
                 {transazione.categoria.nome}
               </Text>
-              <Text c="dimmed" lineClamp={2}>
+              <Text size="xs" c="dimmed" lineClamp={2}>
                 {transazione.descrizione}
               </Text>
             </Stack>

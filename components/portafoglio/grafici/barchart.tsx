@@ -1,18 +1,50 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@mantine/core";
+import { ApiResponse } from "@/types/types";
+import { formatValuta, showNotification } from "@/lib/helper";
+import { IncassiQueryResult } from "@/app/api/transazioni/incassi/route";
+import { usePortafoglioContext } from "../portafoglioPage";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
-  loading: () => <Skeleton height={350} />,
+  loading: () => <BarChartSkeleton />,
 });
 
-interface BarChartProps {
-  series: (number | null)[];
-}
-function BarChart({ series }: BarChartProps) {
-  return (
+function BarChart() {
+  const { state: forceRender } = usePortafoglioContext();
+  const [incassi, setIncassi] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getIncassi = async () => {
+    const response = await fetch("/api/transazioni/incassi");
+    const result: ApiResponse = await response.json();
+    if (result.error) {
+      showNotification({ message: result.message });
+    } else {
+      let series = Array(12).fill(0);
+      const dati: IncassiQueryResult[] = result.result;
+      dati.forEach((item) => {
+        series[item.mese - 1] = item.totale;
+      });
+      setIsLoading(false);
+      setIncassi(series);
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    getIncassi();
+  }, []);
+
+  useEffect(() => {
+    getIncassi();
+  }, [forceRender]);
+
+  return isLoading ? (
+    <BarChartSkeleton />
+  ) : (
     <ReactApexChart
       options={{
         responsive: [
@@ -29,11 +61,11 @@ function BarChart({ series }: BarChartProps) {
             },
           },
         ],
-        title: { text: "Ricavi ultimi 12 mesi", align: "center", margin: 20 },
+        title: { text: "Incassi ultimi 12 mesi", align: "center", margin: 20 },
         chart: { toolbar: { show: false }, selection: { enabled: false } },
         tooltip: {
           y: {
-            formatter: (val) => `€ ${val}`,
+            formatter: (val) => formatValuta(val),
           },
         },
         labels: [
@@ -54,7 +86,7 @@ function BarChart({ series }: BarChartProps) {
           bar: { borderRadius: 10, dataLabels: { position: "top" } },
         },
         dataLabels: {
-          formatter: (val) => `€ ${val}`,
+          formatter: (val) => formatValuta(Number(val)),
           offsetY: -20,
           style: {
             fontSize: "10px",
@@ -63,12 +95,16 @@ function BarChart({ series }: BarChartProps) {
         },
         xaxis: {
           axisTicks: { show: false },
+          labels: {
+            rotate: -45,
+            rotateAlways: true,
+          },
         },
       }}
       series={[
         {
           name: "Profitto",
-          data: series,
+          data: incassi,
         },
       ]}
       type="bar"
@@ -76,6 +112,10 @@ function BarChart({ series }: BarChartProps) {
       width="100%"
     />
   );
+}
+
+function BarChartSkeleton() {
+  return <Skeleton height={350} />;
 }
 
 export default BarChart;

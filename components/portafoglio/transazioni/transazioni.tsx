@@ -13,12 +13,15 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ModalTransazione, { FormValues } from "./modalTransazione";
 import TransazioneComp, { TransazioneCompSkeleton } from "./transazioneComp";
 import ModalCancellazione from "../../modalCancellazione";
+import { usePortafoglioContext } from "../portafoglioPage";
 
 function Transazioni() {
+  const { state: forceRender, setState: setForceRender } =
+    usePortafoglioContext();
   const isMobile = useMediaQuery(`(max-width: 62em)`);
   const [isOpen, setIsOpen] = useState(false);
   const [editTransazione, setEditTransazione] =
@@ -29,7 +32,8 @@ function Transazioni() {
   );
   const [isTransazioniLoading, setIsTransazioniLoading] = useState(true);
 
-  function btnAggiungi() {
+  function openModalAggiungi() {
+    setEditTransazione(null);
     setIsOpen(true);
   }
 
@@ -57,6 +61,7 @@ function Transazioni() {
         success: true,
       });
       getTransazioni();
+      setForceRender(forceRender + 1);
     }
   }
 
@@ -101,6 +106,7 @@ function Transazioni() {
         success: true,
       });
       getTransazioni();
+      setForceRender(forceRender + 1);
     }
   }
 
@@ -121,6 +127,7 @@ function Transazioni() {
         success: true,
       });
       getTransazioni();
+      setForceRender(forceRender + 1);
     }
   }
 
@@ -150,7 +157,7 @@ function Transazioni() {
               Transazioni
             </Text>
             <Button
-              onClick={btnAggiungi}
+              onClick={openModalAggiungi}
               variant="light"
               leftSection={<IconPlus size={14} />}
             >

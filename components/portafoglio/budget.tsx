@@ -17,11 +17,14 @@ import {
   IconEdit,
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
+import { usePortafoglioContext } from "./portafoglioPage";
 
 function Budget() {
+  const { state: forceRender } = usePortafoglioContext();
   const [isEdit, setIsEdit] = useState(false);
   const [newBudget, setNewBudget] = useState(0);
   const [budget, setBudget] = useState(null);
+  const [bilancio, setBilancio] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function getBudget() {
@@ -33,7 +36,11 @@ function Budget() {
       });
       setBudget(null);
     } else {
-      setBudget(result.result.budget);
+      const budget = result.result.budget.budget;
+      const spesa = result.result.spese._sum.prezzo || 0;
+      const bilancio = budget + spesa; //La variabile spesa è sempre negativa (somma algebrica con segno)
+      setBudget(budget);
+      setBilancio(bilancio);
     }
   }
 
@@ -64,7 +71,7 @@ function Budget() {
 
   useEffect(() => {
     getBudget();
-  }, []);
+  }, [forceRender]);
 
   return (
     <Paper p="md" shadow="xs">
@@ -127,13 +134,20 @@ function Budget() {
             </>
           )}
         </Group>
+
         <Stack gap={0}>
           <Group>
             <Text>Bilancio: </Text>
-            <Text c="red">-254,42 €</Text>
+            {bilancio ? (
+              <Text c={bilancio >= 0 ? "green" : "red"}>
+                {formatValuta(bilancio)}
+              </Text>
+            ) : (
+              <Skeleton w={100} h={14} />
+            )}
           </Group>
           <Text c="dimmed" fz="xs">
-            Il bilancio è calcolato come: Budget - Tot. spese
+            Il bilancio è calcolato come: Budget - Spese
           </Text>
         </Stack>
       </Stack>

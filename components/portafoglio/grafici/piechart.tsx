@@ -14,6 +14,7 @@ import {
 } from "@/lib/helper";
 import { ApiResponse } from "@/types/types";
 import { categorie_spese } from "@prisma/client";
+import { usePortafoglioContext } from "../portafoglioPage";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -31,6 +32,7 @@ interface GraphData {
 }
 
 function PieChart() {
+  const { state: forceRender } = usePortafoglioContext();
   const theme = useMantineTheme();
   const colorScheme = useMantineColorScheme().colorScheme;
   const [isLoading, setIsLoading] = useState(true);
@@ -39,12 +41,8 @@ function PieChart() {
     series: [],
     labels: [],
   });
-  useEffect(() => {
-    getGraphData();
-  }, []);
 
-  async function getGraphData() {
-    setIsLoading(true);
+  const getGraphData = async () => {
     const response = await fetch("/api/transazioni/spese");
     const result: ApiResponse = await response.json();
     if (result.error) {
@@ -53,7 +51,16 @@ function PieChart() {
       setIsLoading(false);
       elaboraDati(result.result);
     }
-  }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    getGraphData();
+  }, []);
+
+  useEffect(() => {
+    getGraphData();
+  }, [forceRender]);
 
   function elaboraDati(dati: GraphApiData[]) {
     const graphData: GraphData = {
