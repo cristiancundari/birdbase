@@ -138,10 +138,14 @@ function Gara({
       </Card.Section>
 
       <Group justify="start" mt="md" mb="xs">
-        {badges.map((badge) => {
+        {badges.map((badge, index) => {
           return (
             badge.condizione && (
-              <Badge color={badge.color} variant={badge.variant || "light"}>
+              <Badge
+                color={badge.color}
+                key={index}
+                variant={badge.variant || "light"}
+              >
                 {badge.titolo}
               </Badge>
             )

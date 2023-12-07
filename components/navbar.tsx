@@ -4,6 +4,7 @@ import {
   Icon360,
   IconBarrel,
   IconBat,
+  IconEggCracked,
   IconFlag,
   IconHome,
   IconTrophy,
@@ -29,9 +30,9 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       url: "/app/portafoglio",
     },
     {
-      icon: <IconBarrel />,
-      label: "Gabbie",
-      url: "/app/gabbie",
+      icon: <IconEggCracked />,
+      label: "Covate",
+      url: "/app/covate",
     },
     {
       icon: <IconTrophy />,
