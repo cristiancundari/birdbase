@@ -28,6 +28,7 @@ import { FileWithPath } from "@mantine/dropzone";
 import { notifications } from "@mantine/notifications";
 import { Gara, Nazione } from "@prisma/client";
 import { imgPath, showNotification } from "@/lib/helper";
+import { apiFetch } from "@/lib/apiFetch";
 
 export interface FormValues {
   titolo: string;
@@ -97,23 +98,22 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
   }, [modalData, isOpen]);
 
   function getNazioni() {
-    const nazioni = async () => {
-      const result = await fetch("/api/nazioni");
-      if (!result.ok) {
+    const _getNazioni = async () => {
+      const result = await apiFetch.get<Nazione[]>("/api/nazioni");
+      if (result.error) {
         showNotification({
           message: "Impossibile ottenere le nazioni dal server",
         });
-        return null;
+        return;
       }
-      const resultJson = await result.json();
-      const nazioni: Nazione[] = resultJson.result;
+      const nazioni = result.data;
       const nazioniSelect = nazioni.map((nazione) => ({
         value: nazione.id.toString(),
         label: nazione.nome,
       }));
       setNazioni(nazioniSelect);
     };
-    nazioni();
+    _getNazioni();
   }
 
   const previews = files.map((file) => URL.createObjectURL(file));
