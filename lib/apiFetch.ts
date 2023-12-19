@@ -1,3 +1,5 @@
+import { ApiResponse } from "@/types/types";
+import z from "zod";
 export const apiFetch = {
   get,
   post,
@@ -61,7 +63,20 @@ async function handleResponse<T>(
       (Boolean(data) && (data.message as string)) || response.statusText;
     return { error: true as true, message: error };
   }
-  return { data: data as T, error: false as false };
+  // Verifico se la risposta del server rispetta il formato ApiResponse
+  const schema = z.custom<ApiResponse>();
+  const parsed = schema.safeParse(data);
+  if (!parsed.success) {
+    // Se non rispetta il formato ritorno comunque i dati facendo il parse con il tipo generico <T>
+    return { data: data as T, error: false as false };
+  } else {
+    if (parsed.data.error) {
+      // Se rispetta il formato ma il server ha ritornato un errore
+      return { error: true as true, message: parsed.data.message };
+    } else {
+      return { data: parsed.data.result as T, error: false as false };
+    }
+  }
 }
 
 function reviveDate(key: string, value: any) {
