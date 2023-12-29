@@ -7,3 +7,4 @@
 (D) Sistemare le immagini nel bucket di supabase in cartelle differenti (avatar e gare)
 (D) Sistemare il loading in caso di errore API
 (A) Rendere l'API utilizzabile solo da chi ne ha i permessi
+(C) Sistemare l'azione di OnDelete e OnUpdate sullo schema prisma

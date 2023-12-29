@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Gara from "./gara";
 import { Box, Button, Group, SimpleGrid } from "@mantine/core";
-import { ApiResponse, GaraWithNazione, Ruolo } from "@/types/types";
+import { ApiResponse, GaraWithNazione } from "@/types/types";
 import { useSupabase } from "@/providers/supabaseProvider";
 import { IconPlus } from "@tabler/icons-react";
 import ModalGara, { FormValues } from "./modalGara";
@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import NessunaGara from "./nessunaGara";
 import { FileWithPath } from "@mantine/dropzone";
 import ModalCancellazione from "../modalCancellazione";
-import { Gara as GaraType } from "@prisma/client";
+import { Gara as GaraType, Role } from "@prisma/client";
 
 function GarePage({ gare }: { gare: GaraWithNazione[] }) {
   const router = useRouter();
@@ -21,7 +21,7 @@ function GarePage({ gare }: { gare: GaraWithNazione[] }) {
 
   const supabase = useSupabase();
   //TODO aggiustare la logica
-  const isAdmin = supabase.session?.user.role != Ruolo.Admin;
+  const isAdmin = supabase.session?.user.role != Role.ADMIN;
 
   function btnAggiungi() {
     setModalData(null);

@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Sesso } from "@/types/types";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
 import { FileWithPath } from "@mantine/dropzone";
-import Result from "postcss/lib/result";
 import assert from "assert";
+import { getServerUser } from "@/lib/supabase/helper";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
   const session = await supabase.auth.getSession();
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     await prisma.$transaction(async (tx) => {
       result = await tx.soggetto.create({
-        data: { ...values, profileId: user.id },
+        data: { ...values, profiloId: user.id },
       });
       if (img) {
         const upload = await supabase.storage.from("img").upload(imgName, img);
@@ -72,5 +72,23 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const user = await getServerUser(cookies());
+  assert(user);
+  try {
+    const result = await prisma.soggetto.findMany({
+      where: { profiloId: user.id },
+      orderBy: { dataNascita: "desc" },
+    });
+
+    return NextResponse.json({ result: result, error: false }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: error.message, error: true },
+      { status: 400 }
+    );
   }
 }

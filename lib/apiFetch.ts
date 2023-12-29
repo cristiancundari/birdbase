@@ -1,9 +1,10 @@
 import { ApiResponse } from "@/types/types";
+import { assert } from "console";
 import z from "zod";
 export const apiFetch = {
   get,
   post,
-  put,
+  patch,
   delete: _delete,
 };
 
@@ -25,9 +26,9 @@ async function post<T = any>(url: string, body: any) {
   return handleResponse<T>(response);
 }
 
-async function put<T = any>(url: string, body: any) {
+async function patch<T = any>(url: string, body: any) {
   const requestOptions = {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   };
@@ -56,26 +57,31 @@ interface ErrorHandler {
 async function handleResponse<T>(
   response: Response
 ): Promise<SuccessHandler<T> | ErrorHandler> {
-  const text = await response.text();
-  const data = text && JSON.parse(text, reviveDate);
-  if (!response.ok) {
-    const error =
-      (Boolean(data) && (data.message as string)) || response.statusText;
-    return { error: true as true, message: error };
-  }
-  // Verifico se la risposta del server rispetta il formato ApiResponse
-  const schema = z.custom<ApiResponse>();
-  const parsed = schema.safeParse(data);
-  if (!parsed.success) {
-    // Se non rispetta il formato ritorno comunque i dati facendo il parse con il tipo generico <T>
-    return { data: data as T, error: false as false };
-  } else {
-    if (parsed.data.error) {
-      // Se rispetta il formato ma il server ha ritornato un errore
-      return { error: true as true, message: parsed.data.message };
+  try {
+    const text = await response.text();
+    const data = text && JSON.parse(text, reviveDate);
+    // Verifico se la risposta del server rispetta il formato ApiResponse
+    const schema = z.custom<ApiResponse>();
+    const parsed = schema.safeParse(data);
+    if (!parsed.success) {
+      // Se non rispetta il formato ritorno comunque i dati facendo il parse con il tipo generico <T>
+      return { error: false, data: data as T };
     } else {
-      return { data: parsed.data.result as T, error: false as false };
+      if (parsed.data.error) {
+        // Se rispetta il formato ma il server ha ritornato un errore
+        return { error: true, message: parsed.data.message };
+      } else {
+        return { error: false, data: parsed.data.result as T };
+      }
     }
+  } catch (error: any) {
+    if (error instanceof SyntaxError) {
+      return {
+        error: true,
+        message: "Il server ha risposto con un formato non riconosciuto",
+      };
+    }
+    return { error: true, message: "Errore generico" };
   }
 }
 

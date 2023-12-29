@@ -1,45 +1,59 @@
 import { dateParser } from "@/lib/DateParser";
-import { showNotification } from "@/lib/helper";
-import { ApiResponse } from "@/types/types";
+import { formatData, showNotification } from "@/lib/helper";
+import { ApiResponse, CovataWithGenitori } from "@/types/types";
 import {
   Button,
   Group,
   Modal,
+  NumberInput,
   Select,
   SimpleGrid,
+  Switch,
   TextInput,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { Soggetto } from "@prisma/client";
-import { IconCalendar, IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconCheck,
+  IconDeviceFloppy,
+  IconX,
+} from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
+import ComboboxGenitori, { GenitoriItem } from "./comboboxGenitori";
+import { apiFetch } from "@/lib/apiFetch";
 
 export interface CovataFormValues {
-  padre: string[];
-  madre: string[];
-  dataConvata: Date;
+  padre: string;
+  madre: string;
+  dataCovata: Date | null;
   uovaDeposte: string;
   uovaSchiuse: string;
+  gabbia: string;
+  completata: boolean;
 }
 
-interface modalCovataValues {
+interface ModalCovataProps {
   isOpen: boolean;
   annulla: () => void;
-  modalData: any;
+  modalData: CovataWithGenitori | null;
+  submit: (values: CovataFormValues) => Promise<void>;
 }
 
-function ModalCovata({ isOpen, annulla, modalData }: modalCovataValues) {
+function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [padre, setPadre] = useState<{ value: string; label: string }[]>([]);
-  const [madre, setMadre] = useState<{ value: string; label: string }[]>([]);
-  const form = useForm({
+  const [padre, setPadre] = useState<GenitoriItem[]>([]);
+  const [madre, setMadre] = useState<GenitoriItem[]>([]);
+  const form = useForm<CovataFormValues>({
     initialValues: {
       padre: "",
       madre: "",
       dataCovata: null,
       uovaDeposte: "0",
       uovaSchiuse: "0",
+      gabbia: "",
+      completata: false,
     },
     validate: {
       padre: (padre) => (padre == null ? "Inserire il padre" : null),
@@ -49,32 +63,52 @@ function ModalCovata({ isOpen, annulla, modalData }: modalCovataValues) {
     },
   });
 
+  useEffect(() => {
+    if (isOpen) {
+      if (modalData) {
+        form.setValues({
+          padre: modalData.padre.id,
+          madre: modalData.madre.id,
+          dataCovata: modalData.data,
+          uovaDeposte: modalData.uovaDeposte.toString(),
+          uovaSchiuse: modalData.uovaSchiuse.toString(),
+          completata: modalData.completata,
+          gabbia: modalData.gabbia?.toString() || "",
+        });
+      } else {
+        form.reset();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalData, isOpen]);
   useEffect(getPadreMadre, []);
 
   function getPadreMadre() {
     const listaPadreMadre = async () => {
-      const response = await fetch("/api/covate/genitori");
-      if (!response.ok) {
+      const response = await fetch("/api/soggetti");
+      const result: ApiResponse<Soggetto[]> = await response.json();
+      if (result.error) {
         showNotification({
-          message: "Impossibile ottenere i dati dal database.",
+          message: result.message,
         });
         return null;
       }
-      const result = await response.json();
-      const resMadre: Soggetto[] = result.result.madre;
-      const resPadre: Soggetto[] = result.result.padre;
 
-      const padreSelect = resPadre.map((padre) => ({
-        value: padre.id,
-        label: padre.rna + padre.numero,
-      }));
-      const madreSelect = resMadre.map((madre) => ({
-        value: madre.id,
-        label: madre.rna + madre.numero,
-      }));
-      //TODO set padre e madre
-      setPadre(padreSelect);
-      setMadre(madreSelect);
+      const resMadre: GenitoriItem[] = result.result
+        .filter((item: Soggetto) => item.sesso == false)
+        .map((s) => ({
+          soggetto: s,
+          parentela: null,
+        }));
+      const resPadre: GenitoriItem[] = result.result
+        .filter((item: Soggetto) => item.sesso == true)
+        .map((s) => ({
+          soggetto: s,
+          parentela: null,
+        }));
+
+      setPadre(resPadre);
+      setMadre(resMadre);
     };
 
     listaPadreMadre();
@@ -84,35 +118,43 @@ function ModalCovata({ isOpen, annulla, modalData }: modalCovataValues) {
     <Modal
       opened={isOpen}
       onClose={annulla}
-      title={modalData == null ? "Aggiungi Gara" : "Modifica Gara"}
+      title={modalData == null ? "Aggiungi Covata" : "Modifica Covata"}
       centered
+      size="lg"
     >
       <form
         onSubmit={form.onSubmit(async () => {
           setIsLoading(true);
-          //effettuare la richiesta al server
+          await submit(form.values);
           setIsLoading(false);
           annulla();
         })}
       >
-        <SimpleGrid cols={2} mt={"md"}>
-          <Select
-            {...form.getInputProps("padre")}
+        <Switch
+          checked={form.values.completata}
+          onChange={(event) =>
+            form.setFieldValue("completata", event.currentTarget.checked)
+          }
+          color="teal"
+          size="sm"
+          label="Completata"
+          thumbIcon={
+            form.values.completata && <IconCheck size={14} color="teal" />
+          }
+        />
+        <SimpleGrid cols={{ base: 1, sm: 2 }} mt={"md"}>
+          <ComboboxGenitori
             label="Padre"
-            data={padre}
-            allowDeselect={false}
-            searchable
-            nothingFoundMessage="Nessun risultato"
-          ></Select>
-          <Select
-            {...form.getInputProps("madre")}
+            genitori={padre}
+            onComboboxChange={(id) => form.setFieldValue("padre", id)}
+            selected={form.values.padre}
+          />
+          <ComboboxGenitori
             label="Madre"
-            data={madre}
-            allowDeselect={false}
-            searchable
-            nothingFoundMessage="Nessun risultato"
-          ></Select>
-
+            genitori={madre}
+            onComboboxChange={(id) => form.setFieldValue("madre", id)}
+            selected={form.values.madre}
+          />
           <DateInput
             label="Data Covata"
             {...form.getInputProps("dataCovata")}
@@ -121,17 +163,28 @@ function ModalCovata({ isOpen, annulla, modalData }: modalCovataValues) {
             leftSection={<IconCalendar size={16} />}
           ></DateInput>
 
-          <TextInput label="Gabbia" {...form.getInputProps("gabbia")} />
+          <NumberInput
+            allowNegative={false}
+            allowDecimal={false}
+            hideControls
+            label="Gabbia"
+            {...form.getInputProps("gabbia")}
+          />
 
-          <TextInput
+          <NumberInput
+            allowNegative={false}
+            allowDecimal={false}
+            hideControls
             label="Uova deposte"
             {...form.getInputProps("uovaDeposte")}
-          ></TextInput>
-
-          <TextInput
+          />
+          <NumberInput
+            allowNegative={false}
+            allowDecimal={false}
+            hideControls
             label="Uova schiuse"
             {...form.getInputProps("uovaSchiuse")}
-          ></TextInput>
+          />
         </SimpleGrid>
 
         <Group mt={"lg"} gap="md" justify="flex-end">

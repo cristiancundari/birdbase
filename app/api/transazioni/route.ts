@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         categoriaId: datiParser.categoriaId,
         prezzo: datiParser.prezzo * (datiParser.tipologia ? -1 : 1),
         descrizione: datiParser.descrizione,
-        user_id: user.id,
+        profiloId: user.id,
       },
     });
     return NextResponse.json({ result: result, error: false }, { status: 200 });
@@ -55,9 +55,9 @@ export async function GET(request: NextRequest) {
   const user = await getServerUser(cookies());
   assert(user);
   const result = await prisma.transazione.findMany({
-    where: { user_id: user.id },
+    where: { profiloId: user.id },
     include: { categoria: true },
-    orderBy: [{ data: "desc" }, { created_at: "desc" }],
+    orderBy: [{ data: "desc" }, { createdAt: "desc" }],
   });
   return NextResponse.json({ result: result, error: false }, { status: 200 });
 }

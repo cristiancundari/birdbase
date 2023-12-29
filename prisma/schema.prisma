@@ -7,64 +7,106 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Profile {
-  id          String        @id @db.Uuid
+model Profilo {
+  id          String        @id(map: "Profile_pkey") @db.Uuid
   name        String
   budget      Float         @default(0)
-  Soggetto    Soggetto[]
-  Transazione Transazione[]
+  ruolo       Role          @default(USER)
+  covate      Covata[]
+  soggetti    Soggetto[]
+  transazioni Transazione[]
+
+  @@map("profili")
 }
 
 model Soggetto {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id(map: "Soggetto_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sesso       Boolean?
-  dataNascita DateTime @db.Date
+  dataNascita DateTime @map("data_nascita") @db.Date
   gabbia      Int?
   numero      String
   rna         String
   preferito   Boolean  @default(false)
-  profileId   String   @db.Uuid
+  profiloId   String   @map("profilo_id") @db.Uuid
   avatar      String?
-  profile     Profile  @relation(fields: [profileId], references: [id])
+  covataId    Int?     @map("covata_id")
+  covateMadre Covata[] @relation("covate_id_madreToSoggetto")
+  covatePadre Covata[] @relation("covate_id_padreToSoggetto")
+  covata      Covata?  @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo     Profilo  @relation(fields: [profiloId], references: [id])
+
+  @@map("soggetti")
 }
 
 model Nazione {
-  id    Int    @id @default(autoincrement())
+  id    Int    @id(map: "Nazione_pkey") @default(autoincrement())
   nome  String
   sigla String
   gare  Gara[]
+
+  @@map("nazioni")
 }
 
 model Gara {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  titolo     String
-  dataEvento DateTime @db.Date
-  tipologia  String
-  citta      String
-  immagine   String?
-  nazioneId  Int
-  createdAt  DateTime @default(now())
-  isDeleted  Boolean  @default(false)
-  prezzo     Float    @default(0)
-  capienza   Int
-  nazione    Nazione  @relation(fields: [nazioneId], references: [id])
+  id        String   @id(map: "Gara_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titolo    String
+  data      DateTime @db.Date
+  tipologia String
+  citta     String
+  immagine  String?
+  nazioneId Int      @map("nazione_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  prezzo    Float    @default(0)
+  capienza  Int
+  nazione   Nazione  @relation(fields: [nazioneId], references: [id])
+
+  @@map("gare")
 }
 
 model Transazione {
-  id           Int             @id @default(autoincrement())
-  created_at   DateTime        @default(now()) @db.Timestamptz(6)
-  categoriaId  Int
-  data         DateTime        @db.Date
+  id           Int            @id(map: "Transazione_pkey") @default(autoincrement())
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  categoriaId  Int            @map("categoria_id")
+  data         DateTime       @db.Date
   prezzo       Float
-  descrizione  String?         @db.VarChar
-  modificabile Boolean         @default(true)
-  user_id      String          @db.Uuid
-  categoria    categorie_spese @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user         Profile         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  descrizione  String?        @db.VarChar
+  modificabile Boolean        @default(true)
+  profiloId    String         @map("profilo_id") @db.Uuid
+  categoria    CategoriaSpesa @relation(fields: [categoriaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo      Profilo        @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("transazioni")
 }
 
-model categorie_spese {
-  id          Int           @id @default(autoincrement())
+model CategoriaSpesa {
+  id          Int           @id(map: "categorie_spese_pkey") @default(autoincrement())
   nome        String
-  Transazione Transazione[]
+  transazioni Transazione[]
+
+  @@map("categorie_spesa")
+}
+
+model Covata {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  data        DateTime   @db.Date
+  uovaDeposte Int        @default(0) @map("uova_deposte") @db.SmallInt
+  uovaSchiuse Int        @default(0) @map("uova_schiuse") @db.SmallInt
+  idPadre     String     @map("id_padre") @db.Uuid
+  idMadre     String     @map("id_madre") @db.Uuid
+  gabbia      Int?       @db.SmallInt
+  profiloId   String     @map("profilo_id") @db.Uuid
+  completata  Boolean    @default(false)
+  madre       Soggetto   @relation("covate_id_madreToSoggetto", fields: [idMadre], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  padre       Soggetto   @relation("covate_id_padreToSoggetto", fields: [idPadre], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo     Profilo    @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  figli       Soggetto[] @relation("soggetti_covata_idTocovate")
+
+  @@map("covate")
+}
+
+enum Role {
+  USER
+  ADMIN
 }

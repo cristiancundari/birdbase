@@ -12,7 +12,7 @@ export async function DELETE(
   const user = await getServerUser(cookies());
   assert(user);
   const result = await prisma.transazione.delete({
-    where: { id: Number(params.id), modificabile: true, user_id: user.id },
+    where: { id: Number(params.id), modificabile: true, profiloId: user.id },
   });
   return NextResponse.json({ result: result, error: false }, { status: 200 });
 }
@@ -39,9 +39,9 @@ export async function PATCH(
         categoriaId: datiParser.categoriaId,
         prezzo: datiParser.prezzo * (datiParser.tipologia ? -1 : 1),
         descrizione: datiParser.descrizione,
-        user_id: user.id,
+        profiloId: user.id,
       },
-      where: { id: Number(params.id), modificabile: true, user_id: user.id },
+      where: { id: Number(params.id), modificabile: true, profiloId: user.id },
     });
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {

@@ -1,49 +1,52 @@
 "use client";
+import { formatData } from "@/lib/helper";
+import { CovataWithGenitori } from "@/types/types";
 import {
   ActionIcon,
   Anchor,
-  Badge,
   Card,
-  Collapse,
   Divider,
   Group,
   Menu,
-  Stack,
   Text,
-  Timeline,
-  UnstyledButton,
+  ThemeIcon,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBarrel,
   IconCheck,
-  IconChevronDown,
-  IconConfetti,
   IconDotsVertical,
   IconEgg,
   IconEggCracked,
-  IconEggs,
   IconGenderFemale,
   IconGenderMale,
-  IconGitBranch,
-  IconGitCommit,
-  IconGitPullRequest,
-  IconMessageDots,
   IconPencil,
+  IconPhoto,
   IconTrash,
 } from "@tabler/icons-react";
 
-function Covata() {
-  const [opened, { toggle }] = useDisclosure(false);
+interface CovataCompProps {
+  covata: CovataWithGenitori;
+  modalElimina: (id: number) => void;
+  modalModifica: (covata: CovataWithGenitori) => void;
+}
 
+function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
   return (
     <Card shadow="sm" withBorder>
       <Group gap="xs" justify="space-between">
-        <Text>
-          <Anchor href="https://mantine.dev/" target="_blank" c="dark">
-            12/12/2024
-          </Anchor>
-        </Text>
+        <Group gap="xs">
+          {covata.completata && (
+            <ThemeIcon radius="xl" color="teal" size="xs">
+              <IconCheck size={14} />
+            </ThemeIcon>
+          )}
+          <Text>
+            <Anchor href="https://mantine.dev/" target="_blank" c="dark">
+              {formatData(covata.data)}
+            </Anchor>
+          </Text>
+        </Group>
         <Menu shadow="md">
           <Menu.Target>
             <ActionIcon variant="subtle" color="gray">
@@ -53,14 +56,18 @@ function Covata() {
           <Menu.Dropdown>
             <Menu.Item
               leftSection={<IconPencil size="14" />}
-              onClick={() => {}}
+              onClick={() => {
+                modalModifica(covata);
+              }}
             >
               Modifica
             </Menu.Item>
             <Menu.Item
               leftSection={<IconTrash size="14" />}
               color="red"
-              onClick={() => {}}
+              onClick={() => {
+                modalElimina(covata.id);
+              }}
             >
               Elimina
             </Menu.Item>
@@ -72,30 +79,34 @@ function Covata() {
       <Group justify="space-between">
         <Group gap="xs">
           <IconGenderMale color="#256ceb" size="18" />
-          <Text>48XA-128</Text>
+          <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
         </Group>
-        <Group gap="xs">
-          <IconBarrel size="14" />
-          <Text size="xs" c="dimmed">
-            5
-          </Text>
-        </Group>
+        {covata.gabbia !== null && (
+          <Group gap={2}>
+            <IconBarrel size="14" />
+            <Text size="xs" c="dimmed">
+              {covata.gabbia}
+            </Text>
+          </Group>
+        )}
       </Group>
 
       <Group justify="space-between">
         <Group gap="xs">
           <IconGenderFemale color="#f92f8e" size="18" />
-          <Text>48XA-129</Text>
+          <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
         </Group>
-        <Group gap="xs">
+        <Group gap={2}>
           <IconEgg size="14" />
           <Text size="xs" c="dimmed">
-            0
+            {covata.uovaDeposte}
           </Text>
-          /
+          <Text size="xs" c="dimmed">
+            &bull;
+          </Text>
           <IconEggCracked size="14" />
           <Text size="xs" c="dimmed">
-            0
+            {covata.uovaSchiuse}
           </Text>
         </Group>
       </Group>
@@ -103,4 +114,4 @@ function Covata() {
   );
 }
 
-export default Covata;
+export default CovataComp;

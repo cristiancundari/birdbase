@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import Flag from "react-world-flags";
-import { GaraWithNazione, Ruolo } from "@/types/types";
+import { GaraWithNazione } from "@/types/types";
 import { differenceInDays, format, formatDistanceToNow } from "date-fns";
 import {
   IconDotsVertical,
@@ -25,6 +25,7 @@ import {
 } from "@tabler/icons-react";
 import { useSupabase } from "@/providers/supabaseProvider";
 import { formatValuta } from "@/lib/helper";
+import { Role } from "@prisma/client";
 
 function Gara({
   gara,
@@ -36,7 +37,7 @@ function Gara({
   onEdit: (gara: GaraWithNazione) => void;
 }) {
   const newGara = differenceInDays(Date.now(), gara.createdAt);
-  const inScadenza = differenceInDays(gara.dataEvento, Date.now());
+  const inScadenza = differenceInDays(gara.data, Date.now());
 
   const badges = [
     {
@@ -73,7 +74,7 @@ function Gara({
   const supabase = useSupabase();
 
   //TODO controllare che la logica sia corretta
-  const isAdmin = supabase.session?.user.role != Ruolo.Admin;
+  const isAdmin = supabase.session?.user.role != Role.ADMIN;
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -167,7 +168,7 @@ function Gara({
           <Group gap={"xs"}>
             <Text size="sm">Data:</Text>
             <Text size="sm" c="dimmed">
-              {format(gara.dataEvento, "dd/MM/yyyy")}
+              {format(gara.data, "dd/MM/yyyy")}
             </Text>
           </Group>
           <Group gap={"xs"}>

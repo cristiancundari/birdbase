@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { categorie_spese } from "@prisma/client";
+import { CategoriaSpesa } from "@prisma/client";
 import {
   IconCalendar,
   IconCurrencyEuro,
@@ -74,7 +74,7 @@ function ModalTransazione({
       const response = await fetch("/api/categorie");
       const result: ApiResponse = await response.json();
       if (!result.error) {
-        const res = result.result as categorie_spese[];
+        const res = result.result as CategoriaSpesa[];
         setCategorie(
           res.map((categoria) => ({
             label: categoria.nome,

@@ -13,7 +13,7 @@ async function HomePage() {
   const userId = session?.user.id;
   const soggetti = await prisma.soggetto.findMany({
     where: {
-      profileId: userId,
+      profiloId: userId,
     },
     orderBy: {
       dataNascita: "desc",

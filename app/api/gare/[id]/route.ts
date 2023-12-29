@@ -6,8 +6,8 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { Ruolo } from "@/types/types";
-import { checkAdmin } from "@/lib/supabase/helper";
+import { getServerUserProfile } from "@/lib/supabase/helper";
+import { Role } from "@prisma/client";
 
 export async function PATCH(
   request: NextRequest,
@@ -26,7 +26,10 @@ export async function PATCH(
 
   try {
     const cookieStore = cookies();
-    await checkAdmin(cookieStore);
+    const profile = await getServerUserProfile(cookieStore);
+    if (profile?.ruolo !== Role.ADMIN) {
+      throw new Error("Non autorizzato");
+    }
 
     const dati = await request.formData();
     const form = JSON.parse(dati.get("form") as string);
@@ -75,7 +78,10 @@ export async function DELETE(
   });
   try {
     const cookieStore = cookies();
-    await checkAdmin(cookieStore);
+    const profile = await getServerUserProfile(cookieStore);
+    if (profile?.ruolo !== Role.ADMIN) {
+      throw new Error("Non autorizzato");
+    }
 
     const values = datiSchema.parse(params);
     const result = await prisma.gara.update({

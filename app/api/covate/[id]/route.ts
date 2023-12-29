@@ -1,4 +1,3 @@
-import { apiFetch } from "@/lib/apiFetch";
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
 import assert from "assert";
@@ -6,25 +5,10 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET(request: NextRequest) {
-  try {
-    const user = await getServerUser(cookies());
-    assert(user);
-    const data = await prisma.covata.findMany({
-      where: { profiloId: user.id },
-      include: { madre: true, padre: true },
-      orderBy: [{ data: "desc" }, { createdAt: "desc" }],
-    });
-    return NextResponse.json({ result: data, error: false }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: true, message: error.message },
-      { status: 400 }
-    );
-  }
-}
-
-export async function POST(request: NextRequest) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const datiSchema = z.object({
     //TODO verificare che padre e madre siano soggetti dello user, inserire il campo completato.
     padre: z.string().min(1),
@@ -44,13 +28,12 @@ export async function POST(request: NextRequest) {
     const datiParsed = datiSchema.parse(dati);
     const user = await getServerUser(cookies());
     assert(user);
-    const result = await prisma.covata.create({
+    const result = await prisma.covata.update({
       data: {
         data: datiParsed.dataCovata,
         gabbia: datiParsed.gabbia,
         idMadre: datiParsed.madre,
         idPadre: datiParsed.padre,
-        profiloId: user.id,
         uovaDeposte: datiParsed.uovaDeposte,
         uovaSchiuse: datiParsed.uovaSchiuse,
         completata: datiParsed.completata,
@@ -58,6 +41,10 @@ export async function POST(request: NextRequest) {
       include: {
         madre: true,
         padre: true,
+      },
+      where: {
+        id: Number(params.id),
+        profiloId: user.id,
       },
     });
     return NextResponse.json({ error: false, result: result }, { status: 200 });
@@ -70,6 +57,25 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json(
       { error: true, message: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await getServerUser(cookies());
+    assert(user);
+    const result = await prisma.covata.delete({
+      where: { profiloId: user.id, id: Number(params.id) },
+    });
+    return NextResponse.json({ result: result, error: false }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { messsage: error.message, error: true },
       { status: 500 }
     );
   }

@@ -13,11 +13,15 @@ export type GaraWithNazione = Prisma.GaraGetPayload<{
 export type TransazioneWithCategoria = Prisma.TransazioneGetPayload<{
   include: { categoria: true };
 }>;
-export enum Ruolo {
-  Admin = "admin",
-  User = "authenticated",
-}
 
-export type ApiResponse =
+export type CovataWithGenitori = Prisma.CovataGetPayload<{
+  include: { madre: true; padre: true };
+}>;
+
+export type SoggettoWithGenitori = Prisma.SoggettoGetPayload<{
+  include: { covata: { select: { idMadre: true; idPadre: true } } };
+}>;
+
+export type ApiResponse<T = any> =
   | { error: true; message: string }
-  | { error: false; result: any };
+  | { error: false; result: T };

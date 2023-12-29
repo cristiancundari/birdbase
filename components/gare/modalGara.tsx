@@ -33,7 +33,7 @@ import { apiFetch } from "@/lib/apiFetch";
 export interface FormValues {
   titolo: string;
   tipologia: string;
-  dataEvento: Date | null;
+  data: Date | null;
   citta: string;
   nazioneId: string;
   prezzo: string;
@@ -60,7 +60,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
     initialValues: {
       titolo: "",
       tipologia: "",
-      dataEvento: null,
+      data: null,
       citta: "",
       nazioneId: "0",
       prezzo: "0",
@@ -69,7 +69,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
     },
     validate: {
       titolo: (titolo) => (titolo.length == 0 ? "Inserire Titolo" : null),
-      dataEvento: (data) => (data == null ? "Inserire Data" : null),
+      data: (data) => (data == null ? "Inserire Data" : null),
       citta: (citta) => (citta.length == 0 ? "Inserire la città" : null),
     },
   });
@@ -82,7 +82,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
         form.setValues({
           titolo: modalData.titolo,
           tipologia: modalData.tipologia,
-          dataEvento: modalData.dataEvento,
+          data: modalData.data,
           citta: modalData.citta,
           nazioneId: modalData.nazioneId.toString(),
           prezzo: modalData.prezzo.toString(),

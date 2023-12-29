@@ -13,7 +13,7 @@ import {
   transazioniIconColor,
 } from "@/lib/helper";
 import { ApiResponse } from "@/types/types";
-import { categorie_spese } from "@prisma/client";
+import { CategoriaSpesa } from "@prisma/client";
 import { usePortafoglioContext } from "../portafoglioPage";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -22,7 +22,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 interface GraphApiData {
-  categoria: categorie_spese;
+  categoria: CategoriaSpesa;
   totale: number;
 }
 interface GraphData {

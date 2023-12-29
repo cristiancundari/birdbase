@@ -1,8 +1,9 @@
 import { FormValues } from "@/components/gare/modalGara";
-import { checkAdmin } from "@/lib/supabase/helper";
 import { prisma } from "@/lib/prisma";
+import { getServerUserProfile } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
 import { FileWithPath } from "@mantine/dropzone";
+import { Role } from "@prisma/client";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
   const datiSchema = z.object({
     titolo: z.string().min(1),
     citta: z.string().min(1),
-    dataEvento: z.coerce.date(),
+    data: z.coerce.date(),
     tipologia: z.string(),
     nazioneId: z.coerce.number(),
     prezzo: z.coerce.number().min(0),
@@ -21,7 +22,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const cookieStore = cookies();
-    await checkAdmin(cookieStore);
+    const profile = await getServerUserProfile(cookieStore);
+    if (profile?.ruolo !== Role.ADMIN) {
+      throw new Error("Non autorizzato");
+    }
 
     const supabase = createClient(cookieStore);
 
