@@ -1,15 +1,13 @@
 import { dateParser } from "@/lib/DateParser";
-import { formatData, showNotification } from "@/lib/helper";
+import { showNotification } from "@/lib/helper";
 import { ApiResponse, CovataWithGenitori } from "@/types/types";
 import {
   Button,
   Group,
   Modal,
   NumberInput,
-  Select,
   SimpleGrid,
-  Switch,
-  TextInput,
+  Switch
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
@@ -20,7 +18,7 @@ import {
   IconDeviceFloppy,
   IconX,
 } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ComboboxGenitori, { GenitoriItem } from "./comboboxGenitori";
 import { apiFetch } from "@/lib/apiFetch";
 
@@ -43,8 +41,12 @@ interface ModalCovataProps {
 
 function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [padre, setPadre] = useState<GenitoriItem[]>([]);
-  const [madre, setMadre] = useState<GenitoriItem[]>([]);
+  const [initMaschi, setInitMaschi] = useState<GenitoriItem[]>([]);
+  const [initFemmine, setInitFemmine] = useState<GenitoriItem[]>([]);
+  const [loadingMaschi, setLoadingMaschi] = useState(false);
+  const [loadingFemmine, setLoadingFemmine] = useState(false);
+  const [maschi, setMaschi] = useState<GenitoriItem[]>([]);
+  const [femmine, setFemmine] = useState<GenitoriItem[]>([]);
   const form = useForm<CovataFormValues>({
     initialValues: {
       padre: "",
@@ -77,14 +79,18 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
         });
       } else {
         form.reset();
+        setMaschi(initMaschi);
+        setFemmine(initFemmine);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalData, isOpen]);
-  useEffect(getPadreMadre, []);
+  useEffect(getSoggettiCombobox, []);
 
-  function getPadreMadre() {
+  function getSoggettiCombobox() {
     const listaPadreMadre = async () => {
+      setLoadingMaschi(true);
+      setLoadingFemmine(true);
       const response = await fetch("/api/soggetti");
       const result: ApiResponse<Soggetto[]> = await response.json();
       if (result.error) {
@@ -107,11 +113,43 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
           parentela: null,
         }));
 
-      setPadre(resPadre);
-      setMadre(resMadre);
+      setInitMaschi(resPadre)
+      setMaschi(resPadre);
+      setInitFemmine(resMadre)
+      setFemmine(resMadre);
+      setLoadingMaschi(false);
+      setLoadingFemmine(false);
     };
 
     listaPadreMadre();
+  }
+
+  async function getMadrePadre(id: string): Promise<GenitoriItem[]> {
+    // Chiamiamo l'API per sapere le parentele dei soggetti del sesso opposto
+    const res = await apiFetch.get(`/api/covate/parentele?soggetto=${id}`);
+    if (res.error) {
+      showNotification({ message: res.message });
+      return [];
+    }
+    return res.data;
+  }
+
+  async function comboboxPadreChange(id: string) {
+    setLoadingFemmine(true);
+    form.setFieldValue("padre", id);
+    // invocare la funzione getMadrePadre e utilizzare i risultati ottenuti per popolare la combobox opposta
+    const res = await getMadrePadre(id);
+    setFemmine(res);
+    setLoadingFemmine(false);
+  }
+
+  async function comboboxMadreChange(id: string) {
+    setLoadingMaschi(true);
+    form.setFieldValue("madre", id);
+    // invocare la funzione getMadrePadre e utilizzare i risultati ottenuti per popolare la combobox opposta
+    const res = await getMadrePadre(id);
+    setMaschi(res);
+    setLoadingMaschi(false);
   }
 
   return (
@@ -145,15 +183,17 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
         <SimpleGrid cols={{ base: 1, sm: 2 }} mt={"md"}>
           <ComboboxGenitori
             label="Padre"
-            genitori={padre}
-            onComboboxChange={(id) => form.setFieldValue("padre", id)}
+            genitori={maschi}
+            onComboboxChange={comboboxPadreChange}
             selected={form.values.padre}
+            loading={loadingMaschi}
           />
           <ComboboxGenitori
             label="Madre"
-            genitori={madre}
-            onComboboxChange={(id) => form.setFieldValue("madre", id)}
+            genitori={femmine}
+            onComboboxChange={comboboxMadreChange}
             selected={form.values.madre}
+            loading={loadingFemmine}
           />
           <DateInput
             label="Data Covata"

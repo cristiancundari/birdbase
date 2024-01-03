@@ -6,7 +6,7 @@ import React from "react";
 
 interface comboboxGenitoriItemProps {
   soggetto: Soggetto;
-  parentela: { nome: string; percentuale: number; colore: string };
+  parentela: { nome: string; percentuale: number; colore: string } | null;
 }
 
 function comboboxGenitoriItem({
@@ -36,6 +36,7 @@ function comboboxGenitoriItem({
           )}
         </Group>
       </Stack>
+      {parentela && (
       <Stack gap="0">
         <Text size="xs" c="dimmed">
           {parentela.nome}
@@ -45,7 +46,7 @@ function comboboxGenitoriItem({
           value={parentela.percentuale}
           color={parentela.colore}
         ></Progress>
-      </Stack>
+      </Stack>)}
     </Group>
   );
 }

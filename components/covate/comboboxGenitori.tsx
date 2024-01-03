@@ -2,6 +2,7 @@ import {
   Combobox,
   Input,
   InputBase,
+  Loader,
   ScrollArea,
   useCombobox,
 } from "@mantine/core";
@@ -23,6 +24,7 @@ interface ComboboxGenitoriProps {
   onComboboxChange: (val: string) => void;
   selected: string;
   label: string;
+  loading: boolean;
 }
 
 function ComboboxGenitori({
@@ -30,6 +32,7 @@ function ComboboxGenitori({
   onComboboxChange,
   selected,
   label,
+  loading
 }: ComboboxGenitoriProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -38,7 +41,7 @@ function ComboboxGenitori({
     <Combobox.Option value={g.soggetto.id} key={g.soggetto.id}>
       <ComboboxGenitoriItem
         soggetto={g.soggetto}
-        parentela={{ nome: "Cugini", colore: "yellow", percentuale: 50 }}
+        parentela={g.parentela}
       />
     </Combobox.Option>
   ));
@@ -62,7 +65,7 @@ function ComboboxGenitori({
           component="button"
           type="button"
           pointer
-          rightSection={<Combobox.Chevron />}
+          rightSection={loading ? <Loader size={18}/> : <Combobox.Chevron />}
           onClick={() => combobox.toggleDropdown()}
           rightSectionPointerEvents="none"
           multiline

@@ -84,7 +84,7 @@ export async function PUT(
   try {
     const result = await prisma.$queryRaw<
       Soggetto[]
-    >`UPDATE "Soggetto" SET preferito = not preferito WHERE id=${params.id}::uuid RETURNING *`;
+    >`UPDATE "soggetti" SET preferito = not preferito WHERE id=${params.id}::uuid RETURNING *`;
     return NextResponse.json(
       { result: result[0], error: false },
       { status: 200 }

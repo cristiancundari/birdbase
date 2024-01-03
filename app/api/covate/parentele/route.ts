@@ -5,7 +5,12 @@ import { Soggetto } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { checkParentele } from "./checkParentele";
+import {
+  checkParentele,
+  coloreParentela,
+  nomeParentela,
+  percentualeParentela,
+} from "./checkParentele";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -47,10 +52,12 @@ export async function GET(request: NextRequest) {
         select: { idPadre: true, idMadre: true },
       },
     },
+    orderBy: { dataNascita: "desc" },
   });
   const result = elaboraSoggetto(listaSoggetti, soggetto);
   return NextResponse.json({ result: result, error: false }, { status: 200 });
 }
+
 function elaboraSoggetto(
   listaSoggetti: SoggettoWithGenitori[],
   soggetto: SoggettoWithGenitori
@@ -68,14 +75,21 @@ function elaboraSoggetto(
     const parentiPartner = calcolaLivelliParentela(partner, obj);
     const gradoParentela = checkParentele(parentiSoggetto, parentiPartner);
     if (gradoParentela) {
+      const gradoParentelaStr = `${gradoParentela[0]},${gradoParentela[1]}`;
       return {
         soggetto: { ...partner, covata: undefined } as Soggetto,
-        parentela: { nome: "booh", percentuale: 5, colore: "booooh" },
+        parentela: {
+          nome: nomeParentela[gradoParentelaStr],
+          percentuale: percentualeParentela[gradoParentelaStr],
+          colore: coloreParentela(percentualeParentela[gradoParentelaStr]),
+        },
+        grado: gradoParentela,
       };
     } else {
       return {
         soggetto: { ...partner, covata: undefined } as Soggetto,
         parentela: null,
+        grado: gradoParentela,
       };
     }
   });
@@ -88,7 +102,7 @@ function calcolaLivelliParentela(
 ): [string, string][][] {
   const res: [string, string][][] = [];
   res.push([[partner.id, ""]]);
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 4; i++) {
     res.push(calcolaParenti(soggetti, partner, i));
   }
   return res;

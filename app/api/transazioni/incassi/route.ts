@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     //TODO INPUT YEAR
     const year = 2023;
     const result = await prisma.$queryRaw<IncassiQueryResult[]>(
-      Prisma.sql`select extract(month from data)::integer AS mese, SUM(prezzo) AS totale FROM "Transazione" WHERE prezzo>0 AND extract(year from data) = ${year} AND user_id = ${user.id}::uuid GROUP BY mese`
+      Prisma.sql`select extract(month from data)::integer AS mese, SUM(prezzo) AS totale FROM "transazioni" WHERE prezzo>0 AND extract(year from data) = ${year} AND profilo_id = ${user.id}::uuid GROUP BY mese`
     );
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
