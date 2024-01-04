@@ -2,13 +2,7 @@
 import { showNotification } from "@/lib/helper";
 import { createClient } from "@/lib/supabase/client";
 import { ApiResponse, Sesso } from "@/types/types";
-import {
-  Box,
-  Button,
-  Group,
-  ScrollArea,
-  SimpleGrid
-} from "@mantine/core";
+import { Box, Button, Group, ScrollArea, SimpleGrid } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
 import { IconPlus } from "@tabler/icons-react";
@@ -168,11 +162,14 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
             Aggiungi
           </Button>
         </Group>
-        <Box>
-          {soggetti.length == 0 && <NessunSoggetto />}
-          <ScrollArea>
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 5 }}>
-              {soggetti.map((soggetto) => (
+      </Box>
+      <Box>
+        {soggetti.length == 0 && <NessunSoggetto />}
+        <ScrollArea>
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
+            {
+              //TODO gestire caso nessun soggetto
+              soggetti.map((soggetto) => (
                 <SoggettoComp
                   key={soggetto.id}
                   sogg={soggetto}
@@ -180,18 +177,18 @@ function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
                   onDelete={deleteHandler}
                   handlerPreferito={handlerPreferito}
                 />
-              ))}
-            </SimpleGrid>
-          </ScrollArea>
-        </Box>
-
-        <ModalSoggetto
-          isOpen={modalOpen}
-          annulla={annulla}
-          submit={submit}
-          modalData={modalData}
-        />
+              ))
+            }
+          </SimpleGrid>
+        </ScrollArea>
       </Box>
+
+      <ModalSoggetto
+        isOpen={modalOpen}
+        annulla={annulla}
+        submit={submit}
+        modalData={modalData}
+      />
 
       <ModalCancellazione
         isOpen={modalDeleteOpen != null}

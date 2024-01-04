@@ -1,13 +1,17 @@
 import { dateParser } from "@/lib/DateParser";
 import { showNotification } from "@/lib/helper";
-import { ApiResponse, CovataWithGenitori, SoggettoWithGenitori } from "@/types/types";
+import {
+  ApiResponse,
+  CovataWithGenitori,
+  SoggettoWithGenitori,
+} from "@/types/types";
 import {
   Button,
   Group,
   Modal,
   NumberInput,
   SimpleGrid,
-  Switch
+  Switch,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
@@ -101,21 +105,23 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
       }
 
       const resMadre: GenitoriItem[] = result.result
-        .filter((item: Soggetto) => item.sesso == false && item.is_morto == false)
+        .filter(
+          (item: Soggetto) => item.sesso == false && item.isMorto == false
+        )
         .map((s) => ({
           soggetto: s,
           parentela: null,
         }));
       const resPadre: GenitoriItem[] = result.result
-        .filter((item: Soggetto) => item.sesso == true && item.is_morto == false)
+        .filter((item: Soggetto) => item.sesso == true && item.isMorto == false)
         .map((s) => ({
           soggetto: s,
           parentela: null,
         }));
 
-      setInitMaschi(resPadre)
+      setInitMaschi(resPadre);
       setMaschi(resPadre);
-      setInitFemmine(resMadre)
+      setInitFemmine(resMadre);
       setFemmine(resMadre);
       setLoadingMaschi(false);
       setLoadingFemmine(false);
@@ -126,12 +132,14 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
 
   async function getMadrePadre(id: string): Promise<GenitoriItem[]> {
     // Chiamiamo l'API per sapere le parentele dei soggetti del sesso opposto
-    const res = await apiFetch.get<GenitoriItem[]>(`/api/covate/parentele?soggetto=${id}`);
+    const res = await apiFetch.get<GenitoriItem[]>(
+      `/api/covate/parentele?soggetto=${id}`
+    );
     if (res.error) {
       showNotification({ message: res.message });
       return [];
     }
-    return res.data.filter((item) => item.soggetto.is_morto==false);
+    return res.data.filter((item) => item.soggetto.isMorto == false);
   }
 
   async function comboboxPadreChange(id: string) {

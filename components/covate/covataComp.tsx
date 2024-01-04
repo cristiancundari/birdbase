@@ -4,12 +4,14 @@ import { CovataWithGenitori } from "@/types/types";
 import {
   ActionIcon,
   Anchor,
+  Box,
   Card,
   Divider,
   Group,
   Menu,
   Text,
   ThemeIcon,
+  Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -42,7 +44,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
             </ThemeIcon>
           )}
           <Text>
-            <Anchor href="https://mantine.dev/" target="_blank" c="dark">
+            <Anchor href={`/app/covate/${covata.id}`} c="dark">
               {formatData(covata.data)}
             </Anchor>
           </Text>
@@ -97,17 +99,25 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
           <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
         </Group>
         <Group gap={2}>
-          <IconEgg size="14" />
-          <Text size="xs" c="dimmed">
-            {covata.uovaDeposte}
-          </Text>
+          <Tooltip label="Uova deposte">
+            <Group gap={2}>
+              <IconEgg size="14" />
+              <Text size="xs" c="dimmed">
+                {covata.uovaDeposte}
+              </Text>
+            </Group>
+          </Tooltip>
           <Text size="xs" c="dimmed">
             &bull;
           </Text>
-          <IconEggCracked size="14" />
-          <Text size="xs" c="dimmed">
-            {covata.uovaSchiuse}
-          </Text>
+          <Tooltip label="Uova schiuse">
+            <Group gap={2}>
+              <IconEggCracked size="14" />
+              <Text size="xs" c="dimmed">
+                {covata.uovaSchiuse}
+              </Text>
+            </Group>
+          </Tooltip>
         </Group>
       </Group>
     </Card>

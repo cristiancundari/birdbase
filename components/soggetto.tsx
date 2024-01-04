@@ -10,7 +10,7 @@ import {
   Menu,
   Stack,
   Text,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
 import {
@@ -23,7 +23,7 @@ import {
   IconHeart,
   IconHeartFilled,
   IconPencil,
-  IconTrash
+  IconTrash,
 } from "@tabler/icons-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
@@ -135,7 +135,7 @@ function SoggettoComp({
               {formatDistanceToNow(sogg.dataNascita, { locale: it })}
             </Text>
           </Stack>
-          {sogg.gabbia && !sogg.is_morto && (
+          {sogg.gabbia && !sogg.isMorto && (
             <Group>
               <Tooltip label={`Gabbia #${sogg.gabbia}`} position="bottom">
                 <Group gap="3">
@@ -145,9 +145,7 @@ function SoggettoComp({
               </Tooltip>
             </Group>
           )}
-          {sogg.is_morto && (
-            <IconGrave size="16"/>
-          )}
+          {sogg.isMorto && <IconGrave size="16" />}
         </Stack>
       </Group>
     </Card>

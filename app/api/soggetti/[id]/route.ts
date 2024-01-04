@@ -19,7 +19,7 @@ export async function PATCH(
     rna: z.string(),
     numero: z.string().min(1),
     avatar: z.string().nullish(),
-    is_morto: z.coerce.boolean(),
+    isMorto: z.coerce.boolean(),
   });
 
   try {

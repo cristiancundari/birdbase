@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
     rna: z.string(),
     numero: z.string().min(1),
     avatar: z.string().nullish(),
-    is_morto: z.coerce.boolean(),
+    isMorto: z.coerce.boolean(),
+    covataId: z.coerce.number().optional(),
   });
 
   try {
@@ -79,9 +80,10 @@ export async function GET(request: NextRequest) {
   const user = await getServerUser(cookies());
   assert(user);
   try {
+    //TODO: verificare ordinamento per isMorto (boolean)
     const result = await prisma.soggetto.findMany({
       where: { profiloId: user.id },
-      orderBy: [{ is_morto: "desc" }, { dataNascita: "desc" }],
+      orderBy: [{ isMorto: "desc" }, { dataNascita: "desc" }],
     });
 
     return NextResponse.json({ result: result, error: false }, { status: 200 });

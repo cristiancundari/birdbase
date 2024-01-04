@@ -5,13 +5,17 @@ import {
   Box,
   Button,
   Center,
+  Chip,
   Group,
+  Input,
   Modal,
   NumberInput,
   Select,
   SimpleGrid,
   Switch,
+  Text,
   TextInput,
+  useMantineTheme,
 } from "@mantine/core";
 
 import { Soggetto } from ".prisma/client";
@@ -21,7 +25,12 @@ import { DateInput } from "@mantine/dates";
 import { FileWithPath } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { IconCalendar, IconDeviceFloppy, IconGrave, IconX } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconDeviceFloppy,
+  IconGrave,
+  IconX,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import Upload from "../upload";
 
@@ -32,7 +41,7 @@ export interface FormValues {
   gabbia: number | null;
   sesso: Sesso;
   avatar: string | null;
-  is_morto:boolean
+  isMorto: boolean;
 }
 
 interface PropsType {
@@ -43,6 +52,7 @@ interface PropsType {
 }
 
 function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
+  const theme = useMantineTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
@@ -55,7 +65,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
       gabbia: null,
       sesso: Sesso.InAttesa,
       avatar: null,
-      is_morto:false,
+      isMorto: false,
     },
     validate: {
       rna: (value) => (value.length == 0 ? "Inserire RNA" : null),
@@ -80,7 +90,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
           dataNascita: modalData.dataNascita,
           sesso: sesso,
           avatar: modalData.avatar,
-          is_morto:modalData.is_morto
+          isMorto: modalData.isMorto,
         });
       } else {
         form.reset();
@@ -172,19 +182,23 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             hideControls
             {...form.getInputProps("gabbia")}
           />
-          <Group align="center" justify="center"><Switch
-          checked={form.values.is_morto}
-          onChange={(event) =>
-            form.setFieldValue("is_morto", event.currentTarget.checked)
-          }
-          color="red"
-          size="sm"
-          label="Morto"
-          thumbIcon={
-            form.values.is_morto && <IconGrave size={14} color="red" />
-          }/></Group>
-          
-        
+          <Group align="center">
+            <Input.Wrapper label=" ">
+              <Switch
+                checked={form.values.isMorto}
+                onChange={(event) =>
+                  form.setFieldValue("isMorto", event.currentTarget.checked)
+                }
+                color="grape"
+                label="Morto"
+                thumbIcon={
+                  form.values.isMorto && (
+                    <IconGrave size={12} color={theme.colors.grape[6]} />
+                  )
+                }
+              />
+            </Input.Wrapper>
+          </Group>
         </SimpleGrid>
 
         <Group mt={"lg"} gap="md" justify="flex-end">

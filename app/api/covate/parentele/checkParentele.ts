@@ -1,3 +1,37 @@
+import { SoggettoWithGenitori } from "@/types/types";
+
+export function calcolaLivelliParentela(
+  partner: SoggettoWithGenitori,
+  soggetti: Record<string, SoggettoWithGenitori>
+): [string, string][][] {
+  const res: [string, string][][] = [];
+  res.push([[partner.id, ""]]);
+  for (let i = 1; i <= 4; i++) {
+    res.push(calcolaParenti(soggetti, partner, i));
+  }
+  return res;
+}
+
+function calcolaParenti(
+  soggetti: Record<string, SoggettoWithGenitori>,
+  soggetto: SoggettoWithGenitori,
+  livello: number
+): [string, string][] {
+  if (soggetto.covata == null) {
+    return [];
+  }
+  const madre = soggetto.covata.idMadre;
+  const padre = soggetto.covata.idPadre;
+  if (livello == 1) {
+    return [[madre, padre]];
+  } else {
+    return [
+      ...calcolaParenti(soggetti, soggetti[madre], livello - 1),
+      ...calcolaParenti(soggetti, soggetti[padre], livello - 1),
+    ];
+  }
+}
+
 export function checkParentele(
   a: [string, string][][],
   b: [string, string][][]
