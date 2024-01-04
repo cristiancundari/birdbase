@@ -1,29 +1,29 @@
 "use client";
 import {
-  Button,
-  Group,
-  Select,
-  TextInput,
-  Modal,
-  SimpleGrid,
-  NumberInput,
-  Avatar,
-  Center,
-  Box,
   ActionIcon,
+  Avatar,
+  Box,
+  Button,
+  Center,
+  Group,
+  Modal,
+  NumberInput,
+  Select,
+  SimpleGrid,
+  Switch,
+  TextInput,
 } from "@mantine/core";
 
-import errorNotificationClasses from "@/styles/errorNotification.module.css";
-import { DateInput } from "@mantine/dates";
-import { IconCalendar, IconDeviceFloppy, IconX } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
-import { useForm } from "@mantine/form";
-import { Sesso } from "@/types/types";
 import { Soggetto } from ".prisma/client";
 import { dateParser } from "@/lib/DateParser";
-import Upload from "../upload";
+import { Sesso } from "@/types/types";
+import { DateInput } from "@mantine/dates";
 import { FileWithPath } from "@mantine/dropzone";
-import { notifications, showNotification } from "@mantine/notifications";
+import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
+import { IconCalendar, IconDeviceFloppy, IconGrave, IconX } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import Upload from "../upload";
 
 export interface FormValues {
   rna: string;
@@ -32,6 +32,7 @@ export interface FormValues {
   gabbia: number | null;
   sesso: Sesso;
   avatar: string | null;
+  is_morto:boolean
 }
 
 interface PropsType {
@@ -54,6 +55,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
       gabbia: null,
       sesso: Sesso.InAttesa,
       avatar: null,
+      is_morto:false,
     },
     validate: {
       rna: (value) => (value.length == 0 ? "Inserire RNA" : null),
@@ -78,6 +80,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
           dataNascita: modalData.dataNascita,
           sesso: sesso,
           avatar: modalData.avatar,
+          is_morto:modalData.is_morto
         });
       } else {
         form.reset();
@@ -169,6 +172,19 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             hideControls
             {...form.getInputProps("gabbia")}
           />
+          <Group align="center" justify="center"><Switch
+          checked={form.values.is_morto}
+          onChange={(event) =>
+            form.setFieldValue("is_morto", event.currentTarget.checked)
+          }
+          color="red"
+          size="sm"
+          label="Morto"
+          thumbIcon={
+            form.values.is_morto && <IconGrave size={14} color="red" />
+          }/></Group>
+          
+        
         </SimpleGrid>
 
         <Group mt={"lg"} gap="md" justify="flex-end">

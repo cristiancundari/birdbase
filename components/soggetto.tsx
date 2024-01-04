@@ -1,20 +1,16 @@
 "use client";
-import { format, formatDistance, formatDistanceToNow } from "date-fns";
-import { it } from "date-fns/locale";
 import {
   ActionIcon,
   Anchor,
   Avatar,
   Box,
   Card,
-  Center,
-  Container,
   Divider,
   Group,
   Menu,
   Stack,
   Text,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
 import {
@@ -23,15 +19,15 @@ import {
   IconGenderAgender,
   IconGenderFemale,
   IconGenderMale,
+  IconGrave,
   IconHeart,
   IconHeartFilled,
   IconPencil,
-  IconStar,
-  IconStarFilled,
-  IconTrash,
+  IconTrash
 } from "@tabler/icons-react";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { format, formatDistanceToNow } from "date-fns";
+import { it } from "date-fns/locale";
+import { useState } from "react";
 
 function SoggettoComp({
   sogg,
@@ -139,7 +135,7 @@ function SoggettoComp({
               {formatDistanceToNow(sogg.dataNascita, { locale: it })}
             </Text>
           </Stack>
-          {sogg.gabbia && (
+          {sogg.gabbia && !sogg.is_morto && (
             <Group>
               <Tooltip label={`Gabbia #${sogg.gabbia}`} position="bottom">
                 <Group gap="3">
@@ -148,6 +144,9 @@ function SoggettoComp({
                 </Group>
               </Tooltip>
             </Group>
+          )}
+          {sogg.is_morto && (
+            <IconGrave size="16"/>
           )}
         </Stack>
       </Group>

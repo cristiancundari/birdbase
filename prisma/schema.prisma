@@ -30,6 +30,7 @@ model Soggetto {
   profiloId   String   @map("profilo_id") @db.Uuid
   avatar      String?
   covataId    Int?     @map("covata_id")
+  is_morto    Boolean  @default(false)
   covateMadre Covata[] @relation("covate_id_madreToSoggetto")
   covatePadre Covata[] @relation("covate_id_padreToSoggetto")
   covata      Covata?  @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -98,8 +99,8 @@ model Covata {
   gabbia      Int?       @db.SmallInt
   profiloId   String     @map("profilo_id") @db.Uuid
   completata  Boolean    @default(false)
-  madre       Soggetto   @relation("covate_id_madreToSoggetto", fields: [idMadre], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  padre       Soggetto   @relation("covate_id_padreToSoggetto", fields: [idPadre], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  madre       Soggetto   @relation("covate_id_madreToSoggetto", fields: [idMadre], references: [id], onDelete: NoAction)
+  padre       Soggetto   @relation("covate_id_padreToSoggetto", fields: [idPadre], references: [id], onDelete: NoAction)
   profilo     Profilo    @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   figli       Soggetto[] @relation("soggetti_covata_idTocovate")
 

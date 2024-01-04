@@ -1,6 +1,6 @@
 import { dateParser } from "@/lib/DateParser";
 import { showNotification } from "@/lib/helper";
-import { ApiResponse, CovataWithGenitori } from "@/types/types";
+import { ApiResponse, CovataWithGenitori, SoggettoWithGenitori } from "@/types/types";
 import {
   Button,
   Group,
@@ -101,13 +101,13 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
       }
 
       const resMadre: GenitoriItem[] = result.result
-        .filter((item: Soggetto) => item.sesso == false)
+        .filter((item: Soggetto) => item.sesso == false && item.is_morto == false)
         .map((s) => ({
           soggetto: s,
           parentela: null,
         }));
       const resPadre: GenitoriItem[] = result.result
-        .filter((item: Soggetto) => item.sesso == true)
+        .filter((item: Soggetto) => item.sesso == true && item.is_morto == false)
         .map((s) => ({
           soggetto: s,
           parentela: null,
@@ -126,12 +126,12 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
 
   async function getMadrePadre(id: string): Promise<GenitoriItem[]> {
     // Chiamiamo l'API per sapere le parentele dei soggetti del sesso opposto
-    const res = await apiFetch.get(`/api/covate/parentele?soggetto=${id}`);
+    const res = await apiFetch.get<GenitoriItem[]>(`/api/covate/parentele?soggetto=${id}`);
     if (res.error) {
       showNotification({ message: res.message });
       return [];
     }
-    return res.data;
+    return res.data.filter((item) => item.soggetto.is_morto==false);
   }
 
   async function comboboxPadreChange(id: string) {

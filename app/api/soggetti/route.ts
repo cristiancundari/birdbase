@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
-import { Sesso } from "@/types/types";
-import { z } from "zod";
+import { getServerUser } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
-import { v4 as uuidv4 } from "uuid";
 import { FileWithPath } from "@mantine/dropzone";
 import assert from "assert";
-import { getServerUser } from "@/lib/supabase/helper";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 
 export async function POST(request: NextRequest) {
   const cookieStore = cookies();
@@ -23,6 +22,7 @@ export async function POST(request: NextRequest) {
     rna: z.string(),
     numero: z.string().min(1),
     avatar: z.string().nullish(),
+    is_morto: z.coerce.boolean(),
   });
 
   try {
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
   try {
     const result = await prisma.soggetto.findMany({
       where: { profiloId: user.id },
-      orderBy: { dataNascita: "desc" },
+      orderBy: [{ is_morto: "desc" }, { dataNascita: "desc" }],
     });
 
     return NextResponse.json({ result: result, error: false }, { status: 200 });

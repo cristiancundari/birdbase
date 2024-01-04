@@ -1,34 +1,23 @@
 "use client";
-import {
-  Container,
-  Button,
-  Center,
-  Group,
-  SimpleGrid,
-  ScrollArea,
-  Text,
-  Box,
-  Modal,
-  Stack,
-} from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import SoggettoComp from "../soggetto";
-import { Soggetto } from "@prisma/client";
-import { IconDeviceFloppy, IconPlus, IconX } from "@tabler/icons-react";
-import errorNotificationClasses from "@/styles/errorNotification.module.css";
-import ModalSoggetto, { FormValues } from "./modalSoggetto";
-import { ApiResponse, Sesso } from "@/types/types";
-import { ModalsProvider, modals } from "@mantine/modals";
-import { IconTrash } from "@tabler/icons-react";
-import NessunSoggetto from "./nessunSoggetto";
-import { FileWithPath } from "@mantine/dropzone";
-import { v4 as uuidv4 } from "uuid";
-import { useSetState } from "@mantine/hooks";
-import { createClient } from "@/lib/supabase/client";
 import { showNotification } from "@/lib/helper";
+import { createClient } from "@/lib/supabase/client";
+import { ApiResponse, Sesso } from "@/types/types";
+import {
+  Box,
+  Button,
+  Group,
+  ScrollArea,
+  SimpleGrid
+} from "@mantine/core";
+import { FileWithPath } from "@mantine/dropzone";
+import { Soggetto } from "@prisma/client";
+import { IconPlus } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import ModalCancellazione from "../modalCancellazione";
+import SoggettoComp from "../soggetto";
+import ModalSoggetto, { FormValues } from "./modalSoggetto";
+import NessunSoggetto from "./nessunSoggetto";
 
 function Homepage({ soggetti }: { soggetti: Soggetto[] }) {
   const supabase = createClient();
