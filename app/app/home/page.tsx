@@ -24,7 +24,7 @@ interface FormData {
 
 function HomePage() {
   const [soggetti, setSoggetti] = useState<Soggetto[]>([]);
-  const [isSoggettiLoading, setIsSoggettiLoading] = useState(false);
+  const [isSoggettiLoading, setIsSoggettiLoading] = useState(true);
 
   const [isModalSoggettoOpen, setIsModalSoggettoOpen] = useState(false);
   const [modalData, setModalData] = useState<Soggetto | null>(null);

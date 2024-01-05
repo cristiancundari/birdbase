@@ -22,7 +22,7 @@ function GarePage() {
   const supabase = useSupabase();
 
   const [gare, setGare] = useState<GaraWithNazione[]>([]);
-  const [isGareLoading, setIsGareLoading] = useState(false);
+  const [isGareLoading, setIsGareLoading] = useState(true);
 
   const [isModalGaraOpen, setIsModalGaraOpen] = useState(false);
   const [modalData, setModalData] = useState<GaraType | null>(null);

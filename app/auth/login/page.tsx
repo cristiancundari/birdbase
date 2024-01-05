@@ -1,10 +1,14 @@
 import React from "react";
 import Login from "./login";
-import { redirect } from "next/navigation";
+import { RedirectType, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
-async function LoginPage() {
+async function LoginPage({
+  searchParams: { callbackUrl },
+}: {
+  searchParams: { callbackUrl: string };
+}) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
   const {
@@ -12,7 +16,8 @@ async function LoginPage() {
   } = await supabase.auth.getSession();
 
   if (session) {
-    return redirect("/app/home");
+    const url = callbackUrl || "/app/home";
+    return redirect(url, RedirectType.replace);
   }
 
   return <Login />;

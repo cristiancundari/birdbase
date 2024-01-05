@@ -66,6 +66,10 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
       madre: (madre) => (madre == null ? "Inserire la madre" : null),
       dataCovata: (dataCovata) =>
         dataCovata == null ? "Inserire la data" : null,
+      uovaSchiuse: (uovaSchiuse, values) =>
+        uovaSchiuse > values.uovaDeposte
+          ? "Il numero non può essere maggiore delle uova deposte"
+          : null,
     },
   });
 

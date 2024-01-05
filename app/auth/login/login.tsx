@@ -16,12 +16,13 @@ import { useForm } from "@mantine/form";
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useSupabase } from "@/providers/supabaseProvider";
 
 function Login() {
-  const supabase = createClient();
+  const supabase = useSupabase();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callback") || "/app/home";
+  const callbackUrl = searchParams.get("callbackUrl") || "/app/home";
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -40,7 +41,7 @@ function Login() {
   const handleSignIn = form.onSubmit(async (values) => {
     try {
       setIsLoading(true);
-      const res = await supabase.auth.signInWithPassword({
+      const res = await supabase.client.auth.signInWithPassword({
         email: `${values.username}@gmail.com`,
         password: values.password,
       });
@@ -50,10 +51,10 @@ function Login() {
         setError(
           "Se non ricordi le credenziali contatta un amministratore per il reset"
         );
+        setIsLoading(false);
       }
     } catch (error: any) {
       setError(error);
-    } finally {
       setIsLoading(false);
     }
   });

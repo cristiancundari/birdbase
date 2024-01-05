@@ -85,14 +85,12 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
     });
   };
 
-  const onFormSubmit = () => {
-    form.onSubmit(async () => {
-      setIsSubmitLoading(true);
-      await submit({ form: form.values, avatarFile: files?.[0] });
-      setIsSubmitLoading(false);
-      annulla();
-    });
-  };
+  const onFormSubmit = form.onSubmit(async () => {
+    setIsSubmitLoading(true);
+    await submit({ form: form.values, avatarFile: files?.[0] });
+    setIsSubmitLoading(false);
+    annulla();
+  });
 
   useEffect(() => {
     if (isOpen) {

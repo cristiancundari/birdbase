@@ -1,4 +1,5 @@
-import { IconsSesso, formatData } from "@/lib/helper";
+import { IconSessoFemale, IconSessoMale } from "@/components/IconsSesso";
+import { formatData } from "@/lib/helper";
 import { CovataWithGenitori } from "@/types/types";
 import { Box, Card, Flex, Group, Text, Title, Tooltip } from "@mantine/core";
 import { IconEgg, IconEggCracked, IconEggs } from "@tabler/icons-react";
@@ -26,11 +27,11 @@ function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
             <Text>Genitori:</Text>
             <Group gap="md">
               <Group gap={2}>
-                <IconsSesso.Male size={22} />
+                <IconSessoMale size={22} />
                 <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
               </Group>
               <Group gap={2}>
-                <IconsSesso.Female size={22} />
+                <IconSessoFemale size={22} />
                 <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
               </Group>
             </Group>

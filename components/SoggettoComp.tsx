@@ -1,5 +1,4 @@
 "use client";
-import { IconsSesso } from "@/lib/helper";
 import {
   ActionIcon,
   Anchor,
@@ -26,6 +25,7 @@ import {
 import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { useState } from "react";
+import { IconSessoAgender, IconSessoFemale, IconSessoMale } from "./IconsSesso";
 
 interface SoggettoCompProps {
   sogg: Soggetto;
@@ -55,9 +55,9 @@ function SoggettoComp({
   return (
     <Card shadow="sm" withBorder>
       <Group gap="xs" justify="space-between">
-        {sogg.sesso && <IconsSesso.Male size="25" />}
-        {sogg.sesso == false && <IconsSesso.Female size="25" />}
-        {sogg.sesso == null && <IconsSesso.Agender size="25" />}
+        {sogg.sesso && <IconSessoMale size="25" />}
+        {sogg.sesso == false && <IconSessoFemale size="25" />}
+        {sogg.sesso == null && <IconSessoAgender size="25" />}
         <Text>
           <Anchor href="https://mantine.dev/" target="_blank" c="dark">
             {sogg.rna}-{sogg.numero}

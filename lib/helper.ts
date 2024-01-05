@@ -5,9 +5,6 @@ import { format } from "date-fns";
 import {
   IconBarrel,
   IconBat,
-  IconGenderAgender,
-  IconGenderFemale,
-  IconGenderMale,
   IconLayoutGrid,
   IconToolsKitchen2,
   IconVaccine,
@@ -73,13 +70,4 @@ export const transazioniIconColor: {
   Medicine: { icon: IconVaccine, color: "yellow" },
   Soggetti: { icon: IconBat, color: "blue" },
   Altro: { icon: IconLayoutGrid, color: "gray" },
-};
-
-export const IconsSesso = {
-  Male: (props: TablerIconsProps) =>
-    IconGenderMale({ color: "#256ceb", ...props }),
-  Female: (props: TablerIconsProps) =>
-    IconGenderFemale({ color: "#f92f8e", ...props }),
-  Agender: (props: TablerIconsProps) =>
-    IconGenderAgender({ color: "#d6d6d6", ...props }),
 };

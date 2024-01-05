@@ -1,22 +1,28 @@
 "use client";
-import { AppShell, Burger, Group, NavLink, Text } from "@mantine/core";
+import { useSupabase } from "@/providers/supabaseProvider";
+import "@/styles/navLink.css";
+import { AppShell, Burger, Button, Group, NavLink, Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
-  Icon360,
-  IconBarrel,
   IconBat,
   IconEggCracked,
-  IconFlag,
   IconHome,
+  IconLogout,
   IconTrophy,
   IconWallet,
 } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
-import "@/styles/navLink.css";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
+  const router = useRouter();
+  const supabase = useSupabase();
   const pathname = usePathname();
+
+  const logout = async () => {
+    await supabase.client.auth.signOut();
+    router.push(`/auth/login?callbackUrl=${pathname}`);
+  };
 
   const links = [
     {
@@ -58,15 +64,27 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        {links.map((link, index) => (
-          <NavLink
-            key={index}
-            href={link.url}
-            leftSection={link.icon}
-            label={link.label}
-            active={pathname.startsWith(link.url)}
-          />
-        ))}
+        <AppShell.Section grow>
+          {links.map((link, index) => (
+            <NavLink
+              key={index}
+              href={link.url}
+              leftSection={link.icon}
+              label={link.label}
+              active={pathname.startsWith(link.url)}
+            />
+          ))}
+        </AppShell.Section>
+        <AppShell.Section>
+          <Button
+            leftSection={<IconLogout />}
+            variant="outline"
+            w="100%"
+            onClick={logout}
+          >
+            Logout
+          </Button>
+        </AppShell.Section>
       </AppShell.Navbar>
 
       <AppShell.Main>{children}</AppShell.Main>

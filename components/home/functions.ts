@@ -7,10 +7,12 @@ import { Soggetto } from "@prisma/client";
 interface AggiungiParams {
   form: FormValues;
   avatarFile: FileWithPath;
+  covataId?: number;
 }
 export const aggiungiSoggetto = async ({
   form,
   avatarFile,
+  covataId,
 }: AggiungiParams) => {
   let sesso = null;
   if (form.sesso == Sesso.Maschio) {
@@ -20,7 +22,10 @@ export const aggiungiSoggetto = async ({
   }
   const formData = new FormData();
 
-  formData.append("form", JSON.stringify({ ...form, sesso: sesso }));
+  formData.append(
+    "form",
+    JSON.stringify({ ...form, sesso: sesso, covataId: covataId })
+  );
   if (avatarFile) {
     formData.append("imgFile", avatarFile);
   }

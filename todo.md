@@ -11,3 +11,4 @@
 (F) Gestire i morti
 (F) Valutare la condivisione dello schema zod nei metodi POST e PATCH dell'API che risultano molto simili
 (F) Verificare tutte le validazioni di dati lato client nei vari form dei modal (valutare se utilizzare zod "mantine-form-zod-resolver")
+(F) Verificare durante la modifica del sesso di un soggetto se il soggetto è padre o madre di una covata e generare errore in caso affermativo

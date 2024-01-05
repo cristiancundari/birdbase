@@ -10,11 +10,10 @@ export async function getServerUserProfile(
   cookieStore: ReadonlyRequestCookies
 ) {
   const user = await getServerUser(cookieStore);
-  assert(user);
+
   const profile = await prisma.profilo.findFirst({
     where: {
-      id: user.id,
-      ruolo: Role.ADMIN,
+      id: user?.id,
     },
   });
 

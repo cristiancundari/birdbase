@@ -1,5 +1,5 @@
 "use client";
-import { IconsSesso, formatData } from "@/lib/helper";
+import { formatData } from "@/lib/helper";
 import { CovataWithGenitori } from "@/types/types";
 import {
   ActionIcon,
@@ -21,6 +21,7 @@ import {
   IconPencil,
   IconTrash,
 } from "@tabler/icons-react";
+import { IconSessoFemale, IconSessoMale } from "../IconsSesso";
 
 interface CovataCompProps {
   covata: CovataWithGenitori;
@@ -75,7 +76,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
 
       <Group justify="space-between">
         <Group gap="xs">
-          <IconsSesso.Male size="18" />
+          <IconSessoMale size="18" />
           <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
         </Group>
         {covata.gabbia !== null && (
@@ -90,7 +91,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
 
       <Group justify="space-between">
         <Group gap="xs">
-          <IconsSesso.Female size="18" />
+          <IconSessoFemale size="18" />
           <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
         </Group>
         <Group gap={2}>

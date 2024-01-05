@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     //TODO: verificare ordinamento per isMorto (boolean)
     const result = await prisma.soggetto.findMany({
       where: { profiloId: user.id },
-      orderBy: [{ isMorto: "desc" }, { dataNascita: "desc" }],
+      orderBy: [{ isMorto: "asc" }, { dataNascita: "desc" }],
     });
 
     return NextResponse.json({ result: result, error: false }, { status: 200 });

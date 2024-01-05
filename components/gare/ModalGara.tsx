@@ -88,14 +88,12 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
     });
   };
 
-  const onFormSubmit = () => {
-    form.onSubmit(async () => {
-      setIsSubmitLoading(true);
-      await submit({ form: form.values, imgFile: files?.[0] });
-      setIsSubmitLoading(false);
-      annulla();
-    });
-  };
+  const onFormSubmit = form.onSubmit(async () => {
+    setIsSubmitLoading(true);
+    await submit({ form: form.values, imgFile: files?.[0] });
+    setIsSubmitLoading(false);
+    annulla();
+  });
 
   const getNazioni = async () => {
     const result = await apiFetch.get<Nazione[]>("/api/nazioni");
