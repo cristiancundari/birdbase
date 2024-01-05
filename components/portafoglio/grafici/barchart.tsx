@@ -6,6 +6,7 @@ import { ApiResponse } from "@/types/types";
 import { formatValuta, showNotification } from "@/lib/helper";
 import { IncassiQueryResult } from "@/app/api/transazioni/incassi/route";
 import { usePortafoglioContext } from "../portafoglioPage";
+import { apiFetch } from "@/lib/apiFetch";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -18,14 +19,14 @@ function BarChart() {
   const [isLoading, setIsLoading] = useState(true);
 
   const getIncassi = async () => {
-    const response = await fetch("/api/transazioni/incassi");
-    const result: ApiResponse = await response.json();
+    const result = await apiFetch.get<IncassiQueryResult[]>(
+      "/api/transazioni/incassi"
+    );
     if (result.error) {
       showNotification({ message: result.message });
     } else {
       let series = Array(12).fill(0);
-      const dati: IncassiQueryResult[] = result.result;
-      dati.forEach((item) => {
+      result.data.forEach((item) => {
         series[item.mese - 1] = item.totale;
       });
       setIsLoading(false);

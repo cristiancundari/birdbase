@@ -1,10 +1,9 @@
 "use client";
-import { formatData } from "@/lib/helper";
+import { IconsSesso, formatData } from "@/lib/helper";
 import { CovataWithGenitori } from "@/types/types";
 import {
   ActionIcon,
   Anchor,
-  Box,
   Card,
   Divider,
   Group,
@@ -13,17 +12,13 @@ import {
   ThemeIcon,
   Tooltip,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
   IconBarrel,
   IconCheck,
   IconDotsVertical,
   IconEgg,
   IconEggCracked,
-  IconGenderFemale,
-  IconGenderMale,
   IconPencil,
-  IconPhoto,
   IconTrash,
 } from "@tabler/icons-react";
 
@@ -80,7 +75,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
 
       <Group justify="space-between">
         <Group gap="xs">
-          <IconGenderMale color="#256ceb" size="18" />
+          <IconsSesso.Male size="18" />
           <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
         </Group>
         {covata.gabbia !== null && (
@@ -95,7 +90,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
 
       <Group justify="space-between">
         <Group gap="xs">
-          <IconGenderFemale color="#f92f8e" size="18" />
+          <IconsSesso.Female size="18" />
           <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
         </Group>
         <Group gap={2}>

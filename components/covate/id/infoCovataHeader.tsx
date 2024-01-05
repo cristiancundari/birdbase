@@ -1,13 +1,7 @@
-import { formatData } from "@/lib/helper";
+import { IconsSesso, formatData } from "@/lib/helper";
 import { CovataWithGenitori } from "@/types/types";
 import { Box, Card, Flex, Group, Text, Title, Tooltip } from "@mantine/core";
-import {
-  IconEgg,
-  IconEggCracked,
-  IconEggs,
-  IconGenderFemale,
-  IconGenderMale,
-} from "@tabler/icons-react";
+import { IconEgg, IconEggCracked, IconEggs } from "@tabler/icons-react";
 
 interface InfoCovataHeaderProps {
   covata: CovataWithGenitori;
@@ -32,11 +26,11 @@ function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
             <Text>Genitori:</Text>
             <Group gap="md">
               <Group gap={2}>
-                <IconGenderMale color="#256ceb" size={22} />
+                <IconsSesso.Male size={22} />
                 <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
               </Group>
               <Group gap={2}>
-                <IconGenderFemale color="#f92f8e" size={22} />
+                <IconsSesso.Female size={22} />
                 <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
               </Group>
             </Group>

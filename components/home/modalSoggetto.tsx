@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Center,
-  Chip,
   Group,
   Input,
   Modal,
@@ -13,18 +12,18 @@ import {
   Select,
   SimpleGrid,
   Switch,
-  Text,
   TextInput,
   useMantineTheme,
 } from "@mantine/core";
 
-import { Soggetto } from ".prisma/client";
 import { dateParser } from "@/lib/DateParser";
+import { imgPath } from "@/lib/helper";
 import { Sesso } from "@/types/types";
 import { DateInput } from "@mantine/dates";
 import { FileWithPath } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { Soggetto } from "@prisma/client";
 import {
   IconCalendar,
   IconDeviceFloppy,
@@ -32,7 +31,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import Upload from "../upload";
+import Upload from "../Upload";
 
 export interface FormValues {
   rna: string;
@@ -53,7 +52,7 @@ interface PropsType {
 
 function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
   const theme = useMantineTheme();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
   const form = useForm<FormValues>({
@@ -73,6 +72,27 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
         value.length == 0 ? "Inserire numero anelletto" : null,
     },
   });
+
+  const removeImageHandler = () => {
+    setFiles([]);
+    form.setFieldValue("avatar", null);
+  };
+
+  const onUploadReject = () => {
+    showNotification({
+      title: "Errore Upload",
+      message: "Impossibile utilizzare il file selezionato",
+    });
+  };
+
+  const onFormSubmit = () => {
+    form.onSubmit(async () => {
+      setIsSubmitLoading(true);
+      await submit({ form: form.values, avatarFile: files?.[0] });
+      setIsSubmitLoading(false);
+      annulla();
+    });
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -103,7 +123,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
   let preview = files.length > 0 ? URL.createObjectURL(files[0]) : null;
 
   if (preview == null && form.values.avatar !== null) {
-    preview = `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/${form.values.avatar}`;
+    preview = imgPath + form.values.avatar;
   }
 
   return (
@@ -113,24 +133,14 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
       title={modalData == null ? "Aggiungi Soggetto" : "Modifica Soggetto"}
       centered
     >
-      <form
-        onSubmit={form.onSubmit(async () => {
-          setIsLoading(true);
-          await submit({ form: form.values, avatarFile: files?.[0] });
-          setIsLoading(false);
-          annulla();
-        })}
-      >
+      <form onSubmit={onFormSubmit}>
         <Center py="xs">
           {preview ? (
             <Box pos="relative">
               <Avatar variant="filled" size="xl" src={preview} />
               <ActionIcon
                 color="dark"
-                onClick={() => {
-                  setFiles([]);
-                  form.setFieldValue("avatar", null);
-                }}
+                onClick={removeImageHandler}
                 variant="white"
                 radius="xl"
                 pos="absolute"
@@ -145,12 +155,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             <Upload
               multiple={false}
               onDrop={setFiles}
-              onReject={() => {
-                showNotification({
-                  title: "Errore Upload",
-                  message: "Impossibile utilizzare il file selezionato",
-                });
-              }}
+              onReject={onUploadReject}
               w="100%"
             ></Upload>
           )}
@@ -185,17 +190,14 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
           <Group align="center">
             <Input.Wrapper label=" ">
               <Switch
-                checked={form.values.isMorto}
-                onChange={(event) =>
-                  form.setFieldValue("isMorto", event.currentTarget.checked)
-                }
-                color="grape"
                 label="Morto"
+                color="grape"
                 thumbIcon={
                   form.values.isMorto && (
                     <IconGrave size={12} color={theme.colors.grape[6]} />
                   )
                 }
+                {...form.getInputProps("isMorto", { type: "checkbox" })}
               />
             </Input.Wrapper>
           </Group>
@@ -214,7 +216,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             color="green"
             leftSection={<IconDeviceFloppy size={14} />}
             type="submit"
-            loading={isLoading}
+            loading={isSubmitLoading}
           >
             Salva
           </Button>

@@ -1,4 +1,5 @@
 import { dateParser } from "@/lib/DateParser";
+import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
 import { ApiResponse, TransazioneWithCategoria } from "@/types/types";
 import {
@@ -71,12 +72,10 @@ function ModalTransazione({
 
   function getCategorie() {
     async function categorieFn() {
-      const response = await fetch("/api/categorie");
-      const result: ApiResponse = await response.json();
+      const result = await apiFetch.get<CategoriaSpesa[]>("/api/categorie");
       if (!result.error) {
-        const res = result.result as CategoriaSpesa[];
         setCategorie(
-          res.map((categoria) => ({
+          result.data.map((categoria) => ({
             label: categoria.nome,
             value: categoria.id.toString(),
           }))

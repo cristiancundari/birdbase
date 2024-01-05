@@ -5,9 +5,10 @@ import { FileWithPath } from "@mantine/dropzone";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
+import { uuid } from "uuidv4";
 import { getServerUserProfile } from "@/lib/supabase/helper";
 import { Role } from "@prisma/client";
+import assert from "assert";
 
 export async function PATCH(
   request: NextRequest,
@@ -26,41 +27,45 @@ export async function PATCH(
 
   try {
     const cookieStore = cookies();
-    const profile = await getServerUserProfile(cookieStore);
-    if (profile?.ruolo !== Role.ADMIN) {
+    const userProfile = await getServerUserProfile(cookieStore);
+    assert(userProfile, "Non autorizzato");
+
+    if (userProfile?.ruolo !== Role.ADMIN) {
       throw new Error("Non autorizzato");
     }
 
     const dati = await request.formData();
-    const form = JSON.parse(dati.get("form") as string);
-    const img = dati.get("imgFile") as FileWithPath;
+    const formJSON = dati.get("form") as string;
+    const imgFile = dati.get("imgFile") as FileWithPath;
+    const form = JSON.parse(formJSON);
     const values = datiSchema.parse(form);
-    let update = null;
+
     // definiamo il nome dell'immagine da salvare sul db
-    const imgName = uuidv4();
-    if (img) {
+    const imgName = `gare/${uuid()}`;
+    if (imgFile) {
       values.immagine = imgName;
     }
     // transazione update gara, immagine
-    await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // effettuiamo la modifica sul db della gara
-      update = await tx.gara.update({
+      const res = await tx.gara.update({
         data: values,
         where: { id: params.id },
       });
       // effettuiamo l'update dell'immagine
-      if (img) {
+      if (imgFile) {
         const supabase = createClient(cookieStore);
         const uploadImg = await supabase.storage
           .from("img")
-          .upload(imgName, img);
+          .upload(imgName, imgFile);
         // generiamo l'errore per essere catturato dal catch
         if (uploadImg.error) {
           throw new Error(uploadImg.error.message);
         }
       }
+      return res;
     });
-    return NextResponse.json({ result: update, error: false }, { status: 200 });
+    return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { message: error.message, error: true },
@@ -77,9 +82,10 @@ export async function DELETE(
     id: z.string().min(1),
   });
   try {
-    const cookieStore = cookies();
-    const profile = await getServerUserProfile(cookieStore);
-    if (profile?.ruolo !== Role.ADMIN) {
+    const userProfile = await getServerUserProfile(cookies());
+    assert(userProfile, "Non autorizzato");
+
+    if (userProfile?.ruolo !== Role.ADMIN) {
       throw new Error("Non autorizzato");
     }
 
@@ -89,10 +95,10 @@ export async function DELETE(
       where: { id: values.id },
     });
 
-    return NextResponse.json({ result, error: false }, { status: 200 });
-  } catch (err: any) {
+    return NextResponse.json({ result: result, error: false }, { status: 200 });
+  } catch (error: any) {
     return NextResponse.json(
-      { message: err.message, error: true },
+      { message: error.message, error: true },
       { status: 500 }
     );
   }

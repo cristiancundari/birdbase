@@ -4,8 +4,10 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { FileWithPath } from "@mantine/dropzone";
-import { v4 as uuidv4 } from "uuid";
+import { uuid } from "uuidv4";
 import { Soggetto } from "@prisma/client";
+import { getServerUser } from "@/lib/supabase/helper";
+import assert from "assert";
 
 export async function PATCH(
   request: Request,
@@ -23,28 +25,32 @@ export async function PATCH(
   });
 
   try {
+    const cookieStore = cookies();
+    const user = await getServerUser(cookieStore);
+    assert(user, "Non autorizzato");
+
     const dati = await request.formData();
-    const img = dati.get("imgFile") as FileWithPath;
+    const imgFile = dati.get("imgFile") as FileWithPath;
     const form = JSON.parse(dati.get("form") as string);
     const values = datiSchema.parse(form);
 
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
-
-    let result = null;
-    const imgName = `soggetti/${uuidv4()}`;
-    if (img) {
+    let result: Soggetto | null = null;
+    const imgName = `soggetti/${uuid()}`;
+    if (imgFile) {
       values.avatar = imgName;
     }
     await prisma.$transaction(async (tx) => {
       result = await tx.soggetto.update({
         data: values,
-        where: { id: params.id },
+        where: { id: params.id, profiloId: user.id },
       });
-      if (img) {
-        const upload = await supabase.storage.from("img").upload(imgName, img);
+      if (imgFile) {
+        const supabase = createClient(cookieStore);
+        const upload = await supabase.storage
+          .from("img")
+          .upload(imgName, imgFile);
         if (upload.error) {
-          throw new Error(upload.error.message);
+          throw new Error("L'upload non è andato a buon fine");
         }
       }
     });
@@ -68,7 +74,12 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const result = await prisma.soggetto.delete({ where: { id: params.id } });
+    const user = await getServerUser(cookies());
+    assert(user, "Non autorizzato");
+
+    const result = await prisma.soggetto.delete({
+      where: { id: params.id, profiloId: user.id },
+    });
     return NextResponse.json({ error: false, result: result }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
@@ -83,9 +94,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const user = await getServerUser(cookies());
+    assert(user, "Non autorizzato");
+
     const result = await prisma.$queryRaw<
       Soggetto[]
-    >`UPDATE "soggetti" SET preferito = not preferito WHERE id=${params.id}::uuid RETURNING *`;
+    >`UPDATE "soggetti" SET preferito = not preferito WHERE id=${params.id}::uuid AND profiloId=${user.id} RETURNING *`;
     return NextResponse.json(
       { result: result[0], error: false },
       { status: 200 }

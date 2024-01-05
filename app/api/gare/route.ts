@@ -1,12 +1,13 @@
-import { FormValues } from "@/components/gare/modalGara";
+import { FormValues } from "@/components/gare/ModalGara";
 import { prisma } from "@/lib/prisma";
 import { getServerUserProfile } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
 import { FileWithPath } from "@mantine/dropzone";
 import { Role } from "@prisma/client";
+import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
+import { uuid } from "uuidv4";
 import { z } from "zod";
 
 export async function POST(request: NextRequest) {
@@ -22,31 +23,34 @@ export async function POST(request: NextRequest) {
 
   try {
     const cookieStore = cookies();
-    const profile = await getServerUserProfile(cookieStore);
-    if (profile?.ruolo !== Role.ADMIN) {
+    const userProfile = await getServerUserProfile(cookieStore);
+    assert(userProfile, "Non autorizzato");
+
+    const isAdmin = userProfile.ruolo == Role.ADMIN;
+    if (!isAdmin) {
       throw new Error("Non autorizzato");
     }
 
-    const supabase = createClient(cookieStore);
+    const dati: FormData = await request.formData();
+    const formJSON = dati.get("form") as string;
+    const imgFile = dati.get("imgFile") as FileWithPath;
+    const form: FormValues = JSON.parse(formJSON);
+    const values = datiSchema.parse(form);
 
-    const data: FormData = await request.formData();
-    const formJSON = data.get("form") as string;
-    const dati: FormValues = JSON.parse(formJSON);
-    const imgFile = data.get("imgFile") as FileWithPath;
-
-    const imgName = uuidv4();
-
-    const values = datiSchema.parse(dati);
+    const imgName = `gare/${uuid()}`;
 
     const result = await prisma.$transaction(async (tx) => {
       const res = await tx.gara.create({
         data: { ...values, immagine: imgFile ? imgName : null },
       });
-      const upload = await supabase.storage
-        .from("img")
-        .upload(imgName, imgFile);
-      if (upload.error) {
-        throw new Error("Upload error");
+      if (imgFile) {
+        const supabase = createClient(cookieStore);
+        const upload = await supabase.storage
+          .from("img")
+          .upload(imgName, imgFile);
+        if (upload.error) {
+          throw new Error("L'upload non è andato a buon fine");
+        }
       }
       return res;
     });
@@ -64,5 +68,28 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const userProfile = await getServerUserProfile(cookies());
+    assert(userProfile, "Non autorizzato");
+
+    const isAdmin = userProfile.ruolo == Role.ADMIN;
+    const whereCondition = isAdmin ? undefined : { isDeleted: false }; //Se l'utente è un amministratore ottieni tutte le gare (anche quelle eliminate).
+
+    const gare = await prisma.gara.findMany({
+      include: { nazione: true },
+      where: whereCondition,
+      orderBy: [{ isDeleted: "asc" }, { data: "asc" }],
+    });
+
+    return NextResponse.json({ result: gare, error: false }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: true, message: error.message },
+      { status: 500 }
+    );
   }
 }

@@ -7,7 +7,7 @@ import ModalCovata, { CovataFormValues } from "./modalCovata";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
 import { CovataWithGenitori } from "@/types/types";
-import ModalCancellazione from "../modalCancellazione";
+import ModalCancellazione from "../ModalCancellazione";
 
 function CovatePage() {
   const [isOpen, setIsOpen] = useState(false);

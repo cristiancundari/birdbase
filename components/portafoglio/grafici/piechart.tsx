@@ -15,6 +15,7 @@ import {
 import { ApiResponse } from "@/types/types";
 import { CategoriaSpesa } from "@prisma/client";
 import { usePortafoglioContext } from "../portafoglioPage";
+import { apiFetch } from "@/lib/apiFetch";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -43,13 +44,12 @@ function PieChart() {
   });
 
   const getGraphData = async () => {
-    const response = await fetch("/api/transazioni/spese");
-    const result: ApiResponse = await response.json();
+    const result = await apiFetch.get("/api/transazioni/spese");
     if (result.error) {
       showNotification({ message: result.message });
     } else {
       setIsLoading(false);
-      elaboraDati(result.result);
+      elaboraDati(result.data);
     }
   };
 

@@ -1,4 +1,5 @@
 "use client";
+import { IconsSesso } from "@/lib/helper";
 import {
   ActionIcon,
   Anchor,
@@ -16,9 +17,6 @@ import { Soggetto } from "@prisma/client";
 import {
   IconBarrel,
   IconDotsVertical,
-  IconGenderAgender,
-  IconGenderFemale,
-  IconGenderMale,
   IconGrave,
   IconHeart,
   IconHeartFilled,
@@ -29,23 +27,25 @@ import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { useState } from "react";
 
+interface SoggettoCompProps {
+  sogg: Soggetto;
+  onEdit: (soggetto: Soggetto) => void;
+  onDelete: (id: string) => void;
+  onPreferito: (id: string) => Promise<Soggetto | null>;
+}
+
 function SoggettoComp({
   sogg,
   onEdit,
   onDelete,
-  handlerPreferito,
-}: {
-  sogg: Soggetto;
-  onEdit: (soggetto: Soggetto) => void;
-  onDelete: (id: string) => void;
-  handlerPreferito: (id: string) => Promise<Soggetto | null>;
-}) {
+  onPreferito,
+}: SoggettoCompProps) {
   const [isFavourite, setIsFavourite] = useState(sogg.preferito);
   const [isFavouriteLoading, setIsFavouriteLoading] = useState(false);
 
   const handleFavourite = async () => {
     setIsFavouriteLoading(true);
-    const result = await handlerPreferito(sogg.id);
+    const result = await onPreferito(sogg.id);
     if (result) {
       setIsFavourite(result.preferito);
     }
@@ -55,9 +55,9 @@ function SoggettoComp({
   return (
     <Card shadow="sm" withBorder>
       <Group gap="xs" justify="space-between">
-        {sogg.sesso && <IconGenderMale color="#256ceb" size="25" />}
-        {sogg.sesso == false && <IconGenderFemale color="#f92f8e" size="25" />}
-        {sogg.sesso == null && <IconGenderAgender color="#d6d6d6" size="25" />}
+        {sogg.sesso && <IconsSesso.Male size="25" />}
+        {sogg.sesso == false && <IconsSesso.Female size="25" />}
+        {sogg.sesso == null && <IconsSesso.Agender size="25" />}
         <Text>
           <Anchor href="https://mantine.dev/" target="_blank" c="dark">
             {sogg.rna}-{sogg.numero}

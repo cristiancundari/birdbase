@@ -16,8 +16,9 @@ import { IconPlus } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import ModalTransazione, { FormValues } from "./modalTransazione";
 import TransazioneComp, { TransazioneCompSkeleton } from "./transazioneComp";
-import ModalCancellazione from "../../modalCancellazione";
+import ModalCancellazione from "../../ModalCancellazione";
 import { usePortafoglioContext } from "../portafoglioPage";
+import { apiFetch } from "@/lib/apiFetch";
 
 function Transazioni() {
   const { state: forceRender, setState: setForceRender } =
@@ -46,18 +47,14 @@ function Transazioni() {
   }
 
   async function elimina() {
-    const response = await fetch(
-      `/api/transazioni/${isModalCancellazioneOpen}`,
-      {
-        method: "DELETE",
-      }
+    const result = await apiFetch.delete(
+      `/api/transazioni/${isModalCancellazioneOpen}`
     );
-    const result: ApiResponse = await response.json();
     if (result.error) {
       showNotification({ message: result.message });
     } else {
       showNotification({
-        message: "Transazione eliminat correttamente",
+        message: "Transazione eliminata correttamente",
         success: true,
       });
       getTransazioni();
@@ -71,12 +68,11 @@ function Transazioni() {
   }
 
   const getTransazioni = async () => {
-    const response = await fetch("/api/transazioni");
-    const result: ApiResponse = await response.json();
+    const result = await apiFetch.get("/api/transazioni");
     if (result.error) {
       showNotification({ message: result.message });
     } else {
-      setTransazioni(result.result);
+      setTransazioni(result.data);
     }
   };
 
@@ -90,13 +86,7 @@ function Transazioni() {
   }, []);
 
   async function aggiungi(values: FormValues) {
-    const response = await fetch("/api/transazioni", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-
-    const result: ApiResponse = await response.json();
+    const result = await apiFetch.post("/api/transazioni", values);
 
     if (result.error) {
       showNotification({ message: result.message });
@@ -111,13 +101,10 @@ function Transazioni() {
   }
 
   async function modifica(values: FormValues) {
-    const response = await fetch(`/api/transazioni/${editTransazione?.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-
-    const result: ApiResponse = await response.json();
+    const result = await apiFetch.patch(
+      `/api/transazioni/${editTransazione?.id}`,
+      values
+    );
 
     if (result.error) {
       showNotification({ message: result.message });

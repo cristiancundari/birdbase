@@ -1,10 +1,10 @@
 import { ApiResponse } from "@/types/types";
-import { assert } from "console";
 import z from "zod";
 export const apiFetch = {
   get,
   post,
   patch,
+  put,
   delete: _delete,
 };
 
@@ -16,7 +16,7 @@ async function get<T = any>(url: string) {
   return handleResponse<T>(response);
 }
 
-async function post<T = any>(url: string, body: any) {
+async function post<T = any>(url: string, body: any = null) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -26,9 +26,19 @@ async function post<T = any>(url: string, body: any) {
   return handleResponse<T>(response);
 }
 
-async function patch<T = any>(url: string, body: any) {
+async function patch<T = any>(url: string, body: any = null) {
   const requestOptions = {
     method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  };
+  const response = await fetch(url, requestOptions);
+  return handleResponse<T>(response);
+}
+
+async function put<T = any>(url: string, body: any = null) {
+  const requestOptions = {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   };

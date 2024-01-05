@@ -1,6 +1,6 @@
 import { SoggettoWithGenitori } from "@/types/types";
 
-export function calcolaLivelliParentela(
+/* export function calcolaLivelliParentelaOld(
   partner: SoggettoWithGenitori,
   soggetti: Record<string, SoggettoWithGenitori>
 ): [string, string][][] {
@@ -10,8 +10,33 @@ export function calcolaLivelliParentela(
     res.push(calcolaParenti(soggetti, partner, i));
   }
   return res;
+} */
+export function calcolaLivelliParentela(
+  partner: SoggettoWithGenitori,
+  soggetti: Record<string, SoggettoWithGenitori>
+): [string, string][][] {
+  const res: [string, string][][] = [];
+  res.push([[partner.id, ""]]);
+
+  for (let lvl = 0; lvl < 4; lvl++) {
+    const last = res[lvl];
+    const step: [string, string][] = [];
+    for (let tuple of last) {
+      for (let sglTup of tuple) {
+        if (sglTup) {
+          const covata = soggetti[sglTup].covata;
+          if (covata) {
+            step.push([covata.idMadre, covata.idPadre]);
+          }
+        }
+      }
+    }
+    res.push(step);
+  }
+  return res;
 }
 
+/* 
 function calcolaParenti(
   soggetti: Record<string, SoggettoWithGenitori>,
   soggetto: SoggettoWithGenitori,
@@ -30,7 +55,7 @@ function calcolaParenti(
       ...calcolaParenti(soggetti, soggetti[padre], livello - 1),
     ];
   }
-}
+} */
 
 export function checkParentele(
   a: [string, string][][],

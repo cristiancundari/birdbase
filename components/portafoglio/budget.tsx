@@ -18,6 +18,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import { usePortafoglioContext } from "./portafoglioPage";
+import { apiFetch } from "@/lib/apiFetch";
 
 function Budget() {
   const { state: forceRender } = usePortafoglioContext();
@@ -28,16 +29,16 @@ function Budget() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function getBudget() {
-    const response = await fetch("/api/budget");
-    const result: ApiResponse = await response.json();
+    //TODO aggiungere tipo alla chiamata fetch
+    const result = await apiFetch.get("/api/budget");
     if (result.error) {
       showNotification({
         message: "Non è stato possibile ottenere il budget",
       });
       setBudget(null);
     } else {
-      const budget = result.result.budget.budget;
-      const spesa = result.result.spese._sum.prezzo || 0;
+      const budget = result.data.budget.budget;
+      const spesa = result.data.spese._sum.prezzo || 0;
       const bilancio = budget + spesa; //La variabile spesa è sempre negativa (somma algebrica con segno)
       setBudget(budget);
       setBilancio(bilancio);
@@ -50,12 +51,8 @@ function Budget() {
     }
 
     setIsLoading(true);
-    const response = await fetch("/api/budget", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newBudget),
-    });
-    const result: ApiResponse = await response.json();
+    //TODO modificare API in modo che accetti un oggetto invece che un numero plain
+    const result = await apiFetch.patch("/api/budget", newBudget);
     if (result.error) {
       showNotification({ message: result.message });
     } else {

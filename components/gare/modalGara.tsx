@@ -1,34 +1,35 @@
 "use client";
 import {
-  Button,
-  Group,
-  Select,
-  TextInput,
-  Modal,
-  SimpleGrid,
-  NumberInput,
-  Image,
   ActionIcon,
   Box,
+  Button,
+  Combobox,
+  ComboboxItem,
+  Group,
+  Image,
+  Loader,
+  Modal,
+  NumberInput,
+  Select,
+  SimpleGrid,
+  TextInput,
 } from "@mantine/core";
 
-import errorNotificationClasses from "@/styles/errorNotification.module.css";
+import { dateParser } from "@/lib/DateParser";
+import { apiFetch } from "@/lib/apiFetch";
+import { imgPath, showNotification } from "@/lib/helper";
 import { DateInput } from "@mantine/dates";
+import { FileWithPath } from "@mantine/dropzone";
+import { useForm } from "@mantine/form";
+import { Gara, Nazione } from "@prisma/client";
 import {
   IconCalendar,
   IconCurrencyEuro,
   IconDeviceFloppy,
   IconX,
 } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
-import { useForm } from "@mantine/form";
-import { dateParser } from "@/lib/DateParser";
-import Upload from "../upload";
-import { FileWithPath } from "@mantine/dropzone";
-import { notifications } from "@mantine/notifications";
-import { Gara, Nazione } from "@prisma/client";
-import { imgPath, showNotification } from "@/lib/helper";
-import { apiFetch } from "@/lib/apiFetch";
+import { useEffect, useState } from "react";
+import Upload from "../Upload";
 
 export interface FormValues {
   titolo: string;
@@ -41,18 +42,19 @@ export interface FormValues {
   immagine: string | null;
 }
 
-interface PropsType {
+interface ModalGaraProps {
   isOpen: boolean;
   annulla: () => void;
   submit: (values: any) => Promise<void>;
   modalData: Gara | null;
 }
 
-function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [nazioni, setNazioni] = useState<{ value: string; label: string }[]>(
-    []
-  );
+function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
+  const [nazioni, setNazioni] = useState<ComboboxItem[]>([]);
+  const [isNazioniLoading, setIsNazioniLoading] = useState(false);
+
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
   const form = useForm<FormValues>({
@@ -74,7 +76,50 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
     },
   });
 
-  useEffect(getNazioni, []);
+  const removeImageHandler = () => {
+    form.setFieldValue("immagine", null);
+    setFiles([]);
+  };
+
+  const onUploadReject = () => {
+    showNotification({
+      title: "Errore Upload",
+      message: "Impossibile utilizzare il file selezionato",
+    });
+  };
+
+  const onFormSubmit = () => {
+    form.onSubmit(async () => {
+      setIsSubmitLoading(true);
+      await submit({ form: form.values, imgFile: files?.[0] });
+      setIsSubmitLoading(false);
+      annulla();
+    });
+  };
+
+  const getNazioni = async () => {
+    const result = await apiFetch.get<Nazione[]>("/api/nazioni");
+    if (result.error) {
+      showNotification({
+        message: result.message,
+      });
+    } else {
+      const nazioniSelect = result.data.map((nazione) => ({
+        value: nazione.id.toString(),
+        label: nazione.nome,
+      }));
+      setNazioni(nazioniSelect);
+    }
+  };
+
+  useEffect(() => {
+    const _getNazioni = async () => {
+      setIsNazioniLoading(true);
+      await getNazioni();
+      setIsNazioniLoading(false);
+    };
+    _getNazioni();
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -97,32 +142,10 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalData, isOpen]);
 
-  function getNazioni() {
-    const _getNazioni = async () => {
-      const result = await apiFetch.get<Nazione[]>("/api/nazioni");
-      if (result.error) {
-        showNotification({
-          message: "Impossibile ottenere le nazioni dal server",
-        });
-        return;
-      }
-      const nazioni = result.data;
-      const nazioniSelect = nazioni.map((nazione) => ({
-        value: nazione.id.toString(),
-        label: nazione.nome,
-      }));
-      setNazioni(nazioniSelect);
-    };
-    _getNazioni();
-  }
+  let preview = files.length > 0 ? URL.createObjectURL(files[0]) : null;
 
-  const previews = files.map((file) => URL.createObjectURL(file));
-
-  let preview = null;
-  if (previews.length > 0) {
-    preview = previews[0];
-  } else if (form.values.immagine !== null) {
-    preview = imgPath + form.values.immagine;
+  if (preview == null && form.values.immagine !== null) {
+    preview = imgPath + "gare/" + form.values.immagine;
   }
 
   return (
@@ -132,24 +155,14 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
       title={modalData == null ? "Aggiungi Gara" : "Modifica Gara"}
       centered
     >
-      <form
-        onSubmit={form.onSubmit(async () => {
-          setIsLoading(true);
-          await submit({ form: form.values, imgFile: files?.[0] });
-          setIsLoading(false);
-          annulla();
-        })}
-      >
+      <form onSubmit={onFormSubmit}>
         {preview ? (
           <Box pos="relative">
             <Image src={preview} alt="Immagine" height={160} />
             <ActionIcon
               color="dark"
               variant="white"
-              onClick={() => {
-                form.setFieldValue("immagine", null);
-                setFiles([]);
-              }}
+              onClick={removeImageHandler}
               radius="xl"
               pos="absolute"
               top="0"
@@ -163,12 +176,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
           <Upload
             multiple={false}
             onDrop={setFiles}
-            onReject={() => {
-              showNotification({
-                title: "Errore Upload",
-                message: "Impossibile utilizzare il file selezionato",
-              });
-            }}
+            onReject={onUploadReject}
             w="100%"
           ></Upload>
         )}
@@ -197,6 +205,9 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
             allowDeselect={false}
             searchable
             nothingFoundMessage="Nessun risultato"
+            rightSection={
+              isNazioniLoading ? <Loader size={18} /> : <Combobox.Chevron />
+            }
           ></Select>
 
           <NumberInput
@@ -208,6 +219,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
             leftSection={<IconCurrencyEuro size={16} />}
             {...form.getInputProps("prezzo")}
           />
+
           <NumberInput
             label="Capienza"
             allowNegative={false}
@@ -230,7 +242,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: PropsType) {
             color="green"
             leftSection={<IconDeviceFloppy size={14} />}
             type="submit"
-            loading={isLoading}
+            loading={isSubmitLoading}
           >
             Salva
           </Button>

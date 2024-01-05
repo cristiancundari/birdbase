@@ -1,11 +1,15 @@
-import React from "react";
+"use client";
+import { Box, Text } from "@mantine/core";
 
 const NessunSoggetto = () => {
   return (
-    <div>
-      Nessun soggetto trovato. Inizia creando un nuovo soggetto utilizzando il
-      pulsante Aggiungi in alto
-    </div>
+    <Box>
+      <Text>Nessun soggetto trovato.</Text>
+      <Text>
+        Inizia creando un nuovo soggetto utilizzando il pulsante Aggiungi in
+        alto
+      </Text>
+    </Box>
   );
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import { Container } from "@mantine/core";
 
 function layout({ children }: { children: React.ReactNode }) {

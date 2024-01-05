@@ -1,12 +1,13 @@
 "use client";
-import Breadcrumb from "@/components/breadcrumb";
-import ModalSoggetto from "@/components/home/modalSoggetto";
+
+import ModalSoggetto from "@/components/home/ModalSoggetto";
 import { CovataWithGenitoriAndFigli } from "@/types/types";
 import { Box, Button, Group, SimpleGrid, Text } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import InfoCovataHeader from "./infoCovataHeader";
-import SoggettoComp from "@/components/soggetto";
+import SoggettoComp from "@/components/SoggettoComp";
+import Breadcrumb from "@/components/Breadcrumb";
 
 interface InfoCovataProps {
   covata: CovataWithGenitoriAndFigli;
@@ -46,7 +47,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
               <SoggettoComp
                 key={soggetto.id}
                 sogg={soggetto}
-                handlerPreferito={async () => {
+                onPreferito={async () => {
                   return null;
                 }}
                 onEdit={() => {}}

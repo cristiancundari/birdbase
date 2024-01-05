@@ -9,3 +9,5 @@
 (A) Rendere l'API utilizzabile solo da chi ne ha i permessi
 (C) Sistemare l'azione di OnDelete e OnUpdate sullo schema prisma
 (F) Gestire i morti
+(F) Valutare la condivisione dello schema zod nei metodi POST e PATCH dell'API che risultano molto simili
+(F) Verificare tutte le validazioni di dati lato client nei vari form dei modal (valutare se utilizzare zod "mantine-form-zod-resolver")

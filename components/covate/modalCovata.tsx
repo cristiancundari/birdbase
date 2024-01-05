@@ -95,8 +95,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
     const listaPadreMadre = async () => {
       setLoadingMaschi(true);
       setLoadingFemmine(true);
-      const response = await fetch("/api/soggetti");
-      const result: ApiResponse<Soggetto[]> = await response.json();
+      const result = await apiFetch.get<Soggetto[]>("/api/soggetti");
       if (result.error) {
         showNotification({
           message: result.message,
@@ -104,7 +103,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
         return null;
       }
 
-      const resMadre: GenitoriItem[] = result.result
+      const resMadre: GenitoriItem[] = result.data
         .filter(
           (item: Soggetto) => item.sesso == false && item.isMorto == false
         )
@@ -112,7 +111,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
           soggetto: s,
           parentela: null,
         }));
-      const resPadre: GenitoriItem[] = result.result
+      const resPadre: GenitoriItem[] = result.data
         .filter((item: Soggetto) => item.sesso == true && item.isMorto == false)
         .map((s) => ({
           soggetto: s,

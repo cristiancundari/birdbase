@@ -1,12 +1,19 @@
+"use client";
+import { useSupabase } from "@/providers/supabaseProvider";
+import { Box, Text } from "@mantine/core";
 import React from "react";
 
-function NessunaGara({ isAdmin }: { isAdmin: boolean }) {
+function NessunaGara() {
+  const supabase = useSupabase();
   return (
-    <div>
-      Nessuna gara trovata.
-      {isAdmin &&
-        " Inizia creando un nuova gara utilizzando il pulsante Aggiungi in alto"}
-    </div>
+    <Box>
+      <Text>Nessuna gara trovata.</Text>
+      {supabase.isAdmin && (
+        <Text>
+          Inizia creando un nuova gara utilizzando il pulsante Aggiungi in alto
+        </Text>
+      )}
+    </Box>
   );
 }
 
