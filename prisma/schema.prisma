@@ -30,7 +30,7 @@ model Soggetto {
   profiloId   String   @map("profilo_id") @db.Uuid
   avatar      String?
   covataId    Int?     @map("covata_id")
-  isMorto     Boolean  @default(false) @map("isMorto")
+  isMorto     Boolean  @default(false) @map("is_morto")
   covateMadre Covata[] @relation("covate_id_madreToSoggetto")
   covatePadre Covata[] @relation("covate_id_padreToSoggetto")
   covata      Covata?  @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
