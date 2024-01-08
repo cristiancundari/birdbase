@@ -1,6 +1,9 @@
 "use client";
 import { formatData } from "@/lib/helper";
-import { CovataWithGenitori } from "@/types/types";
+import {
+  CovataWithGenitoriAndCountFigli,
+  CovataWithGenitoriAndFigli,
+} from "@/types/types";
 import {
   ActionIcon,
   Anchor,
@@ -9,24 +12,21 @@ import {
   Group,
   Menu,
   Text,
-  ThemeIcon,
-  Tooltip,
 } from "@mantine/core";
 import {
   IconBarrel,
-  IconCheck,
   IconDotsVertical,
-  IconEgg,
-  IconEggCracked,
   IconPencil,
   IconTrash,
 } from "@tabler/icons-react";
 import { IconSessoFemale, IconSessoMale } from "../IconsSesso";
+import Completata from "./completata";
+import InfoUova from "./infoUova";
 
 interface CovataCompProps {
-  covata: CovataWithGenitori;
+  covata: CovataWithGenitoriAndCountFigli;
   modalElimina: (id: number) => void;
-  modalModifica: (covata: CovataWithGenitori) => void;
+  modalModifica: (covata: CovataWithGenitoriAndCountFigli) => void;
 }
 
 function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
@@ -34,11 +34,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
     <Card shadow="sm" withBorder>
       <Group gap="xs" justify="space-between">
         <Group gap="xs">
-          {covata.completata && (
-            <ThemeIcon radius="xl" color="teal" size="xs">
-              <IconCheck size={14} />
-            </ThemeIcon>
-          )}
+          {covata.completata && <Completata />}
           <Text>
             <Anchor href={`/app/covate/${covata.id}`} c="dark">
               {formatData(covata.data)}
@@ -94,27 +90,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
           <IconSessoFemale size="18" />
           <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
         </Group>
-        <Group gap={2}>
-          <Tooltip label="Uova deposte">
-            <Group gap={2}>
-              <IconEgg size="14" />
-              <Text size="xs" c="dimmed">
-                {covata.uovaDeposte}
-              </Text>
-            </Group>
-          </Tooltip>
-          <Text size="xs" c="dimmed">
-            &bull;
-          </Text>
-          <Tooltip label="Uova schiuse">
-            <Group gap={2}>
-              <IconEggCracked size="14" />
-              <Text size="xs" c="dimmed">
-                {covata.uovaSchiuse}
-              </Text>
-            </Group>
-          </Tooltip>
-        </Group>
+        <InfoUova deposte={covata.uovaDeposte} schiuse={covata._count.figli} />
       </Group>
     </Card>
   );

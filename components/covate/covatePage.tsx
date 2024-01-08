@@ -1,18 +1,22 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import CovataComp from "./covataComp";
-import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
-import ModalCovata, { CovataFormValues } from "./modalCovata";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
-import { CovataWithGenitori } from "@/types/types";
+import {
+  CovataWithGenitori,
+  CovataWithGenitoriAndCountFigli,
+} from "@/types/types";
+import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import ModalCancellazione from "../ModalCancellazione";
+import CovataComp from "./covataComp";
+import ModalCovata, { CovataFormValues } from "./modalCovata";
 
 function CovatePage() {
   const [isOpen, setIsOpen] = useState(false);
-  const [modalData, setModalData] = useState<CovataWithGenitori | null>(null);
-  const [covate, setCovate] = useState<CovataWithGenitori[]>([]);
+  const [modalData, setModalData] =
+    useState<CovataWithGenitoriAndCountFigli | null>(null);
+  const [covate, setCovate] = useState<CovataWithGenitoriAndCountFigli[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleteOpen, setIsDeleteOpen] = useState<number | null>(null);
 
@@ -26,7 +30,9 @@ function CovatePage() {
   }, []);
 
   async function getCovate() {
-    const result = await apiFetch.get<CovataWithGenitori[]>("/api/covate");
+    const result = await apiFetch.get<CovataWithGenitoriAndCountFigli[]>(
+      "/api/covate"
+    );
     if (result.error) {
       showNotification({ message: "Errore nel caricamento delle covate" });
     } else {
@@ -89,7 +95,7 @@ function CovatePage() {
     setIsOpen(true);
   }
 
-  function modalModifica(covata: CovataWithGenitori) {
+  function modalModifica(covata: CovataWithGenitoriAndCountFigli) {
     setModalData(covata);
     setIsOpen(true);
   }

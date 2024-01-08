@@ -22,6 +22,10 @@ export type CovataWithGenitoriAndFigli = Prisma.CovataGetPayload<{
   include: { madre: true; padre: true; figli: true };
 }>;
 
+export type CovataWithGenitoriAndCountFigli = Prisma.CovataGetPayload<{
+  include: { madre: true; padre: true; _count: { select: { figli: true } } };
+}>;
+
 export type SoggettoWithGenitori = Prisma.SoggettoGetPayload<{
   include: { covata: { select: { idMadre: true; idPadre: true } } };
 }>;

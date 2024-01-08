@@ -147,6 +147,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
               Figli
             </Text>
             <Button
+              disabled={covata.uovaDeposte <= covata.figli.length}
               onClick={addHandler}
               variant="light"
               leftSection={<IconPlus size={14} />}

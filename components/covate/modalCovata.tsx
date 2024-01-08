@@ -31,7 +31,6 @@ export interface CovataFormValues {
   madre: string;
   dataCovata: Date | null;
   uovaDeposte: string;
-  uovaSchiuse: string;
   gabbia: string;
   completata: boolean;
 }
@@ -42,6 +41,11 @@ interface ModalCovataProps {
   modalData: CovataWithGenitori | null;
   submit: (values: CovataFormValues) => Promise<void>;
 }
+
+const soggettoToGenitoriItem = (s: Soggetto) => ({
+  soggetto: s,
+  parentela: null,
+});
 
 function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +61,6 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
       madre: "",
       dataCovata: null,
       uovaDeposte: "0",
-      uovaSchiuse: "0",
       gabbia: "",
       completata: false,
     },
@@ -66,10 +69,6 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
       madre: (madre) => (madre == null ? "Inserire la madre" : null),
       dataCovata: (dataCovata) =>
         dataCovata == null ? "Inserire la data" : null,
-      uovaSchiuse: (uovaSchiuse, values) =>
-        uovaSchiuse > values.uovaDeposte
-          ? "Il numero non può essere maggiore delle uova deposte"
-          : null,
     },
   });
 
@@ -81,10 +80,18 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
           madre: modalData.madre.id,
           dataCovata: modalData.data,
           uovaDeposte: modalData.uovaDeposte.toString(),
-          uovaSchiuse: modalData.uovaSchiuse.toString(),
           completata: modalData.completata,
           gabbia: modalData.gabbia?.toString() || "",
         });
+        if (modalData.padre.isMorto) {
+          setMaschi((old) => [soggettoToGenitoriItem(modalData.padre), ...old]);
+        }
+        if (modalData.madre.isMorto) {
+          setFemmine((old) => [
+            soggettoToGenitoriItem(modalData.madre),
+            ...old,
+          ]);
+        }
       } else {
         form.reset();
         setMaschi(initMaschi);
@@ -111,16 +118,10 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
         .filter(
           (item: Soggetto) => item.sesso == false && item.isMorto == false
         )
-        .map((s) => ({
-          soggetto: s,
-          parentela: null,
-        }));
+        .map(soggettoToGenitoriItem);
       const resPadre: GenitoriItem[] = result.data
         .filter((item: Soggetto) => item.sesso == true && item.isMorto == false)
-        .map((s) => ({
-          soggetto: s,
-          parentela: null,
-        }));
+        .map(soggettoToGenitoriItem);
 
       setInitMaschi(resPadre);
       setMaschi(resPadre);
@@ -228,13 +229,6 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
             hideControls
             label="Uova deposte"
             {...form.getInputProps("uovaDeposte")}
-          />
-          <NumberInput
-            allowNegative={false}
-            allowDecimal={false}
-            hideControls
-            label="Uova schiuse"
-            {...form.getInputProps("uovaSchiuse")}
           />
         </SimpleGrid>
 

@@ -137,7 +137,7 @@ function SoggettoComp({
           </Stack>
           {sogg.gabbia && !sogg.isMorto && (
             <Group>
-              <Tooltip label={`Gabbia #${sogg.gabbia}`} position="bottom">
+              <Tooltip label={`Gabbia #${sogg.gabbia}`}>
                 <Group gap="3">
                   <IconBarrel size="16" />
                   <Text size="sm">{sogg.gabbia}</Text>

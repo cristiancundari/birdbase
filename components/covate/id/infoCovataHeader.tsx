@@ -1,16 +1,18 @@
 import { IconSessoFemale, IconSessoMale } from "@/components/IconsSesso";
 import { formatData } from "@/lib/helper";
-import { CovataWithGenitori } from "@/types/types";
+import { CovataWithGenitori, CovataWithGenitoriAndFigli } from "@/types/types";
 import { Box, Card, Flex, Group, Text, Title, Tooltip } from "@mantine/core";
 import { IconEgg, IconEggCracked, IconEggs } from "@tabler/icons-react";
+import InfoUova from "../infoUova";
+import Completata from "../completata";
 
 interface InfoCovataHeaderProps {
-  covata: CovataWithGenitori;
+  covata: CovataWithGenitoriAndFigli;
 }
 
 function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
   return (
-    <Card>
+    <Card shadow="sm" withBorder>
       <Group justify="center">
         <Text>
           <IconEggs size={42} />
@@ -20,7 +22,8 @@ function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
       <Box mt="md">
         <Flex columnGap="xl" rowGap="xs" wrap="wrap" justify="center">
           <Group gap="xs">
-            <Text>Data:</Text>
+            {covata.completata && <Completata />}
+            <Text>Data covata:</Text>
             <Text>{formatData(covata.data)}</Text>
           </Group>
           <Group gap="xs">
@@ -36,23 +39,10 @@ function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
               </Group>
             </Group>
           </Group>
-          <Group gap={2}>
-            <Tooltip label="Uova deposte">
-              <Group gap={2}>
-                <IconEgg size="14" />
-                <Text size="xs">{covata.uovaDeposte}</Text>
-              </Group>
-            </Tooltip>
-            <Text size="xs" c="dimmed">
-              &bull;
-            </Text>
-            <Tooltip label="Uova schiuse">
-              <Group gap={2}>
-                <IconEggCracked size="14" />
-                <Text size="xs">{covata.uovaSchiuse}</Text>
-              </Group>
-            </Tooltip>
-          </Group>
+          <InfoUova
+            deposte={covata.uovaDeposte}
+            schiuse={covata.figli.length}
+          />
         </Flex>
       </Box>
     </Card>

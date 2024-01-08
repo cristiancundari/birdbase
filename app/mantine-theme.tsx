@@ -2,6 +2,7 @@
 import { Modal, createTheme } from "@mantine/core";
 
 export default createTheme({
+  cursorType: "pointer",
   defaultRadius: "md",
   primaryColor: "indigo",
   components: {

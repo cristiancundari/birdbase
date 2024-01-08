@@ -9,25 +9,20 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const datiSchema = z
-    .object({
-      //TODO verificare che padre e madre siano soggetti dello user.
-      padre: z.string().min(1),
-      madre: z.string().min(1),
-      dataCovata: z.coerce.date(),
-      completata: z.coerce.boolean(),
-      uovaDeposte: z.coerce.number().min(0),
-      uovaSchiuse: z.coerce.number().min(0),
-      gabbia: z
-        .string()
-        .max(0)
-        .transform((v) => null)
-        .or(z.coerce.number().nullable()),
-    })
-    .refine((values) => values.uovaSchiuse <= values.uovaDeposte, {
-      path: ["uovaSchiuse"],
-      message: "Il numero non può essere maggiore delle uova deposte",
-    });
+  const datiSchema = z.object({
+    //TODO verificare che padre e madre siano soggetti dello user.
+    padre: z.string().min(1),
+    madre: z.string().min(1),
+    dataCovata: z.coerce.date(),
+    completata: z.coerce.boolean(),
+    uovaDeposte: z.coerce.number().min(0),
+    gabbia: z
+      .string()
+      .max(0)
+      .transform((v) => null)
+      .or(z.coerce.number().nullable()),
+  });
+
   try {
     const dati = await request.json();
     const datiParsed = datiSchema.parse(dati);
@@ -40,7 +35,6 @@ export async function PATCH(
         idMadre: datiParsed.madre,
         idPadre: datiParsed.padre,
         uovaDeposte: datiParsed.uovaDeposte,
-        uovaSchiuse: datiParsed.uovaSchiuse,
         completata: datiParsed.completata,
       },
       include: {

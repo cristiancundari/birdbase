@@ -32,17 +32,14 @@ function ComboboxGenitori({
   onComboboxChange,
   selected,
   label,
-  loading
+  loading,
 }: ComboboxGenitoriProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
   const options = genitori.map((g) => (
     <Combobox.Option value={g.soggetto.id} key={g.soggetto.id}>
-      <ComboboxGenitoriItem
-        soggetto={g.soggetto}
-        parentela={g.parentela}
-      />
+      <ComboboxGenitoriItem soggetto={g.soggetto} parentela={g.parentela} />
     </Combobox.Option>
   ));
 
@@ -65,7 +62,7 @@ function ComboboxGenitori({
           component="button"
           type="button"
           pointer
-          rightSection={loading ? <Loader size={18}/> : <Combobox.Chevron />}
+          rightSection={loading ? <Loader size={18} /> : <Combobox.Chevron />}
           onClick={() => combobox.toggleDropdown()}
           rightSectionPointerEvents="none"
           multiline

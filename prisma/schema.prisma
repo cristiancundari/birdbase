@@ -93,7 +93,6 @@ model Covata {
   createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   data        DateTime   @db.Date
   uovaDeposte Int        @default(0) @map("uova_deposte") @db.SmallInt
-  uovaSchiuse Int        @default(0) @map("uova_schiuse") @db.SmallInt
   idPadre     String     @map("id_padre") @db.Uuid
   idMadre     String     @map("id_madre") @db.Uuid
   gabbia      Int?       @db.SmallInt

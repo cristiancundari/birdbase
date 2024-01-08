@@ -51,6 +51,25 @@ export async function POST(request: NextRequest) {
     const form = JSON.parse(formJSON);
     const values = datiSchema.parse(form);
 
+    if (values.covataId) {
+      const covata = await prisma.covata.findFirst({
+        where: { id: values.covataId },
+        include: { figli: true },
+      });
+      if (!covata) {
+        return NextResponse.json(
+          { error: true, message: "La covata specificata non è valida" },
+          { status: 400 }
+        );
+      }
+      if (covata.figli.length >= covata.uovaDeposte) {
+        return NextResponse.json(
+          { error: true, message: "La covata non può avere altri figli" },
+          { status: 400 }
+        );
+      }
+    }
+
     const controllo = await prisma.soggetto.findFirst({
       where: { numero: values.numero, rna: values.rna },
     });
