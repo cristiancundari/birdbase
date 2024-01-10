@@ -11,13 +11,19 @@ import {
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
 import { CovataWithGenitoriAndFigli } from "@/types/types";
-import { Box, Button, Group, SimpleGrid, Text } from "@mantine/core";
+import { Box, Button, Group, Menu, SimpleGrid, Text } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
-import { IconPlus } from "@tabler/icons-react";
+import {
+  IconCirclePlus,
+  IconHandClick,
+  IconPlus,
+  IconSettings,
+} from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import InfoCovataHeader from "./infoCovataHeader";
+import ModalAggiungiFiglio from "./ModalAggiungiFiglio";
 
 interface InfoCovataProps {
   covata: CovataWithGenitoriAndFigli;
@@ -30,6 +36,8 @@ const breadcrumbsItems = [
 
 function InfoCovata({ covata }: InfoCovataProps) {
   const [isModalSoggettoOpen, setIsModalSoggettoOpen] = useState(false);
+  const [isModalAggiungiFiglioOpen, setIsModalAggiungiFiglioOpen] =
+    useState(false);
   const [modalDeleteId, setModalDeleteId] = useState("");
   const [modalData, setModalData] = useState<Soggetto | null>(null);
   const router = useRouter();
@@ -93,7 +101,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     }
   };
 
-  const submit = async (values: {
+  const modalSoggettoSubmit = async (values: {
     form: FormValues;
     avatarFile: FileWithPath;
   }) => {
@@ -104,6 +112,10 @@ function InfoCovata({ covata }: InfoCovataProps) {
     }
   };
 
+  const modalAggiungiFiglioSubmit = async (value: string) => {
+    console.log("SUBMIT: ", value);
+  };
+
   const annullaAggiungi = () => {
     setIsModalSoggettoOpen(false);
   };
@@ -112,9 +124,17 @@ function InfoCovata({ covata }: InfoCovataProps) {
     setModalDeleteId("");
   };
 
-  const addHandler = () => {
+  const annullaAggiungiFiglio = () => {
+    setIsModalAggiungiFiglioOpen(false);
+  };
+
+  const addNewHandler = () => {
     setModalData(null);
     setIsModalSoggettoOpen(true);
+  };
+
+  const addExistingHandler = () => {
+    setIsModalAggiungiFiglioOpen(true);
   };
 
   const editHandler = (soggetto: Soggetto) => {
@@ -146,14 +166,31 @@ function InfoCovata({ covata }: InfoCovataProps) {
             <Text fw={500} fz="lg">
               Figli
             </Text>
-            <Button
-              disabled={covata.uovaDeposte <= covata.figli.length}
-              onClick={addHandler}
-              variant="light"
-              leftSection={<IconPlus size={14} />}
-            >
-              Aggiungi
-            </Button>
+            <Menu shadow="md">
+              <Menu.Target>
+                <Button
+                  disabled={covata.uovaDeposte <= covata.figli.length}
+                  variant="light"
+                  leftSection={<IconPlus size={14} />}
+                >
+                  Aggiungi
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconCirclePlus size={14} />}
+                  onClick={addNewHandler}
+                >
+                  Crea nuovo
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconHandClick size={14} />}
+                  onClick={addExistingHandler}
+                >
+                  Seleziona esistente
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Group>
         </Box>
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
@@ -175,8 +212,14 @@ function InfoCovata({ covata }: InfoCovataProps) {
       <ModalSoggetto
         isOpen={isModalSoggettoOpen}
         annulla={annullaAggiungi}
-        submit={submit}
+        submit={modalSoggettoSubmit}
         modalData={modalData}
+      />
+      <ModalAggiungiFiglio
+        covataId={covata.id}
+        isOpen={isModalAggiungiFiglioOpen}
+        annulla={annullaAggiungiFiglio}
+        submit={modalAggiungiFiglioSubmit}
       />
       <ModalCancellazione
         isOpen={modalDeleteId != ""}

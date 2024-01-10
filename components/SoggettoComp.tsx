@@ -26,6 +26,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { useState } from "react";
 import { IconSessoAgender, IconSessoFemale, IconSessoMale } from "./IconsSesso";
+import { imgPath } from "@/lib/helper";
 
 interface SoggettoCompProps {
   sogg: Soggetto;
@@ -98,7 +99,7 @@ function SoggettoComp({
             size="xl"
             src={
               sogg.avatar
-                ? `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/${sogg.avatar}`
+                ? imgPath + sogg.avatar
                 : `https://images.placeholders.dev/?width=50&height=50&text=${
                     sogg.rna + "-" + sogg.numero
                   }`

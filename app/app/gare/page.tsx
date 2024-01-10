@@ -6,7 +6,7 @@ import NessunaGara from "@/components/gare/NessunaGara";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
 import { useSupabase } from "@/providers/supabaseProvider";
-import { ApiResponse, GaraWithNazione } from "@/types/types";
+import { ApiResponse, GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Gara as GaraType } from "@prisma/client";
@@ -21,7 +21,7 @@ interface FormData {
 function GarePage() {
   const supabase = useSupabase();
 
-  const [gare, setGare] = useState<GaraWithNazione[]>([]);
+  const [gare, setGare] = useState<GaraWithNazioneAndCountIscrizioni[]>([]);
   const [isGareLoading, setIsGareLoading] = useState(true);
 
   const [isModalGaraOpen, setIsModalGaraOpen] = useState(false);
@@ -118,7 +118,7 @@ function GarePage() {
     setIsModalGaraOpen(true);
   };
 
-  const editHandler = (gara: GaraWithNazione) => {
+  const editHandler = (gara: GaraWithNazioneAndCountIscrizioni) => {
     setModalData(gara);
     setIsModalGaraOpen(true);
   };
@@ -128,7 +128,9 @@ function GarePage() {
   };
 
   const getGare = async () => {
-    const result = await apiFetch.get<GaraWithNazione[]>("/api/gare");
+    const result = await apiFetch.get<GaraWithNazioneAndCountIscrizioni[]>(
+      "/api/gare"
+    );
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -166,8 +168,8 @@ function GarePage() {
           {isGareLoading &&
             Array(6)
               .fill(0)
-              .map((_, i) => <Skeleton key={i} h={140} />)}
-          {gare.map((gara: GaraWithNazione) => (
+              .map((_, i) => <Skeleton key={i} h={300} />)}
+          {gare.map((gara: GaraWithNazioneAndCountIscrizioni) => (
             <Gara
               key={gara.id}
               gara={gara}

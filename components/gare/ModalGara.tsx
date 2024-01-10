@@ -21,7 +21,7 @@ import { imgPath, showNotification } from "@/lib/helper";
 import { DateInput } from "@mantine/dates";
 import { FileWithPath } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
-import { Gara, Nazione } from "@prisma/client";
+import { $Enums, Gara, Nazione } from "@prisma/client";
 import {
   IconCalendar,
   IconCurrencyEuro,
@@ -30,6 +30,26 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import Upload from "../Upload";
+import { useModalInit } from "@/lib/hooks";
+
+const garaStatesArr = [
+  {
+    value: $Enums.GaraStatus.BOZZA,
+    label: "Bozza",
+  },
+  {
+    value: $Enums.GaraStatus.PUBBLICA,
+    label: "Pubblicata",
+  },
+  {
+    value: $Enums.GaraStatus.VALUTAZIONE,
+    label: "Da valutare",
+  },
+  {
+    value: $Enums.GaraStatus.COMPLETATA,
+    label: "Completata",
+  },
+];
 
 export interface FormValues {
   titolo: string;
@@ -40,6 +60,7 @@ export interface FormValues {
   prezzo: string;
   capienza: string;
   immagine: string | null;
+  stato: string;
 }
 
 interface ModalGaraProps {
@@ -51,6 +72,8 @@ interface ModalGaraProps {
 
 function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
+  const [garaStates, setGaraStates] = useState<ComboboxItem[]>(garaStatesArr);
 
   const [nazioni, setNazioni] = useState<ComboboxItem[]>([]);
   const [isNazioniLoading, setIsNazioniLoading] = useState(false);
@@ -68,6 +91,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
       prezzo: "0",
       capienza: "1",
       immagine: null,
+      stato: $Enums.GaraStatus.BOZZA,
     },
     validate: {
       titolo: (titolo) => (titolo.length == 0 ? "Inserire Titolo" : null),
@@ -110,14 +134,14 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
     }
   };
 
-  useEffect(() => {
+  useModalInit(() => {
     const _getNazioni = async () => {
       setIsNazioniLoading(true);
       await getNazioni();
       setIsNazioniLoading(false);
     };
     _getNazioni();
-  }, []);
+  }, isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -131,9 +155,19 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
           prezzo: modalData.prezzo.toString(),
           capienza: modalData.capienza.toString(),
           immagine: modalData.immagine,
+          stato: modalData.stato,
         });
+        if (modalData.stato !== $Enums.GaraStatus.BOZZA) {
+          //Disabilita l'opzione Bozza se la gara è stata già pubblicata
+          setGaraStates(
+            garaStatesArr.map((i) =>
+              i.value == $Enums.GaraStatus.BOZZA ? { ...i, disabled: true } : i
+            )
+          );
+        }
       } else {
         form.reset();
+        setGaraStates(garaStatesArr);
       }
       setFiles([]);
     }
@@ -143,7 +177,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
   let preview = files.length > 0 ? URL.createObjectURL(files[0]) : null;
 
   if (preview == null && form.values.immagine !== null) {
-    preview = imgPath + "gare/" + form.values.immagine;
+    preview = imgPath + form.values.immagine;
   }
 
   return (
@@ -188,7 +222,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
 
           <DateInput
             label="Data Evento"
-            {...form.getInputProps("dataEvento")}
+            {...form.getInputProps("data")}
             valueFormat="DD/MM/YYYY"
             dateParser={dateParser}
             leftSection={<IconCalendar size={16} />}
@@ -224,6 +258,14 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
             allowDecimal={false}
             hideControls
             {...form.getInputProps("capienza")}
+          />
+
+          <Select
+            {...form.getInputProps("stato")}
+            label="Stato"
+            data={garaStates}
+            allowDeselect={false}
+            rightSection={<Combobox.Chevron />}
           />
         </SimpleGrid>
 

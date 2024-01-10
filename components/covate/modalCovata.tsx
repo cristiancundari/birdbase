@@ -25,6 +25,7 @@ import {
 import { useEffect, useState } from "react";
 import ComboboxGenitori, { GenitoriItem } from "./comboboxGenitori";
 import { apiFetch } from "@/lib/apiFetch";
+import { useModalInit } from "@/lib/hooks";
 
 export interface CovataFormValues {
   padre: string;
@@ -100,7 +101,8 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalData, isOpen]);
-  useEffect(getSoggettiCombobox, []);
+
+  useModalInit(getSoggettiCombobox, isOpen);
 
   function getSoggettiCombobox() {
     const listaPadreMadre = async () => {

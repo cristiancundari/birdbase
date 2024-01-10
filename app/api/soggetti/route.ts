@@ -2,27 +2,50 @@ import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
 import { FileWithPath } from "@mantine/dropzone";
+import { Prisma } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { uuid } from "uuidv4";
 import { z } from "zod";
 
+type SoggettoGetFilter = Pick<Prisma.SoggettoWhereInput, "covataId">;
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getServerUser(cookies());
     assert(user, "Non autorizzato");
-    //TODO: verificare ordinamento per isMorto (boolean)
+
+    const searchParams = request.nextUrl.searchParams;
+    const paramsObj = Object.fromEntries(searchParams.entries());
+    const paramsSchema: z.ZodType<SoggettoGetFilter> = z.object({
+      covataId: z.coerce
+        .number()
+        .transform((v) => v || null)
+        .optional(),
+    });
+    const filters = paramsSchema.parse(paramsObj);
+
     const result = await prisma.soggetto.findMany({
-      where: { profiloId: user.id },
-      orderBy: [{ isMorto: "asc" }, { dataNascita: "desc" }],
+      where: { ...filters, profiloId: user.id },
+      orderBy: [
+        { isMorto: "asc" },
+        { preferito: "desc" },
+        { dataNascita: "desc" },
+      ],
     });
 
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { message: error.message, error: true },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { message: error.message, error: true },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }

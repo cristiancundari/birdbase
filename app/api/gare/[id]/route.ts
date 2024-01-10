@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { uuid } from "uuidv4";
 import { getServerUserProfile } from "@/lib/supabase/helper";
-import { Role } from "@prisma/client";
+import { $Enums, Role } from "@prisma/client";
 import assert from "assert";
 
 export async function PATCH(
@@ -17,12 +17,13 @@ export async function PATCH(
   const datiSchema = z.object({
     titolo: z.string().min(1),
     citta: z.string().min(1),
-    dataEvento: z.coerce.date(),
+    data: z.coerce.date(),
     tipologia: z.string(),
     nazioneId: z.coerce.number(),
     prezzo: z.coerce.number().min(0),
     capienza: z.coerce.number().min(1),
     immagine: z.string().nullish(),
+    stato: z.nativeEnum($Enums.GaraStatus),
   });
 
   try {
@@ -40,26 +41,49 @@ export async function PATCH(
     const form = JSON.parse(formJSON);
     const values = datiSchema.parse(form);
 
-    // definiamo il nome dell'immagine da salvare sul db
+    let createdAt: Date | undefined = undefined;
+    const gara = await prisma.gara.findFirst({ where: { id: params.id } });
+
+    if (
+      gara?.stato !== $Enums.GaraStatus.BOZZA &&
+      values.stato === $Enums.GaraStatus.BOZZA
+    ) {
+      // Se si vuole reimpostare una gara già precedentemente pubblicata a bozza:
+      return NextResponse.json(
+        {
+          message: "Impossibile modificare in bozza una gara già pubblicata",
+          error: true,
+        },
+        { status: 400 }
+      );
+    }
+    if (
+      gara?.stato === $Enums.GaraStatus.BOZZA &&
+      values.stato !== $Enums.GaraStatus.BOZZA
+    ) {
+      // Se si sta pubblicando una gara, modifichiamo il campo createdAt in modo che rappresenti la data di pubblicazione:
+      createdAt = new Date();
+    }
+
     const imgName = `gare/${uuid()}`;
     if (imgFile) {
       values.immagine = imgName;
     }
-    // transazione update gara, immagine
+
     const result = await prisma.$transaction(async (tx) => {
-      // effettuiamo la modifica sul db della gara
       const res = await tx.gara.update({
-        data: values,
+        data: { ...values, createdAt: createdAt },
         where: { id: params.id },
       });
-      // effettuiamo l'update dell'immagine
+
       if (imgFile) {
         const supabase = createClient(cookieStore);
         const uploadImg = await supabase.storage
           .from("img")
           .upload(imgName, imgFile);
-        // generiamo l'errore per essere catturato dal catch
+
         if (uploadImg.error) {
+          // Se l'upload non è andato a buon fine eseguiamo il rollback generando un errore
           throw new Error(uploadImg.error.message);
         }
       }
@@ -67,10 +91,17 @@ export async function PATCH(
     });
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json(
-      { message: error.message, error: true },
-      { status: 400 }
-    );
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { message: error.message, error: true },
+        { status: 400 }
+      );
+    } else {
+      return NextResponse.json(
+        { message: error.message, error: true },
+        { status: 500 }
+      );
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { dateParser } from "@/lib/DateParser";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
+import { useModalInit } from "@/lib/hooks";
 import { ApiResponse, TransazioneWithCategoria } from "@/types/types";
 import {
   Button,
@@ -51,8 +52,8 @@ function ModalTransazione({
 }: ModalTransazioneProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [categorie, setCategorie] = useState<ComboboxItem[]>([]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(getCategorie, []);
+
+  useModalInit(getCategorie, isOpen);
 
   useEffect(() => {
     if (isOpen) {

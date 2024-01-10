@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import Flag from "react-world-flags";
-import { GaraWithNazione } from "@/types/types";
+import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { differenceInDays, format, formatDistanceToNow } from "date-fns";
 import {
   IconDotsVertical,
@@ -24,18 +24,20 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useSupabase } from "@/providers/supabaseProvider";
-import { formatValuta } from "@/lib/helper";
+import { formatValuta, imgPath } from "@/lib/helper";
 import { Role } from "@prisma/client";
+import Link from "next/link";
 
 function Gara({
   gara,
   onDelete,
   onEdit,
 }: {
-  gara: GaraWithNazione;
+  gara: GaraWithNazioneAndCountIscrizioni;
   onDelete: (id: string) => void;
-  onEdit: (gara: GaraWithNazione) => void;
+  onEdit: (gara: GaraWithNazioneAndCountIscrizioni) => void;
 }) {
+  const supabase = useSupabase();
   const newGara = differenceInDays(Date.now(), gara.createdAt);
   const inScadenza = differenceInDays(gara.data, Date.now());
 
@@ -52,14 +54,17 @@ function Gara({
       color: "yellow",
     },
     {
-      //verificare condizione
-      condizione: true,
-      titolo: "Completato",
+      condizione: !gara.isDeleted && gara.stato == "BOZZA",
+      titolo: "Bozza",
+      color: "grape",
+    },
+    {
+      condizione: !gara.isDeleted && gara.stato == "COMPLETATA",
+      titolo: "Completata",
       color: "green",
     },
     {
-      //verificare condizione
-      condizione: true,
+      condizione: !gara.isDeleted && gara.stato == "VALUTAZIONE",
       titolo: "Da Valutare",
       color: "blue",
     },
@@ -70,12 +75,6 @@ function Gara({
     },
   ];
 
-  // recupero utente loggato, verifico se è un admin o un utente
-  const supabase = useSupabase();
-
-  //TODO controllare che la logica sia corretta
-  const isAdmin = supabase.session?.user.role != Role.ADMIN;
-
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
@@ -83,13 +82,13 @@ function Gara({
           <Image
             src={
               gara.immagine
-                ? `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/${gara.immagine}`
+                ? imgPath + gara.immagine
                 : `https://images.placeholders.dev/?width=200&height=90&fontSize=8&text=${gara.titolo}`
             }
             height={160}
             alt={gara.titolo}
           />
-          {isAdmin && (
+          {supabase.isAdmin && (
             <Menu shadow="md">
               <Menu.Target>
                 <ActionIcon
@@ -203,24 +202,25 @@ function Gara({
             <Text size="xs" c="dimmed">
               Posti disponibili
             </Text>
-            <Text size="xs">58/{gara.capienza}</Text>
+            <Text size="xs">
+              {gara.capienza - gara._count.iscrizioni}/{gara.capienza}
+            </Text>
           </Stack>
         </Group>
+        {!supabase.isAdmin && (
+          <Button
+            component={Link}
+            href={`/app/gare/${gara.id}`}
+            variant="light"
+            color="blue"
+            fullWidth
+            mt="md"
+            radius="md"
+          >
+            Iscriviti
+          </Button>
+        )}
       </Stack>
-
-      {!isAdmin && (
-        <Button
-          component="a"
-          href={`/app/gare/${gara.id}`}
-          variant="light"
-          color="blue"
-          fullWidth
-          mt="md"
-          radius="md"
-        >
-          Iscriviti
-        </Button>
-      )}
     </Card>
   );
 }

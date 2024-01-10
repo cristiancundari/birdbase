@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model Profilo {
   id          String        @id(map: "Profile_pkey") @db.Uuid
   name        String
@@ -20,21 +25,22 @@ model Profilo {
 }
 
 model Soggetto {
-  id          String   @id(map: "Soggetto_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String       @id(map: "Soggetto_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sesso       Boolean?
-  dataNascita DateTime @map("data_nascita") @db.Date
+  dataNascita DateTime     @map("data_nascita") @db.Date
   gabbia      Int?
   numero      String
   rna         String
-  preferito   Boolean  @default(false)
-  profiloId   String   @map("profilo_id") @db.Uuid
+  preferito   Boolean      @default(false)
+  profiloId   String       @map("profilo_id") @db.Uuid
   avatar      String?
-  covataId    Int?     @map("covata_id")
-  isMorto     Boolean  @default(false) @map("is_morto")
-  covateMadre Covata[] @relation("covate_id_madreToSoggetto")
-  covatePadre Covata[] @relation("covate_id_padreToSoggetto")
-  covata      Covata?  @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  profilo     Profilo  @relation(fields: [profiloId], references: [id])
+  covataId    Int?         @map("covata_id")
+  isMorto     Boolean      @default(false) @map("is_morto")
+  covateMadre Covata[]     @relation("covate_id_madreToSoggetto")
+  covatePadre Covata[]     @relation("covate_id_padreToSoggetto")
+  covata      Covata?      @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo     Profilo      @relation(fields: [profiloId], references: [id])
+  iscrizioni  Iscrizione[]
 
   @@map("soggetti")
 }
@@ -48,21 +54,44 @@ model Nazione {
   @@map("nazioni")
 }
 
+enum GaraStatus {
+  BOZZA
+  PUBBLICA
+  VALUTAZIONE
+  COMPLETATA
+}
+
 model Gara {
-  id        String   @id(map: "Gara_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  titolo    String
-  data      DateTime @db.Date
-  tipologia String
-  citta     String
-  immagine  String?
-  nazioneId Int      @map("nazione_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  isDeleted Boolean  @default(false) @map("is_deleted")
-  prezzo    Float    @default(0)
-  capienza  Int
-  nazione   Nazione  @relation(fields: [nazioneId], references: [id])
+  id         String       @id(map: "Gara_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titolo     String
+  data       DateTime     @db.Date
+  tipologia  String
+  citta      String
+  immagine   String?
+  nazioneId  Int          @map("nazione_id")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  isDeleted  Boolean      @default(false) @map("is_deleted")
+  prezzo     Float        @default(0)
+  capienza   Int
+  nazione    Nazione      @relation(fields: [nazioneId], references: [id])
+  stato      GaraStatus   @default(BOZZA)
+  iscrizioni Iscrizione[]
 
   @@map("gare")
+}
+
+model Iscrizione {
+  id         String   @id(map: "Iscrizione_Pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  garaId     String   @map("gara_id") @db.Uuid
+  soggettoId String   @map("soggetto_id") @db.Uuid
+  data       DateTime @db.Date
+  importo    Float
+  posizione  Int?
+  punteggio  Float?
+  soggetto   Soggetto @relation(fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  gara       Gara     @relation(fields: [garaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("iscrizioni")
 }
 
 model Transazione {
@@ -104,9 +133,4 @@ model Covata {
   figli       Soggetto[] @relation("soggetti_covata_idTocovate")
 
   @@map("covate")
-}
-
-enum Role {
-  USER
-  ADMIN
 }

@@ -6,8 +6,8 @@ export enum Sesso {
   InAttesa = "In Attesa",
 }
 
-export type GaraWithNazione = Prisma.GaraGetPayload<{
-  include: { nazione: true };
+export type GaraWithNazioneAndCountIscrizioni = Prisma.GaraGetPayload<{
+  include: { nazione: true; _count: { select: { iscrizioni: true } } };
 }>;
 
 export type TransazioneWithCategoria = Prisma.TransazioneGetPayload<{
