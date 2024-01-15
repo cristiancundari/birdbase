@@ -14,7 +14,6 @@ import {
   ActionIcon,
   Tooltip,
 } from "@mantine/core";
-import Flag from "react-world-flags";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { differenceInDays, format, formatDistanceToNow } from "date-fns";
 import {
@@ -178,10 +177,10 @@ function Gara({
           </Group>
           <Tooltip label={gara.nazione.nome}>
             <Group gap={"xs"} align="center">
-              <Flag
-                code={gara.nazione.sigla}
-                height={16}
+              <Image
+                src={`https://flagcdn.com/h16/${gara.nazione.sigla}.jpg`}
                 style={{ boxShadow: "0px 0px 5px 0px #00000047" }}
+                alt={gara.nazione.nome}
               />
               <Text size="xs" c="dimmed">
                 {gara.nazione.sigla}
