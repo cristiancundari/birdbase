@@ -19,7 +19,7 @@ import {
   parseThemeColor,
   useCombobox,
   useMantineColorScheme,
-  useMantineTheme
+  useMantineTheme,
 } from "@mantine/core";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -54,10 +54,8 @@ function PieChart() {
     labels: [],
   });
   const currentAnno = new Date().getFullYear().toString();
-  const [listaAnni, setListaAnni] = useState<string[]>([currentAnno])
-  const [selectedAnno, setSelectedAnno] = useState<string | null>(
-    currentAnno
-  );
+  const [listaAnni, setListaAnni] = useState<string[]>([currentAnno]);
+  const [selectedAnno, setSelectedAnno] = useState<string | null>(currentAnno);
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
@@ -126,7 +124,7 @@ function PieChart() {
           <Center>
             <Group gap={3}>
               <Text fw={500} fz="lg">
-                Spese per tipologia dell'anno
+                {"Spese per tipologia dell'anno"}
               </Text>
               <Combobox
                 store={combobox}
@@ -216,7 +214,13 @@ function PieChart() {
               width="100%"
             />
             {graphData.series.length == 0 && (
-              <NessunGrafico pos="absolute" top={0} right={0} bottom={0} left={0} />
+              <NessunGrafico
+                pos="absolute"
+                top={0}
+                right={0}
+                bottom={0}
+                left={0}
+              />
             )}
           </Box>
         </Stack>

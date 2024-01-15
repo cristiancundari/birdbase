@@ -90,7 +90,7 @@ function BarChart() {
       <Center>
         <Group gap={3}>
           <Text fw={500} fz="lg">
-            Incassi dell'anno
+            {"Incassi dell'anno"}
           </Text>
           <Combobox
             store={combobox}
