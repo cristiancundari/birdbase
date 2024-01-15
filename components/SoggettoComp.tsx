@@ -26,21 +26,25 @@ import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { useState } from "react";
 import { IconSessoAgender, IconSessoFemale, IconSessoMale } from "./IconsSesso";
-import { imgPath } from "@/lib/helper";
+import { formatAnelletto, imgPath } from "@/lib/helper";
+import InfoGabbia from "./InfoGabbia";
+import InfoMorto from "./InfoMorto";
+import InfoNote from "./InfoNote";
+
+export interface SoggettoMenu {
+  label: string;
+  icon: React.ReactNode;
+  fn: (soggetto: Soggetto) => void;
+  color?: string;
+}
 
 interface SoggettoCompProps {
   sogg: Soggetto;
-  onEdit: (soggetto: Soggetto) => void;
-  onDelete: (id: string) => void;
   onPreferito: (id: string) => Promise<Soggetto | null>;
+  menu: SoggettoMenu[];
 }
 
-function SoggettoComp({
-  sogg,
-  onEdit,
-  onDelete,
-  onPreferito,
-}: SoggettoCompProps) {
+function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
   const [isFavourite, setIsFavourite] = useState(sogg.preferito);
   const [isFavouriteLoading, setIsFavouriteLoading] = useState(false);
 
@@ -61,35 +65,34 @@ function SoggettoComp({
         {sogg.sesso == null && <IconSessoAgender size="25" />}
         <Text>
           <Anchor href="https://mantine.dev/" target="_blank" c="dark">
-            {sogg.rna}-{sogg.numero}
+            {formatAnelletto(sogg.rna, sogg.numero, sogg.anno)}
           </Anchor>
         </Text>
-        <Menu shadow="md">
-          <Menu.Target>
-            <ActionIcon variant="subtle" color="gray">
-              <IconDotsVertical size="14" />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<IconPencil size="14" />}
-              onClick={() => {
-                onEdit(sogg);
-              }}
-            >
-              Modifica
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconTrash size="14" />}
-              color="red"
-              onClick={() => {
-                onDelete(sogg.id);
-              }}
-            >
-              Elimina
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+        {menu.length > 0 ? (
+          <Menu shadow="md">
+            <Menu.Target>
+              <ActionIcon variant="subtle" color="gray">
+                <IconDotsVertical size="14" />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              {menu.map((item) => (
+                <Menu.Item
+                  key={item.label}
+                  leftSection={item.icon}
+                  color={item.color}
+                  onClick={() => {
+                    item.fn(sogg);
+                  }}
+                >
+                  {item.label}
+                </Menu.Item>
+              ))}
+            </Menu.Dropdown>
+          </Menu>
+        ) : (
+          <Box></Box>
+        )}
       </Group>
       <Divider my="sm" />
       <Group>
@@ -100,28 +103,32 @@ function SoggettoComp({
             src={
               sogg.avatar
                 ? imgPath + sogg.avatar
-                : `https://images.placeholders.dev/?width=50&height=50&text=${
-                    sogg.rna + "-" + sogg.numero
-                  }`
+                : `https://images.placeholders.dev/?width=50&height=50&text=${formatAnelletto(
+                    sogg.rna,
+                    sogg.numero,
+                    sogg.anno
+                  )}`
             }
           />
-          <ActionIcon
-            color="dark"
-            onClick={handleFavourite}
-            loading={isFavouriteLoading}
-            variant="white"
-            radius="xl"
-            pos="absolute"
-            bottom="0"
-            left="0"
-            style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
-          >
-            {isFavourite ? (
-              <IconHeartFilled size="20" style={{ color: "#e83d2e" }} />
-            ) : (
-              <IconHeart size="20" color="#555" />
-            )}
-          </ActionIcon>
+          <Tooltip label="Preferito">
+            <ActionIcon
+              color="dark"
+              onClick={handleFavourite}
+              loading={isFavouriteLoading}
+              variant="white"
+              radius="xl"
+              pos="absolute"
+              bottom="0"
+              left="0"
+              style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
+            >
+              {isFavourite ? (
+                <IconHeartFilled size="20" style={{ color: "#e83d2e" }} />
+              ) : (
+                <IconHeart size="20" color="#555" />
+              )}
+            </ActionIcon>
+          </Tooltip>
         </Box>
 
         <Stack gap="0" justify="space-evenly" style={{ alignSelf: "stretch" }}>
@@ -136,17 +143,13 @@ function SoggettoComp({
               {formatDistanceToNow(sogg.dataNascita, { locale: it })}
             </Text>
           </Stack>
-          {sogg.gabbia && !sogg.isMorto && (
-            <Group>
-              <Tooltip label={`Gabbia #${sogg.gabbia}`}>
-                <Group gap="3">
-                  <IconBarrel size="16" />
-                  <Text size="sm">{sogg.gabbia}</Text>
-                </Group>
-              </Tooltip>
-            </Group>
-          )}
-          {sogg.isMorto && <IconGrave size="16" />}
+          <Group gap="xs">
+            {sogg.note && <InfoNote note={sogg.note} />}
+            {sogg.gabbia && !sogg.isMorto && (
+              <InfoGabbia gabbia={sogg.gabbia} hideNull />
+            )}
+            {sogg.isMorto && <InfoMorto />}
+          </Group>
         </Stack>
       </Group>
     </Card>

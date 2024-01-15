@@ -201,6 +201,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
             onComboboxChange={comboboxPadreChange}
             selected={form.values.padre}
             loading={loadingMaschi}
+            description="Sono visualizzati solo i soggetti Maschi"
           />
           <ComboboxGenitori
             label="Madre"
@@ -208,6 +209,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
             onComboboxChange={comboboxMadreChange}
             selected={form.values.madre}
             loading={loadingFemmine}
+            description="Sono visualizzati solo i soggetti Femmina"
           />
           <DateInput
             label="Data Covata"

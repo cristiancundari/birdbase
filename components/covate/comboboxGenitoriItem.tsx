@@ -1,8 +1,9 @@
-import { formatData } from "@/lib/helper";
+import { formatAnelletto, formatData } from "@/lib/helper";
 import { Group, Progress, Stack, Text } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
 import { IconBarrel, IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import React from "react";
+import InfoGabbia from "../InfoGabbia";
 
 interface comboboxGenitoriItemProps {
   soggetto: Soggetto;
@@ -16,20 +17,13 @@ function comboboxGenitoriItem({
   return (
     <Group grow>
       <Stack gap="0">
-        <Text size="sm">{soggetto.rna + "-" + soggetto.numero}</Text>
+        <Text size="sm">{formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}</Text>
         <Text size="xs" c="dimmed">
           {formatData(soggetto.dataNascita)}
         </Text>
       </Stack>
       <Stack gap={0}>
-        {soggetto.gabbia && (
-          <Group gap={2}>
-            <IconBarrel size={14} />
-            <Text size="xs" c="dimmed">
-              {soggetto.gabbia}
-            </Text>
-          </Group>
-        )}
+        <InfoGabbia gabbia={soggetto.gabbia} hideNull />
         <Group>
           {soggetto.preferito && (
             <IconHeartFilled size={14} style={{ color: "red" }} />

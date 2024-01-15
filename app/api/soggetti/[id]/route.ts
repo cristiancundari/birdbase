@@ -15,13 +15,19 @@ export async function PATCH(
 ) {
   const datiSchema = z.object({
     preferito: z.boolean().optional(),
-    dataNascita: z.coerce.date(),
-    sesso: z.boolean().nullable(),
-    gabbia: z.coerce.number().nullish(),
-    rna: z.string(),
-    numero: z.string().min(1),
-    avatar: z.string().nullish(),
-    isMorto: z.coerce.boolean(),
+    dataNascita: z.coerce.date().optional(),
+    sesso: z.boolean().nullable().optional(),
+    gabbia: z.coerce.number().nullish().optional(),
+    rna: z.string().optional(),
+    numero: z.string().min(1).optional(),
+    anno: z.string().min(1).optional(),
+    avatar: z.string().nullish().optional(),
+    isMorto: z.coerce.boolean().optional(),
+    note: z.string().optional(),
+    covataId: z.coerce
+      .number()
+      .transform((v) => v || null)
+      .optional(),
   });
 
   try {

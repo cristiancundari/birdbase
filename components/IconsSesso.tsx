@@ -1,3 +1,4 @@
+import { Tooltip } from "@mantine/core";
 import {
   IconGenderAgender,
   IconGenderFemale,
@@ -7,13 +8,17 @@ import {
 import React from "react";
 
 export function IconSessoMale(props: TablerIconsProps) {
-  return <IconGenderMale color="#256ceb" {...props} />;
+  return <Tooltip label="Maschio"><IconGenderMale color="#256ceb" {...props} /></Tooltip>;
 }
 
 export function IconSessoFemale(props: TablerIconsProps) {
-  return <IconGenderFemale color="#f92f8e" {...props} />;
+  return <Tooltip label="Femmina"><IconGenderFemale color="#f92f8e" {...props} /></Tooltip>;
 }
 
 export function IconSessoAgender(props: TablerIconsProps) {
-  return <IconGenderAgender color="#d6d6d6" {...props} />;
+  return (
+    <Tooltip label="In attesa">
+      <IconGenderAgender color="#d6d6d6" {...props} />
+    </Tooltip>
+  );
 }

@@ -13,7 +13,9 @@ import {
   SimpleGrid,
   Switch,
   TextInput,
+  Fieldset,
   useMantineTheme,
+  Textarea
 } from "@mantine/core";
 
 import { dateParser } from "@/lib/DateParser";
@@ -36,11 +38,13 @@ import Upload from "../Upload";
 export interface FormValues {
   rna: string;
   numero: string;
+  anno: string;
   dataNascita: Date | null;
   gabbia: number | null;
   sesso: Sesso;
   avatar: string | null;
   isMorto: boolean;
+  note: string;
 }
 
 interface PropsType {
@@ -60,16 +64,19 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
     initialValues: {
       rna: "",
       numero: "",
+      anno: "",
       dataNascita: null,
       gabbia: null,
       sesso: Sesso.InAttesa,
       avatar: null,
       isMorto: false,
+      note:""
     },
     validate: {
       rna: (value) => (value.length == 0 ? "Inserire RNA" : null),
       numero: (value) =>
         value.length == 0 ? "Inserire numero anelletto" : null,
+      anno: (value) => (value.length == 0 ? "Inserire anno anelletto" : null),
     },
   });
 
@@ -104,11 +111,13 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
         form.setValues({
           rna: modalData.rna,
           numero: modalData.numero,
+          anno: modalData.anno,
           gabbia: modalData.gabbia,
           dataNascita: modalData.dataNascita,
           sesso: sesso,
           avatar: modalData.avatar,
           isMorto: modalData.isMorto,
+          note:modalData.note
         });
       } else {
         form.reset();
@@ -158,48 +167,57 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             ></Upload>
           )}
         </Center>
-        <SimpleGrid cols={2} mt={"md"}>
-          <TextInput label="RNA" {...form.getInputProps("rna")} />
-          <TextInput
-            label="Numero"
-            {...form.getInputProps("numero")}
-          ></TextInput>
+        <Fieldset legend="Anelletto">
+          <SimpleGrid cols={3}>
+            <TextInput label="RNA" {...form.getInputProps("rna")} />
+            <TextInput label="Anno" {...form.getInputProps("anno")} />
+            <TextInput label="Numero" {...form.getInputProps("numero")} />
+          </SimpleGrid>
+        </Fieldset>
+        <Fieldset legend="Info">
+          <SimpleGrid cols={2}>
+            <DateInput
+              label="Data di nascita"
+              {...form.getInputProps("dataNascita")}
+              valueFormat="DD/MM/YYYY"
+              dateParser={dateParser}
+              leftSection={<IconCalendar size={16} />}
+            ></DateInput>
+            <Select
+              {...form.getInputProps("sesso")}
+              label="Sesso"
+              data={[Sesso.Maschio, Sesso.Femmina, Sesso.InAttesa]}
+            ></Select>
 
-          <DateInput
-            label="Data di nascita"
-            {...form.getInputProps("dataNascita")}
-            valueFormat="DD/MM/YYYY"
-            dateParser={dateParser}
-            leftSection={<IconCalendar size={16} />}
-          ></DateInput>
-          <Select
-            {...form.getInputProps("sesso")}
-            label="Sesso"
-            data={[Sesso.Maschio, Sesso.Femmina, Sesso.InAttesa]}
-          ></Select>
+            <NumberInput
+              label="Gabbia"
+              allowDecimal={false}
+              allowNegative={false}
+              hideControls
+              {...form.getInputProps("gabbia")}
+            />
+            <Group align="center">
+              <Input.Wrapper label=" ">
+                <Switch
+                  label="Morto"
+                  color="grape"
+                  thumbIcon={
+                    form.values.isMorto && (
+                      <IconGrave size={12} color={theme.colors.grape[6]} />
+                    )
+                  }
+                  {...form.getInputProps("isMorto", { type: "checkbox" })}
+                />
+              </Input.Wrapper>
+            </Group>
+          </SimpleGrid>
+        </Fieldset>
 
-          <NumberInput
-            label="Gabbia"
-            allowDecimal={false}
-            allowNegative={false}
-            hideControls
-            {...form.getInputProps("gabbia")}
-          />
-          <Group align="center">
-            <Input.Wrapper label=" ">
-              <Switch
-                label="Morto"
-                color="grape"
-                thumbIcon={
-                  form.values.isMorto && (
-                    <IconGrave size={12} color={theme.colors.grape[6]} />
-                  )
-                }
-                {...form.getInputProps("isMorto", { type: "checkbox" })}
-              />
-            </Input.Wrapper>
-          </Group>
-        </SimpleGrid>
+        <Textarea
+          label="Note"
+          placeholder="Inserisci una nota"
+          {...form.getInputProps("note")}
+        />
 
         <Group mt={"lg"} gap="md" justify="flex-end">
           <Button

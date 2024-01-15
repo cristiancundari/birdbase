@@ -1,9 +1,12 @@
 "use client";
+import { apiFetch } from "@/lib/apiFetch";
+import { formatAnelletto, showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
-import { Button, Group, Modal, Select } from "@mantine/core";
+import { Button, Combobox, ComboboxItem, Group, Loader, Modal, Popover, Select, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconDeviceFloppy, IconX } from "@tabler/icons-react";
-import React, { useState } from "react";
+import { Soggetto } from "@prisma/client";
+import { IconDeviceFloppy, IconInfoCircle, IconX } from "@tabler/icons-react";
+import React, { useEffect, useState } from "react";
 
 interface ModalAggiungiFiglioProps {
   isOpen: boolean;
@@ -17,11 +20,22 @@ function ModalAggiungiFiglio({
   covataId,
   submit,
 }: ModalAggiungiFiglioProps) {
+  const [isSelectLoading, setIsSelectLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [soggetti, setSoggetti] = useState([]);
+  const [soggettiItems, setSoggettiItems] = useState<ComboboxItem[]>([]);
 
   useModalInit(() => {
-    console.log("Only first time");
+    async function _getSoggetti() {
+      setIsSelectLoading(true);
+      const result = await apiFetch.get<Soggetto[]>("/api/soggetti?covataId=")
+      if (result.error) {
+        showNotification({message:result.message})
+      } else {
+        setSoggettiItems(result.data.map((item)=>({value: item.id, label: formatAnelletto(item.rna, item.numero, item.anno)})))
+      }
+      setIsSelectLoading(false);
+    }
+    _getSoggetti();
   }, isOpen);
 
   const form = useForm({
@@ -30,13 +44,18 @@ function ModalAggiungiFiglio({
     },
   });
 
+  useEffect(()=>{
+    if(isOpen) {
+      form.reset();
+    }
+  },[isOpen])
+
   return (
     <Modal
       opened={isOpen}
       onClose={annulla}
       title={"Seleziona soggetto"}
       centered
-      size="lg"
     >
       <form
         onSubmit={form.onSubmit(async () => {
@@ -48,8 +67,12 @@ function ModalAggiungiFiglio({
       >
         <Select
           label="Soggetto"
-          data={soggetti}
+          description="Sono visualizzati solo i soggetti figli di nessuna covata"
+          data={soggettiItems}
           {...form.getInputProps("soggettoId")}
+          rightSection={
+            isSelectLoading ? <Loader size={18} /> : <Combobox.Chevron />
+          }
         />
 
         <Group mt={"lg"} gap="md" justify="flex-end">

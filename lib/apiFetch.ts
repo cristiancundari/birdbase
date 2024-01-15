@@ -6,6 +6,9 @@ export const apiFetch = {
   patch,
   put,
   delete: _delete,
+  postFormData,
+  putFormData,
+  patchFormData,
 };
 
 async function get<T = any>(url: string) {
@@ -101,4 +104,31 @@ function reviveDate(key: string, value: any) {
   return typeof value === "string" && isoDateRegex.test(value)
     ? new Date(value)
     : value;
+}
+
+async function postFormData<T = any>(url: string, body: FormData) {
+  const requestOptions = {
+    method: "POST",
+    body: body,
+  };
+  const response = await fetch(url, requestOptions);
+  return handleResponse<T>(response);
+}
+
+async function patchFormData<T = any>(url: string, body: FormData) {
+  const requestOptions = {
+    method: "PATCH",
+    body: body,
+  };
+  const response = await fetch(url, requestOptions);
+  return handleResponse<T>(response);
+}
+
+async function putFormData<T = any>(url: string, body: FormData) {
+  const requestOptions = {
+    method: "PUT",
+    body: body,
+  };
+  const response = await fetch(url, requestOptions);
+  return handleResponse<T>(response);
 }

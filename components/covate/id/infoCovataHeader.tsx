@@ -1,10 +1,26 @@
 import { IconSessoFemale, IconSessoMale } from "@/components/IconsSesso";
-import { formatData } from "@/lib/helper";
+import { formatAnelletto, formatData } from "@/lib/helper";
 import { CovataWithGenitori, CovataWithGenitoriAndFigli } from "@/types/types";
-import { Box, Card, Flex, Group, Text, Title, Tooltip } from "@mantine/core";
-import { IconEgg, IconEggCracked, IconEggs } from "@tabler/icons-react";
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Group,
+  Text,
+  Title,
+  Tooltip,
+} from "@mantine/core";
+import {
+  IconBarrel,
+  IconEdit,
+  IconEgg,
+  IconEggCracked,
+  IconEggs,
+} from "@tabler/icons-react";
 import InfoUova from "../infoUova";
 import Completata from "../completata";
+import InfoGabbia from "@/components/InfoGabbia";
 
 interface InfoCovataHeaderProps {
   covata: CovataWithGenitoriAndFigli;
@@ -12,7 +28,7 @@ interface InfoCovataHeaderProps {
 
 function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
   return (
-    <Card shadow="sm" withBorder>
+    <Card shadow="sm" withBorder pos="relative">
       <Group justify="center">
         <Text>
           <IconEggs size={42} />
@@ -31,14 +47,27 @@ function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {
             <Group gap="md">
               <Group gap={2}>
                 <IconSessoMale size={22} />
-                <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
+                <Text>
+                  {formatAnelletto(
+                    covata.padre.rna,
+                    covata.padre.numero,
+                    covata.padre.anno
+                  )}
+                </Text>
               </Group>
               <Group gap={2}>
                 <IconSessoFemale size={22} />
-                <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
+                <Text>
+                  {formatAnelletto(
+                    covata.madre.rna,
+                    covata.madre.numero,
+                    covata.madre.anno
+                  )}
+                </Text>
               </Group>
             </Group>
           </Group>
+          <InfoGabbia gabbia={covata.gabbia} hideNull />
           <InfoUova
             deposte={covata.uovaDeposte}
             schiuse={covata.figli.length}

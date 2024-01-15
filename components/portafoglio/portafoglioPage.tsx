@@ -2,12 +2,15 @@
 import { Container, Grid, Paper, Stack, Group, Button } from "@mantine/core";
 import { IconReport } from "@tabler/icons-react";
 import Budget from "./budget";
-import ModalReport from "./modalReport";
+import ModalReport, { FormValues } from "./modalReport";
 import BarChart from "./grafici/barchart";
 import PieChart from "./grafici/piechart";
 import Transazioni from "./transazioni/transazioni";
 import React, { SetStateAction, useContext, useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/apiFetch";
+import { showNotification } from "@/lib/helper";
+import { format } from "date-fns";
 
 const PortafoglioContext = React.createContext<
   | { state: number; setState: React.Dispatch<React.SetStateAction<number>> }
@@ -37,8 +40,10 @@ function PortafoglioPage() {
     setIsModalReportOpen(false);
   };
 
-  const submit = async (values: any) => {
-    router.push("/app/portafoglio/report");
+  const submit = async (values: FormValues) => {
+    const dataInizio = values.dataInizio ? format(values.dataInizio,"yyyy-MM-dd") : ""
+    const dataFine = values.dataFine ? format(values.dataFine,"yyyy-MM-dd") : ""
+    router.push(`/app/portafoglio/report?dataInizio=${dataInizio}&dataFine=${dataFine}&tipologia=${values.tipologia}`);
   };
 
   return (

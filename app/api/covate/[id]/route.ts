@@ -16,11 +16,7 @@ export async function PATCH(
     dataCovata: z.coerce.date(),
     completata: z.coerce.boolean(),
     uovaDeposte: z.coerce.number().min(0),
-    gabbia: z
-      .string()
-      .max(0)
-      .transform((v) => null)
-      .or(z.coerce.number().nullable()),
+    gabbia: z.coerce.number().transform((v) => v || null),
   });
 
   try {

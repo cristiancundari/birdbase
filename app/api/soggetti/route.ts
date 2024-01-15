@@ -58,8 +58,10 @@ export async function POST(request: NextRequest) {
     gabbia: z.coerce.number().nullish(),
     rna: z.string(),
     numero: z.string().min(1),
+    anno: z.string().min(1),
     avatar: z.string().nullish(),
     isMorto: z.coerce.boolean(),
+    note: z.string(),
     covataId: z.coerce.number().optional(),
   });
 
@@ -76,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     if (values.covataId) {
       const covata = await prisma.covata.findFirst({
-        where: { id: values.covataId },
+        where: { id: values.covataId, profiloId: user.id },
         include: { figli: true },
       });
       if (!covata) {
@@ -94,7 +96,7 @@ export async function POST(request: NextRequest) {
     }
 
     const controllo = await prisma.soggetto.findFirst({
-      where: { numero: values.numero, rna: values.rna },
+      where: { numero: values.numero, rna: values.rna, anno: values.anno },
     });
     if (controllo) {
       return NextResponse.json(

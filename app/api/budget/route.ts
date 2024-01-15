@@ -42,14 +42,14 @@ export async function GET(request: NextRequest) {
     });
     const oggi = new Date();
     const mese_corrente = oggi.getMonth();
-    const anno = 2023; //TODO farsi passare l'anno dal client
+    const anno_corrente = oggi.getFullYear();
     const spese = await prisma.transazione.aggregate({
       _sum: { prezzo: true },
       where: {
         prezzo: { lt: 0 },
         data: {
-          gte: new Date(anno, mese_corrente, 1),
-          lt: new Date(anno, mese_corrente + 1, 1),
+          gte: new Date(anno_corrente, mese_corrente, 1),
+          lt: new Date(anno_corrente, mese_corrente + 1, 1),
         },
         profiloId: user.id,
       },

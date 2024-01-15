@@ -1,5 +1,5 @@
 "use client";
-import { formatData } from "@/lib/helper";
+import { formatAnelletto, formatData } from "@/lib/helper";
 import {
   CovataWithGenitoriAndCountFigli,
   CovataWithGenitoriAndFigli,
@@ -22,6 +22,7 @@ import {
 import { IconSessoFemale, IconSessoMale } from "../IconsSesso";
 import Completata from "./completata";
 import InfoUova from "./infoUova";
+import InfoGabbia from "../InfoGabbia";
 
 interface CovataCompProps {
   covata: CovataWithGenitoriAndCountFigli;
@@ -73,22 +74,27 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
       <Group justify="space-between">
         <Group gap="xs">
           <IconSessoMale size="18" />
-          <Text>{covata.padre.rna + "-" + covata.padre.numero}</Text>
+          <Text>
+            {formatAnelletto(
+              covata.padre.rna,
+              covata.padre.numero,
+              covata.padre.anno
+            )}
+          </Text>
         </Group>
-        {covata.gabbia !== null && (
-          <Group gap={2}>
-            <IconBarrel size="14" />
-            <Text size="xs" c="dimmed">
-              {covata.gabbia}
-            </Text>
-          </Group>
-        )}
+        <InfoGabbia gabbia={covata.gabbia} hideNull />
       </Group>
 
       <Group justify="space-between">
         <Group gap="xs">
           <IconSessoFemale size="18" />
-          <Text>{covata.madre.rna + "-" + covata.madre.numero}</Text>
+          <Text>
+            {formatAnelletto(
+              covata.madre.rna,
+              covata.madre.numero,
+              covata.madre.anno
+            )}
+          </Text>
         </Group>
         <InfoUova deposte={covata.uovaDeposte} schiuse={covata._count.figli} />
       </Group>

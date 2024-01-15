@@ -1,5 +1,5 @@
 "use client";
-import SoggettoComp from "@/components/SoggettoComp";
+import SoggettoComp, { SoggettoMenu } from "@/components/SoggettoComp";
 import {
   aggiungiSoggetto,
   modificaSoggetto,
@@ -14,7 +14,7 @@ import { ApiResponse } from "@/types/types";
 import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
-import { IconPlus } from "@tabler/icons-react";
+import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 interface FormData {
@@ -46,7 +46,7 @@ function HomePage() {
 
   const modifica = async ({ form, avatarFile }: FormData) => {
     const id = modalData?.id || "";
-    const res: ApiResponse = await modificaSoggetto({ form, avatarFile, id });
+    const res = await modificaSoggetto({ form, avatarFile, id });
     if (res.error) {
       showNotification({ message: res.message });
     } else {
@@ -102,8 +102,8 @@ function HomePage() {
     setIsModalSoggettoOpen(true);
   };
 
-  const deleteHandler = (id: string) => {
-    setModalDeleteId(id);
+  const deleteHandler = (soggetto: Soggetto) => {
+    setModalDeleteId(soggetto.id);
   };
 
   const favouriteHandler = async (id: string) => {
@@ -134,6 +134,8 @@ function HomePage() {
     _getSoggetti();
   }, []);
 
+  const menuSoggetto: SoggettoMenu[] = [{ label: "Modifica", fn: editHandler, icon: <IconEdit size={14} />},{ label: "Elimina", fn: deleteHandler, icon: <IconTrash size={14} />, color: "red"}]
+
   return (
     <>
       <Box mb="md">
@@ -151,7 +153,7 @@ function HomePage() {
         {isSoggettiLoading == false && soggetti.length == 0 && (
           <NessunSoggetto />
         )}
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
+        <SimpleGrid cols={{ base: 1, md: 2, lg: 3, xl: 4 }}>
           {isSoggettiLoading &&
             Array(6)
               .fill(0)
@@ -160,8 +162,7 @@ function HomePage() {
             <SoggettoComp
               key={soggetto.id}
               sogg={soggetto}
-              onEdit={editHandler}
-              onDelete={deleteHandler}
+              menu={menuSoggetto}
               onPreferito={favouriteHandler}
             />
           ))}

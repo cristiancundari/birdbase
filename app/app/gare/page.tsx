@@ -37,12 +37,8 @@ function GarePage() {
       formData.append("imgFile", imgFile);
     }
 
-    const response = await fetch("/api/gare", {
-      body: formData,
-      method: "POST",
-    });
+    const result = await apiFetch.postFormData("/api/gare", formData);
 
-    const result: ApiResponse = await response.json();
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -61,12 +57,10 @@ function GarePage() {
     if (imgFile) {
       formData.append("imgFile", imgFile);
     }
-    const response = await fetch(`/api/gare/${modalData?.id}`, {
-      body: formData,
-      method: "PATCH",
-    });
-
-    const result: ApiResponse = await response.json();
+    const result = await apiFetch.patchFormData(
+      `/api/gare/${modalData?.id}`,
+      formData
+    );
 
     if (result.error) {
       showNotification({ message: result.message });

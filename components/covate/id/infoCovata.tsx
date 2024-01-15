@@ -1,7 +1,7 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumb";
 import ModalCancellazione from "@/components/ModalCancellazione";
-import SoggettoComp from "@/components/SoggettoComp";
+import SoggettoComp, { SoggettoMenu } from "@/components/SoggettoComp";
 import ModalSoggetto, { FormValues } from "@/components/home/ModalSoggetto";
 import {
   aggiungiSoggetto,
@@ -10,12 +10,14 @@ import {
 } from "@/components/home/functions";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
-import { CovataWithGenitoriAndFigli } from "@/types/types";
+import { ApiResponse, CovataWithGenitoriAndFigli } from "@/types/types";
 import { Box, Button, Group, Menu, SimpleGrid, Text } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
 import {
+  IconCircleMinus,
   IconCirclePlus,
+  IconEdit,
   IconHandClick,
   IconPlus,
   IconSettings,
@@ -24,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import InfoCovataHeader from "./infoCovataHeader";
 import ModalAggiungiFiglio from "./ModalAggiungiFiglio";
+import ModalConferma from "@/components/ModalConferma";
 
 interface InfoCovataProps {
   covata: CovataWithGenitoriAndFigli;
@@ -38,7 +41,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
   const [isModalSoggettoOpen, setIsModalSoggettoOpen] = useState(false);
   const [isModalAggiungiFiglioOpen, setIsModalAggiungiFiglioOpen] =
     useState(false);
-  const [modalDeleteId, setModalDeleteId] = useState("");
+  const [modalRemoveId, setModalDeleteId] = useState("");
   const [modalData, setModalData] = useState<Soggetto | null>(null);
   const router = useRouter();
 
@@ -88,13 +91,18 @@ function InfoCovata({ covata }: InfoCovataProps) {
     }
   };
 
-  const elimina = async () => {
-    const result = await apiFetch.delete(`/api/soggetti/${modalDeleteId}`);
+  const rimuovi = async () => {
+    const formData = new FormData();
+    const data = {covataId: null}
+    formData.append("form", JSON.stringify(data))
+
+    const result = await apiFetch.patchFormData(`/api/soggetti/${modalRemoveId}`, formData);
+    
     if (result.error) {
       showNotification({ message: result.message });
     } else {
       showNotification({
-        message: "Soggetto eliminato con successo",
+        message: "Soggetto rimosso con successo",
         success: true,
       });
       router.refresh();
@@ -113,14 +121,27 @@ function InfoCovata({ covata }: InfoCovataProps) {
   };
 
   const modalAggiungiFiglioSubmit = async (value: string) => {
-    console.log("SUBMIT: ", value);
+    const data = {
+      covataId: covata.id
+    }
+    const formData = new FormData()
+    formData.append("form", JSON.stringify(data));
+    
+    const result = await apiFetch.patchFormData(`/api/soggetti/${value}`, formData);
+
+    if (result.error) {
+      showNotification({message: result.message});
+    } else {
+      showNotification({message: "Figlio aggiunto correttamente alla covata", success: true});
+      router.refresh();
+    }
   };
 
   const annullaAggiungi = () => {
     setIsModalSoggettoOpen(false);
   };
 
-  const annullaElimina = () => {
+  const annullaRimuovi = () => {
     setModalDeleteId("");
   };
 
@@ -142,8 +163,8 @@ function InfoCovata({ covata }: InfoCovataProps) {
     setIsModalSoggettoOpen(true);
   };
 
-  const deleteHandler = (id: string) => {
-    setModalDeleteId(id);
+  const removeHandler = (soggetto: Soggetto) => {
+    setModalDeleteId(soggetto.id);
   };
 
   const favouriteHandler = async (id: string) => {
@@ -155,6 +176,8 @@ function InfoCovata({ covata }: InfoCovataProps) {
       return result.data;
     }
   };
+
+  const menuSoggetto: SoggettoMenu[] = [{ label: "Modifica", fn: editHandler, icon: <IconEdit size={14} />},{ label: "Rimuovi", fn: removeHandler, icon: <IconCircleMinus size={14} />}]
 
   return (
     <>
@@ -200,8 +223,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
                 key={soggetto.id}
                 sogg={soggetto}
                 onPreferito={favouriteHandler}
-                onEdit={editHandler}
-                onDelete={deleteHandler}
+                menu={menuSoggetto}
               />
             ))
           ) : (
@@ -221,11 +243,13 @@ function InfoCovata({ covata }: InfoCovataProps) {
         annulla={annullaAggiungiFiglio}
         submit={modalAggiungiFiglioSubmit}
       />
-      <ModalCancellazione
-        isOpen={modalDeleteId != ""}
-        titolo="Elimina Soggetto"
-        onDelete={elimina}
-        onClose={annullaElimina}
+      <ModalConferma
+        isOpen={modalRemoveId != ""}
+        titolo="Rimuovi Soggetto"
+        messages={["Vuoi rimuovere questo soggetto dalla covata?"]}
+        confirmButton={{ label: "Rimuovi", icon: (<IconCircleMinus size={14} />), color: "yellow"}}
+        onConfirm={rimuovi}
+        onClose={annullaRimuovi}
       />
     </>
   );

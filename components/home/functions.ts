@@ -30,12 +30,9 @@ export const aggiungiSoggetto = async ({
     formData.append("imgFile", avatarFile);
   }
 
-  const result = await fetch("/api/soggetti", {
-    method: "POST",
-    body: formData,
-  });
-  const res: ApiResponse<Soggetto> = await result.json();
-  return res;
+  const result = await apiFetch.postFormData("/api/soggetti", formData);
+
+  return result;
 };
 
 interface ModificaParams {
@@ -55,17 +52,14 @@ export const modificaSoggetto = async ({
     sesso = false;
   }
 
-  const values = new FormData();
-  values.append("form", JSON.stringify({ ...form, sesso: sesso }));
+  const formData = new FormData();
+  formData.append("form", JSON.stringify({ ...form, sesso: sesso }));
   if (avatarFile) {
-    values.append("imgFile", avatarFile);
+    formData.append("imgFile", avatarFile);
   }
-  const response = await fetch(`/api/soggetti/${id}`, {
-    method: "PATCH",
-    body: values,
-  });
-  const res: ApiResponse<Soggetto> = await response.json();
-  return res;
+  const result = await apiFetch.patchFormData(`/api/soggetti/${id}`, formData);
+
+  return result;
 };
 
 export const togglePreferitoSoggetto = async (id: string) => {

@@ -1,32 +1,19 @@
+"use client";
 import { dateParser } from "@/lib/DateParser";
-import { showNotification } from "@/lib/helper";
-import {
-  ApiResponse,
-  CovataWithGenitori,
-  SoggettoWithGenitori,
-} from "@/types/types";
+import { formatData } from "@/lib/helper";
+
 import {
   Button,
   Group,
   Modal,
-  NumberInput,
   SimpleGrid,
-  Switch,
   SegmentedControl,
   ComboboxItem,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { Soggetto } from "@prisma/client";
-import {
-  IconCalendar,
-  IconCheck,
-  IconDeviceFloppy,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCalendar, IconDeviceFloppy, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/apiFetch";
-import ComboboxGenitori from "../covate/comboboxGenitori";
 
 const tipologie: ComboboxItem[] = [
   { value: "2", label: "Tutti" },
@@ -42,18 +29,18 @@ const ranges: ComboboxItem[] = [
 interface ModalReportProps {
   isOpen: boolean;
   annulla: () => void;
-  submit: (values: any) => Promise<void>;
+  submit: (values: any) => void;
+}
+
+export interface FormValues {
+  dataInizio: Date | null;
+  dataFine: Date | null;
+  tipologia: string;
 }
 
 function ModalReport({ isOpen, annulla, submit }: ModalReportProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [segmentValue, setSegmentValue] = useState("");
-
-  interface FormValues {
-    dataInizio: Date | null;
-    dataFine: Date | null;
-    tipologia: string;
-  }
+  const [segmentValue, setSegmentValue] = useState<string>("");
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -75,27 +62,27 @@ function ModalReport({ isOpen, annulla, submit }: ModalReportProps) {
   }, [form.values.dataInizio, form.values.dataFine]);
 
   const checkDate = () => {
+    const dataInizio = form.values.dataInizio
+      ? formatData(form.values.dataInizio)
+      : "";
+    const dataFine = form.values.dataFine
+      ? formatData(form.values.dataFine)
+      : "";
     const now = new Date();
-    const today = new Date(
-      Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
-    );
-    let date = new Date(today);
-    console.log("Inizio:", form.values.dataInizio?.getTime());
-    console.log("Fine:", form.values.dataFine?.getTime());
-    console.log("TODAY:", today.getTime());
-    if (form.values.dataFine?.getTime() != today.getTime()) {
+    const today = formatData(new Date());
+    if (dataFine != today) {
       return "";
     }
-    date.setMonth(today.getMonth() - 1);
-    if (form.values.dataInizio?.getTime() == date.getTime()) {
+    now.setMonth(now.getMonth() - 1);
+    if (dataInizio == formatData(now)) {
       return "1";
     }
-    date.setMonth(today.getMonth() - 3);
-    if (form.values.dataInizio?.getTime() == date.getTime()) {
+    now.setMonth(now.getMonth() - 2);
+    if (dataInizio == formatData(now)) {
       return "3";
     }
-    date.setMonth(today.getMonth() - 6);
-    if (form.values.dataInizio?.getTime() == date.getTime()) {
+    now.setMonth(now.getMonth() - 3);
+    if (dataInizio == formatData(now)) {
       return "6";
     }
     return "";
@@ -121,9 +108,7 @@ function ModalReport({ isOpen, annulla, submit }: ModalReportProps) {
       <form
         onSubmit={form.onSubmit(async () => {
           setIsLoading(true);
-          await submit(form.values);
-          setIsLoading(false);
-          annulla();
+          submit(form.values);
         })}
       >
         <Group justify="space-between">

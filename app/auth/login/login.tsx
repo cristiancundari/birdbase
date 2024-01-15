@@ -68,7 +68,7 @@ function Login() {
         h="100vh"
       >
         <Center h="100%">
-          <Paper shadow="sm" w="100%" px="8rem" py="7rem">
+          <Paper shadow="sm" w="100%" px={{ base: "3rem", xs: "8rem" }} py="7rem">
             <Title order={1} ta="center">
               {"Accedi"}
             </Title>

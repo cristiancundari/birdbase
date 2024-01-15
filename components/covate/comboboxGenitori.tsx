@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import ComboboxGenitoriItem from "./comboboxGenitoriItem";
 import { Soggetto } from "@prisma/client";
+import { formatAnelletto } from "@/lib/helper";
 
 export interface GenitoriItem {
   soggetto: Soggetto;
@@ -25,6 +26,7 @@ interface ComboboxGenitoriProps {
   selected: string;
   label: string;
   loading: boolean;
+  description?: string
 }
 
 function ComboboxGenitori({
@@ -33,6 +35,7 @@ function ComboboxGenitori({
   selected,
   label,
   loading,
+  description
 }: ComboboxGenitoriProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -58,6 +61,7 @@ function ComboboxGenitori({
     >
       <Combobox.Target>
         <InputBase
+          description={description}
           label={label}
           component="button"
           type="button"
@@ -67,8 +71,7 @@ function ComboboxGenitori({
           rightSectionPointerEvents="none"
           multiline
         >
-          {genitore ? (
-            genitore.soggetto.rna + "-" + genitore.soggetto.numero
+          {genitore ? (formatAnelletto(genitore.soggetto.rna, genitore.soggetto.numero, genitore.soggetto.anno)
           ) : (
             <Input.Placeholder>Scegli un Soggetto</Input.Placeholder>
           )}

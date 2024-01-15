@@ -29,8 +29,10 @@ model Soggetto {
   sesso       Boolean?
   dataNascita DateTime     @map("data_nascita") @db.Date
   gabbia      Int?
-  numero      String
   rna         String
+  numero      String
+  anno        String
+  note        String       @default("") @db.VarChar
   preferito   Boolean      @default(false)
   profiloId   String       @map("profilo_id") @db.Uuid
   avatar      String?

@@ -71,3 +71,18 @@ export const transazioniIconColor: {
   Soggetti: { icon: IconBat, color: "blue" },
   Altro: { icon: IconLayoutGrid, color: "gray" },
 };
+
+export const formatAnelletto = (rna: string, numero: string, anno: string) => {
+  return `${rna}-${anno}-${numero}`;
+};
+
+export const getRangeYears = (transazioni: { anno: number }[]) => {
+  const currentAnno = new Date().getFullYear();
+  const minAnno =
+    Math.min(...transazioni.map((transazione) => transazione.anno)) ||
+    currentAnno;
+  return Array.from(
+    { length: currentAnno - minAnno + 1 },
+    (_, index) => currentAnno - index
+  );
+};

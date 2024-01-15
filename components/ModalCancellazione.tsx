@@ -1,7 +1,7 @@
 "use client";
-import { Button, Group, Modal, Stack, Text } from "@mantine/core";
-import { IconTrash, IconX } from "@tabler/icons-react";
-import React, { useState } from "react";
+import { IconTrash } from "@tabler/icons-react";
+import React from "react";
+import ModalConferma from "./ModalConferma";
 
 function ModalCancellazione({
   titolo,
@@ -14,39 +14,23 @@ function ModalCancellazione({
   onClose: () => void;
   isOpen: boolean;
 }) {
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <Modal opened={isOpen} onClose={onClose} title={titolo}>
-      <Stack gap="xs" align="center">
-        <Text size="sm">{"Sei sicuro di procedere con l'eliminazione?"}</Text>
-        <Text size="sm">Questa azione non potrà essere annullata.</Text>
-      </Stack>
-
-      <Group mt={"lg"} gap="md" justify="flex-end">
-        <Button
-          variant="outline"
-          color="gray"
-          onClick={onClose}
-          leftSection={<IconX size={14} />}
-        >
-          Annulla
-        </Button>
-        <Button
-          color="red"
-          leftSection={<IconTrash size={14} />}
-          loading={isLoading}
-          onClick={async () => {
-            setIsLoading(true);
-            await onDelete();
-            setIsLoading(false);
-            onClose();
-          }}
-        >
-          Elimina
-        </Button>
-      </Group>
-    </Modal>
+    <ModalConferma
+      isOpen={isOpen}
+      onConfirm={onDelete}
+      onClose={onClose}
+      titolo={titolo}
+      messages={[
+        "Sei sicuro di procedere con l'eliminazione?",
+        "Questa azione non potrà essere annullata.",
+      ]}
+      confirmButton={{
+        icon: <IconTrash size={14} />,
+        label: "Elimina",
+        color: "red",
+      }}
+    />
   );
 }
 
