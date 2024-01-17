@@ -178,9 +178,10 @@ function Gara({
           <Tooltip label={gara.nazione.nome}>
             <Group gap={"xs"} align="center">
               <Image
-                src={`https://flagcdn.com/h16/${gara.nazione.sigla}.jpg`}
+                src={`https://flagcdn.com/h20/${gara.nazione.sigla.toLocaleLowerCase()}.jpg`}
                 style={{ boxShadow: "0px 0px 5px 0px #00000047" }}
                 alt={gara.nazione.nome}
+                height={16}
               />
               <Text size="xs" c="dimmed">
                 {gara.nazione.sigla}

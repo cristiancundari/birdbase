@@ -103,7 +103,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
             src={
               sogg.avatar
                 ? imgPath + sogg.avatar
-                : `https://images.placeholders.dev/?width=50&height=50&text=${formatAnelletto(
+                : `https://images.placeholders.dev/?width=50&height=50&textWrap=true&text=${formatAnelletto(
                     sogg.rna,
                     sogg.numero,
                     sogg.anno
