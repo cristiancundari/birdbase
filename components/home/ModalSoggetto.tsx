@@ -15,7 +15,8 @@ import {
   TextInput,
   Fieldset,
   useMantineTheme,
-  Textarea
+  Textarea,
+  Stack,
 } from "@mantine/core";
 
 import { dateParser } from "@/lib/DateParser";
@@ -65,12 +66,12 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
       rna: "",
       numero: "",
       anno: "",
-      dataNascita: null,
+      dataNascita: new Date(),
       gabbia: null,
       sesso: Sesso.InAttesa,
       avatar: null,
       isMorto: false,
-      note:""
+      note: "",
     },
     validate: {
       rna: (value) => (value.length == 0 ? "Inserire RNA" : null),
@@ -117,7 +118,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
           sesso: sesso,
           avatar: modalData.avatar,
           isMorto: modalData.isMorto,
-          note:modalData.note
+          note: modalData.note,
         });
       } else {
         form.reset();
@@ -141,83 +142,86 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
       centered
     >
       <form onSubmit={onFormSubmit}>
-        <Center py="xs">
-          {preview ? (
-            <Box pos="relative">
-              <Avatar variant="filled" size="xl" src={preview} />
-              <ActionIcon
-                color="dark"
-                onClick={removeImageHandler}
-                variant="white"
-                radius="xl"
-                pos="absolute"
-                top="0"
-                right="0"
-                style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
-              >
-                <IconX size="20" color="#555" />
-              </ActionIcon>
-            </Box>
-          ) : (
-            <Upload
-              multiple={false}
-              onDrop={setFiles}
-              onReject={onUploadReject}
-              w="100%"
-            ></Upload>
-          )}
-        </Center>
-        <Fieldset legend="Anelletto">
-          <SimpleGrid cols={3}>
-            <TextInput label="RNA" {...form.getInputProps("rna")} />
-            <TextInput label="Anno" {...form.getInputProps("anno")} />
-            <TextInput label="Numero" {...form.getInputProps("numero")} />
-          </SimpleGrid>
-        </Fieldset>
-        <Fieldset legend="Info">
-          <SimpleGrid cols={2}>
-            <DateInput
-              label="Data di nascita"
-              {...form.getInputProps("dataNascita")}
-              valueFormat="DD/MM/YYYY"
-              dateParser={dateParser}
-              leftSection={<IconCalendar size={16} />}
-            ></DateInput>
-            <Select
-              {...form.getInputProps("sesso")}
-              label="Sesso"
-              data={[Sesso.Maschio, Sesso.Femmina, Sesso.InAttesa]}
-            ></Select>
+        <Stack>
+          <Center>
+            {preview ? (
+              <Box pos="relative">
+                <Avatar variant="filled" size="xl" src={preview} />
+                <ActionIcon
+                  color="dark"
+                  onClick={removeImageHandler}
+                  variant="white"
+                  radius="xl"
+                  pos="absolute"
+                  top="0"
+                  right="0"
+                  style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
+                >
+                  <IconX size="20" color="#555" />
+                </ActionIcon>
+              </Box>
+            ) : (
+              <Upload
+                multiple={false}
+                onDrop={setFiles}
+                onReject={onUploadReject}
+                w="100%"
+              ></Upload>
+            )}
+          </Center>
 
-            <NumberInput
-              label="Gabbia"
-              allowDecimal={false}
-              allowNegative={false}
-              hideControls
-              {...form.getInputProps("gabbia")}
-            />
-            <Group align="center">
-              <Input.Wrapper label=" ">
-                <Switch
-                  label="Morto"
-                  color="grape"
-                  thumbIcon={
-                    form.values.isMorto && (
-                      <IconGrave size={12} color={theme.colors.grape[6]} />
-                    )
-                  }
-                  {...form.getInputProps("isMorto", { type: "checkbox" })}
-                />
-              </Input.Wrapper>
-            </Group>
-          </SimpleGrid>
-        </Fieldset>
+          <Fieldset legend="Anelletto">
+            <SimpleGrid cols={3}>
+              <TextInput label="RNA" {...form.getInputProps("rna")} />
+              <TextInput label="Anno" {...form.getInputProps("anno")} />
+              <TextInput label="Numero" {...form.getInputProps("numero")} />
+            </SimpleGrid>
+          </Fieldset>
+          <Fieldset legend="Info">
+            <SimpleGrid cols={2}>
+              <DateInput
+                label="Data di nascita"
+                {...form.getInputProps("dataNascita")}
+                valueFormat="DD/MM/YYYY"
+                dateParser={dateParser}
+                leftSection={<IconCalendar size={16} />}
+              ></DateInput>
+              <Select
+                {...form.getInputProps("sesso")}
+                label="Sesso"
+                data={[Sesso.Maschio, Sesso.Femmina, Sesso.InAttesa]}
+              ></Select>
 
-        <Textarea
-          label="Note"
-          placeholder="Inserisci una nota"
-          {...form.getInputProps("note")}
-        />
+              <NumberInput
+                label="Gabbia"
+                allowDecimal={false}
+                allowNegative={false}
+                hideControls
+                {...form.getInputProps("gabbia")}
+              />
+              <Group align="center">
+                <Input.Wrapper label=" ">
+                  <Switch
+                    label="Morto"
+                    color="grape"
+                    thumbIcon={
+                      form.values.isMorto && (
+                        <IconGrave size={12} color={theme.colors.grape[6]} />
+                      )
+                    }
+                    {...form.getInputProps("isMorto", { type: "checkbox" })}
+                  />
+                </Input.Wrapper>
+              </Group>
+            </SimpleGrid>
+          </Fieldset>
+
+          <Textarea
+            label="Note"
+            placeholder="Inserisci una nota"
+            {...form.getInputProps("note")}
+          />
+        </Stack>
 
         <Group mt={"lg"} gap="md" justify="flex-end">
           <Button
