@@ -58,7 +58,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
   };
 
   return (
-    <Card shadow="sm" withBorder>
+    <Card shadow="sm" withBorder data-testid="SoggettoComp">
       <Group gap="xs" justify="space-between">
         {sogg.sesso && <IconSessoMale size="25" />}
         {sogg.sesso == false && <IconSessoFemale size="25" />}
@@ -98,6 +98,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
       <Group>
         <Box pos="relative">
           <Avatar
+            data-testid="ImgAvatar"
             variant="filled"
             size="xl"
             src={
@@ -123,9 +124,17 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
               style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
             >
               {isFavourite ? (
-                <IconHeartFilled size="20" style={{ color: "#e83d2e" }} />
+                <IconHeartFilled
+                  size="20"
+                  style={{ color: "#e83d2e" }}
+                  data-testid="IconPreferito"
+                />
               ) : (
-                <IconHeart size="20" color="#555" />
+                <IconHeart
+                  size="20"
+                  color="#555"
+                  data-testid="IconNonPreferito"
+                />
               )}
             </ActionIcon>
           </Tooltip>

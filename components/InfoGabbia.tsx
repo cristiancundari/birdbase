@@ -7,12 +7,12 @@ function InfoGabbia({
   hideNull,
 }: {
   gabbia: number | null;
-    hideNull?: boolean;
+  hideNull?: boolean;
 }) {
   return hideNull == true && gabbia == null ? null : (
     <Tooltip label={`Gabbia #${gabbia || "-"}`}>
       <Group gap={3}>
-        <IconBarrel size="16" />
+        <IconBarrel size="16" data-testid={"IconGabbia"} />
         <Text size="xs">{gabbia || "-"}</Text>
       </Group>
     </Tooltip>

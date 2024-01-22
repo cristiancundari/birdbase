@@ -1,5 +1,12 @@
 "use client";
-import { Input, Modal, SegmentedControl, createTheme } from "@mantine/core";
+import {
+  Input,
+  Modal,
+  Popover,
+  SegmentedControl,
+  Tooltip,
+  createTheme,
+} from "@mantine/core";
 
 export default createTheme({
   cursorType: "pointer",
@@ -18,14 +25,23 @@ export default createTheme({
     }),
     SegmentedControl: SegmentedControl.extend({
       styles(theme, props) {
-        if (props.value=="") {
+        if (props.value == "") {
           return {
             indicator: {
-              width: "0px", height: "0px", transform: "translate(0px, 0px)"
-          }}
+              width: "0px",
+              height: "0px",
+              transform: "translate(0px, 0px)",
+            },
+          };
         }
-        return {indicator: {}}
-      }
-    })
+        return { indicator: {} };
+      },
+    }),
+    Tooltip: Tooltip.extend({
+      defaultProps: { withinPortal: false },
+    }),
+    Popover: Popover.extend({
+      defaultProps: { withinPortal: false },
+    }),
   },
 });

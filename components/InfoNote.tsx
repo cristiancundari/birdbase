@@ -14,7 +14,7 @@ function InfoNote({ note }: { note: string }) {
           variant="transparent"
           color="black"
         >
-          <IconNotes size={16} />
+          <IconNotes size={16} data-testid="IconNote" />
         </ActionIcon>
       </Popover.Target>
       <Popover.Dropdown>

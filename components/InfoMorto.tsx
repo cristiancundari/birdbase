@@ -5,7 +5,7 @@ import React from "react";
 function InfoMorto() {
   return (
     <Tooltip label="Morto">
-      <IconGrave size="16" />
+      <IconGrave size="16" data-testid="IconMorto" />
     </Tooltip>
   );
 }
