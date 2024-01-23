@@ -1,7 +1,7 @@
 import LayoutProviders from "@/app/layoutProviders";
 import InfoGabbia from "@/components/InfoGabbia";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import { describe, expect, it, vi } from "vitest";
 
 describe("<InfoGabbia />", () => {
   const gabbia = (gabbia: number | null, hideNull: boolean) => (

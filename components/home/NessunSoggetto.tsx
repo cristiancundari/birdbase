@@ -3,7 +3,7 @@ import { Box, Text } from "@mantine/core";
 
 const NessunSoggetto = () => {
   return (
-    <Box>
+    <Box data-testid="NessunSoggetto">
       <Text>Nessun soggetto trovato.</Text>
       <Text>
         Inizia creando un nuovo soggetto utilizzando il pulsante Aggiungi in

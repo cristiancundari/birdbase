@@ -134,13 +134,22 @@ function HomePage() {
     _getSoggetti();
   }, []);
 
-  const menuSoggetto: SoggettoMenu[] = [{ label: "Modifica", fn: editHandler, icon: <IconEdit size={14} />},{ label: "Elimina", fn: deleteHandler, icon: <IconTrash size={14} />, color: "red"}]
+  const menuSoggetto: SoggettoMenu[] = [
+    { label: "Modifica", fn: editHandler, icon: <IconEdit size={14} /> },
+    {
+      label: "Elimina",
+      fn: deleteHandler,
+      icon: <IconTrash size={14} />,
+      color: "red",
+    },
+  ];
 
   return (
     <>
       <Box mb="md">
         <Group justify={"flex-end"}>
           <Button
+            data-testid="ButtonAggiungi"
             onClick={addHandler}
             variant="light"
             leftSection={<IconPlus size={14} />}

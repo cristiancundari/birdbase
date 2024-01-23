@@ -1,19 +1,14 @@
-import "@testing-library/jest-dom";
 import { Soggetto } from "@prisma/client";
 import { soggetti } from "./Soggetti";
-import {
-  fireEvent,
-  getDefaultNormalizer,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
-import SoggettoComp from "@/components/SoggettoComp";
-import assert from "assert";
-import LayoutProviders from "@/app/layoutProviders";
-import { setupServer } from "msw/node";
-import { HttpResponse, http } from "msw";
+
 import HomePage from "@/app/app/home/page";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import assert from "assert";
+import { HttpResponse, http } from "msw";
+import { describe, expect, it } from "vitest";
+import LayoutProviders from "../../app/layoutProviders";
+import SoggettoComp from "../../components/SoggettoComp";
+import server from "../ServerMock";
 
 //sesso = true significa "Maschio" ---- sesso = false significa "Femmina" ---- sesso = null significa "In Attesa"
 describe("<SoggettoComp />", () => {
@@ -149,4 +144,73 @@ describe("<SoggettoComp />", () => {
     const path = avatar?.getAttribute("src");
     expect(path?.includes("https://images.placeholders.dev")).toBeTruthy();
   });
+});
+
+describe("Soggetto CRUD", () => {
+  it("dovrebbe renderizzare la home page mostrando tutti i soggetti", async () => {
+    server.use(
+      http.get(location.origin + "/api/soggetti", () => {
+        return HttpResponse.json(
+          { result: soggetti, error: false },
+          { status: 200 }
+        );
+      })
+    );
+    render(
+      <LayoutProviders>
+        <HomePage />
+      </LayoutProviders>
+    );
+    const soggettiComp = await screen.findAllByTestId("SoggettoComp");
+    expect(soggettiComp.length).toBe(soggetti.length);
+  });
+
+  it("dovrebbe mostrare il componente 'nessun soggetto' se l'API non restituisce nessun elemento", async () => {
+    server.use(
+      http.get(location.origin + "/api/soggetti", () => {
+        return HttpResponse.json({ result: [], error: false }, { status: 200 });
+      })
+    );
+    render(
+      <LayoutProviders>
+        <HomePage />
+      </LayoutProviders>
+    );
+    const soggettiComp = await waitFor(() =>
+      screen.queryAllByTestId("SoggettoComp")
+    );
+    expect(soggettiComp.length).toBe(0);
+    const nessunSoggetto = await screen.findByTestId("NessunSoggetto");
+    expect(nessunSoggetto).toBeInTheDocument();
+  });
+
+  it("dovrebbe aprire il modal quando viene premuto il pulsante aggiungi", () => {
+    render(
+      <LayoutProviders>
+        <HomePage />
+      </LayoutProviders>
+    );
+    const buttonAggiungi = screen.getByTestId("ButtonAggiungi");
+    const modalSoggettoBefore = screen.getByTestId("ModalSoggetto");
+    expect(modalSoggettoBefore.hasChildNodes()).toBeFalsy();
+
+    fireEvent.click(buttonAggiungi);
+    const modalSoggettoAfter = screen.getByTestId("ModalSoggetto");
+    expect(modalSoggettoAfter.hasChildNodes()).toBeTruthy();
+    expect(modalSoggettoAfter).toHaveTextContent("Aggiungi Soggetto");
+  });
+
+  /* it("dovrebbe mostrare il modal in modalità di modifica", () => {
+    render(
+      <LayoutProviders>
+        <ModalSoggetto
+          isOpen={true}
+          annulla={()=>{}}
+          submit={async ()=>{}}
+          modalData={soggetti[0]}
+        />
+      </LayoutProviders>
+    );
+    expect(annulla).toBeCalled();
+  }); */
 });

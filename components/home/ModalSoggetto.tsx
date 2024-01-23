@@ -136,6 +136,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
 
   return (
     <Modal
+      data-testid="ModalSoggetto"
       opened={isOpen}
       onClose={annulla}
       title={modalData == null ? "Aggiungi Soggetto" : "Modifica Soggetto"}
