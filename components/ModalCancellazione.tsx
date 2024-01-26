@@ -8,15 +8,16 @@ function ModalCancellazione({
   onDelete,
   onClose,
   isOpen,
+  ...others
 }: {
   titolo: string;
   onDelete: () => Promise<void>;
   onClose: () => void;
   isOpen: boolean;
 }) {
-
   return (
     <ModalConferma
+      {...others}
       isOpen={isOpen}
       onConfirm={onDelete}
       onClose={onClose}

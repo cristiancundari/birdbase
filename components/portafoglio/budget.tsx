@@ -1,6 +1,6 @@
 "use client";
 import { formatValuta, showNotification } from "@/lib/helper";
-import { ApiResponse } from "@/types/types";
+import { ApiResponse, BudgetRequest } from "@/types/types";
 import {
   ActionIcon,
   Group,
@@ -24,13 +24,12 @@ function Budget() {
   const { state: forceRender } = usePortafoglioContext();
   const [isEdit, setIsEdit] = useState(false);
   const [newBudget, setNewBudget] = useState(0);
-  const [budget, setBudget] = useState(null);
-  const [bilancio, setBilancio] = useState(null);
+  const [budget, setBudget] = useState<number | null>(null);
+  const [bilancio, setBilancio] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function getBudget() {
-    //TODO aggiungere tipo alla chiamata fetch
-    const result = await apiFetch.get("/api/budget");
+    const result = await apiFetch.get<BudgetRequest>("/api/budget");
     if (result.error) {
       showNotification({
         message: "Non è stato possibile ottenere il budget",
@@ -51,8 +50,7 @@ function Budget() {
     }
 
     setIsLoading(true);
-    //TODO modificare API in modo che accetti un oggetto invece che un numero plain
-    const result = await apiFetch.patch("/api/budget", newBudget);
+    const result = await apiFetch.patch("/api/budget", { budget: newBudget });
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -84,11 +82,12 @@ function Budget() {
                 {budget ? (
                   <Text>{formatValuta(budget)}</Text>
                 ) : (
-                  <Skeleton w={100} h={14} />
+                  <Skeleton w={100} h={14} data-testid="SkeletonBudget" />
                 )}
               </Group>
               <Tooltip label="Modifica">
                 <ActionIcon
+                  data-testid="ButtonModificaBudget"
                   variant="light"
                   color="gray"
                   size="sm"
@@ -107,6 +106,7 @@ function Budget() {
               <Group>
                 <Text>Il tuo budget mensile: </Text>
                 <NumberInput
+                  data-testid="InputBudget"
                   value={newBudget}
                   onChange={(value) => {
                     setNewBudget(value as number);
@@ -118,6 +118,7 @@ function Budget() {
                 />
                 <Tooltip label="Salva">
                   <ActionIcon
+                    data-testid="ButtonSalva"
                     loading={isLoading}
                     variant="filled"
                     size="lg"

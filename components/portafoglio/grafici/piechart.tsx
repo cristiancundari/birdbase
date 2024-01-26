@@ -25,17 +25,13 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { usePortafoglioContext } from "../portafoglioPage";
 import NessunGrafico from "./NessunGrafico";
+import { SpesaQueryResult } from "@/types/types";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
   loading: () => <PieChartSkeleton />,
 });
 
-interface GraphApiData {
-  categoria: string;
-  totale: number;
-  anno: number;
-}
 interface GraphData {
   colors: string[];
   labels: string[];
@@ -47,7 +43,7 @@ function PieChart() {
   const theme = useMantineTheme();
   const colorScheme = useMantineColorScheme().colorScheme;
   const [isLoading, setIsLoading] = useState(true);
-  const [listaSpese, setListaSpese] = useState<GraphApiData[]>([]);
+  const [listaSpese, setListaSpese] = useState<SpesaQueryResult[]>([]);
   const [graphData, setGraphData] = useState<GraphData>({
     colors: [],
     series: [],
@@ -61,11 +57,12 @@ function PieChart() {
   });
 
   const getGraphData = async () => {
-    const result = await apiFetch.get<GraphApiData[]>("/api/transazioni/spese");
+    const result = await apiFetch.get<SpesaQueryResult[]>(
+      "/api/transazioni/spese"
+    );
     if (result.error) {
       showNotification({ message: result.message });
     } else {
-      setIsLoading(false);
       setListaSpese(result.data);
       const range = getRangeYears(result.data);
       setListaAnni(range.map(String));
@@ -78,6 +75,7 @@ function PieChart() {
       (element) => element.anno.toString() == selectedAnno
     );
     elaboraDati(result);
+    setIsLoading(false);
   }, [listaSpese, selectedAnno]);
 
   useEffect(() => {
@@ -86,10 +84,12 @@ function PieChart() {
   }, []);
 
   useEffect(() => {
-    getGraphData();
+    if (!isLoading) {
+      getGraphData();
+    }
   }, [forceRender]);
 
-  function elaboraDati(dati: GraphApiData[]) {
+  function elaboraDati(dati: SpesaQueryResult[]) {
     const graphData: GraphData = {
       colors: [],
       series: [],

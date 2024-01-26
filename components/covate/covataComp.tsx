@@ -32,7 +32,7 @@ interface CovataCompProps {
 
 function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
   return (
-    <Card shadow="sm" withBorder>
+    <Card shadow="sm" withBorder data-testid="CovataComp">
       <Group gap="xs" justify="space-between">
         <Group gap="xs">
           {covata.completata && <Completata />}
@@ -44,12 +44,13 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
         </Group>
         <Menu shadow="md">
           <Menu.Target>
-            <ActionIcon variant="subtle" color="gray">
+            <ActionIcon variant="subtle" color="gray" data-testid="ButtonMenu">
               <IconDotsVertical size="14" />
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
             <Menu.Item
+              data-testid="ButtonModifica"
               leftSection={<IconPencil size="14" />}
               onClick={() => {
                 modalModifica(covata);
@@ -58,6 +59,7 @@ function CovataComp({ covata, modalElimina, modalModifica }: CovataCompProps) {
               Modifica
             </Menu.Item>
             <Menu.Item
+              data-testid="ButtonElimina"
               leftSection={<IconTrash size="14" />}
               color="red"
               onClick={() => {

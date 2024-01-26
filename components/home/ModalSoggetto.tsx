@@ -55,7 +55,13 @@ interface PropsType {
   modalData: Soggetto | null;
 }
 
-function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
+function ModalSoggetto({
+  isOpen,
+  annulla,
+  submit,
+  modalData,
+  ...others
+}: PropsType) {
   const theme = useMantineTheme();
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [files, setFiles] = useState<FileWithPath[]>([]);
@@ -136,7 +142,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
 
   return (
     <Modal
-      data-testid="ModalSoggetto"
+      {...others}
       opened={isOpen}
       onClose={annulla}
       title={modalData == null ? "Aggiungi Soggetto" : "Modifica Soggetto"}
@@ -234,6 +240,7 @@ function ModalSoggetto({ isOpen, annulla, submit, modalData }: PropsType) {
             Annulla
           </Button>
           <Button
+            data-testid="ButtonSalva"
             color="green"
             leftSection={<IconDeviceFloppy size={14} />}
             type="submit"

@@ -49,6 +49,7 @@ function ModalTransazione({
   annulla,
   submit,
   transazione,
+  ...others
 }: ModalTransazioneProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [categorie, setCategorie] = useState<ComboboxItem[]>([]);
@@ -112,6 +113,7 @@ function ModalTransazione({
       opened={isOpen}
       onClose={annulla}
       centered
+      {...others}
     >
       <form
         onSubmit={form.onSubmit(async () => {

@@ -1,4 +1,11 @@
-import { EffectCallback, useEffect, useState } from "react";
+import { useResizeObserver } from "@mantine/hooks";
+import React, {
+  EffectCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 export function useModalInit(effect: EffectCallback, isOpen: boolean) {
   const [firstTime, setFirstTime] = useState(false);
@@ -7,5 +14,5 @@ export function useModalInit(effect: EffectCallback, isOpen: boolean) {
       setFirstTime(true);
       effect();
     }
-  }, [isOpen]);
+  }, [isOpen, effect, firstTime]);
 }

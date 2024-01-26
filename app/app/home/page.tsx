@@ -179,6 +179,7 @@ function HomePage() {
       </Box>
 
       <ModalSoggetto
+        data-testid="ModalSoggetto"
         isOpen={isModalSoggettoOpen}
         modalData={modalData}
         submit={submit}
@@ -186,6 +187,7 @@ function HomePage() {
       />
 
       <ModalCancellazione
+        data-testid="ModalCancellazione"
         isOpen={modalDeleteId != ""}
         titolo="Elimina Soggetto"
         onDelete={elimina}

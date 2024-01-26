@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
+import { BudgetRequest } from "@/types/types";
 import { Prisma } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
@@ -7,13 +8,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 export async function PATCH(request: NextRequest) {
-  const datiSchema = z.coerce.number().min(1);
+  const datiSchema = z.object({
+    budget: z.coerce.number().min(1),
+  });
+
   try {
     const dati = await request.json();
-    const budget = datiSchema.parse(dati);
+    const datiParsed = datiSchema.parse(dati);
     const user = await getServerUser(cookies());
     const result = await prisma.profilo.update({
-      data: { budget: budget },
+      data: { budget: datiParsed.budget },
       where: { id: user?.id },
     });
     return NextResponse.json({ result: result, error: false }, { status: 200 });
@@ -40,6 +44,7 @@ export async function GET(request: NextRequest) {
       select: { budget: true },
       where: { id: user.id },
     });
+    assert(budget);
     const oggi = new Date();
     const mese_corrente = oggi.getMonth();
     const anno_corrente = oggi.getFullYear();
@@ -54,10 +59,8 @@ export async function GET(request: NextRequest) {
         profiloId: user.id,
       },
     });
-    return NextResponse.json(
-      { result: { budget: budget, spese: spese }, error: false },
-      { status: 200 }
-    );
+    const result: BudgetRequest = { budget: budget, spese: spese };
+    return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { message: error.message, error: true },

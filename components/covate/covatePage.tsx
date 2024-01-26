@@ -111,6 +111,7 @@ function CovatePage() {
       <Box mb="md">
         <Group justify={"flex-end"}>
           <Button
+            data-testid="ButtonAggiungi"
             onClick={btnAggiungiCovata}
             variant="light"
             leftSection={<IconPlus size={14} />}
@@ -140,6 +141,7 @@ function CovatePage() {
         submit={submit}
       />
       <ModalCancellazione
+        data-testid="ModalCancellazione"
         isOpen={isDeleteOpen != null}
         onClose={annullaModalCancellazione}
         onDelete={elimina}

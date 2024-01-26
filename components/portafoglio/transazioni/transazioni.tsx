@@ -144,6 +144,7 @@ function Transazioni() {
               Transazioni
             </Text>
             <Button
+              data-testid="ButtonAggiungi"
               onClick={openModalAggiungi}
               variant="light"
               leftSection={<IconPlus size={14} />}
@@ -180,12 +181,14 @@ function Transazioni() {
       </Paper>
 
       <ModalTransazione
+        data-testid="ModalTransazione"
         isOpen={isOpen}
         annulla={annulla}
         submit={submit}
         transazione={editTransazione}
       />
       <ModalCancellazione
+        data-testid="ModalCancellazione"
         isOpen={isModalCancellazioneOpen != ""}
         titolo="Elimina Transazione"
         onClose={() => setIsModalCancellazioneOpen("")}

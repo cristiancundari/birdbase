@@ -12,7 +12,7 @@ import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
 import { format } from "date-fns";
 
-const PortafoglioContext = React.createContext<
+export const PortafoglioContext = React.createContext<
   | { state: number; setState: React.Dispatch<React.SetStateAction<number>> }
   | undefined
 >(undefined);
@@ -41,9 +41,15 @@ function PortafoglioPage() {
   };
 
   const submit = async (values: FormValues) => {
-    const dataInizio = values.dataInizio ? format(values.dataInizio,"yyyy-MM-dd") : ""
-    const dataFine = values.dataFine ? format(values.dataFine,"yyyy-MM-dd") : ""
-    router.push(`/app/portafoglio/report?dataInizio=${dataInizio}&dataFine=${dataFine}&tipologia=${values.tipologia}`);
+    const dataInizio = values.dataInizio
+      ? format(values.dataInizio, "yyyy-MM-dd")
+      : "";
+    const dataFine = values.dataFine
+      ? format(values.dataFine, "yyyy-MM-dd")
+      : "";
+    router.push(
+      `/app/portafoglio/report?dataInizio=${dataInizio}&dataFine=${dataFine}&tipologia=${values.tipologia}`
+    );
   };
 
   return (

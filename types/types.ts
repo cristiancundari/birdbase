@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Soggetto } from "@prisma/client";
 
 export enum Sesso {
   Maschio = "Maschio",
@@ -29,6 +29,24 @@ export type CovataWithGenitoriAndCountFigli = Prisma.CovataGetPayload<{
 export type SoggettoWithGenitori = Prisma.SoggettoGetPayload<{
   include: { covata: { select: { idMadre: true; idPadre: true } } };
 }>;
+
+export type BudgetRequest = {
+  budget: Prisma.ProfiloGetPayload<{ select: { budget: true } }>;
+  spese: Prisma.GetTransazioneAggregateType<{ _sum: { prezzo: true } }>;
+};
+
+export type SpesaQueryResult = {
+  anno: number;
+  totale: number;
+  categoria: string;
+};
+
+export type SoggettoWithParentela = {
+  soggetto: Soggetto;
+  parentela: { nome: string; percentuale: number; colore: string } | null;
+};
+
+export type IncassoQueryResult = { mese: number; totale: number; anno: number };
 
 export type ApiResponse<T = any> =
   | { error: true; message: string }

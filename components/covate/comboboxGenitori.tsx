@@ -10,23 +10,15 @@ import React, { useState } from "react";
 import ComboboxGenitoriItem from "./comboboxGenitoriItem";
 import { Soggetto } from "@prisma/client";
 import { formatAnelletto } from "@/lib/helper";
-
-export interface GenitoriItem {
-  soggetto: Soggetto;
-  parentela: {
-    nome: string;
-    colore: string;
-    percentuale: number;
-  } | null;
-}
+import { SoggettoWithParentela } from "@/types/types";
 
 interface ComboboxGenitoriProps {
-  genitori: GenitoriItem[];
+  genitori: SoggettoWithParentela[];
   onComboboxChange: (val: string) => void;
   selected: string;
   label: string;
   loading: boolean;
-  description?: string
+  description?: string;
 }
 
 function ComboboxGenitori({
@@ -35,7 +27,7 @@ function ComboboxGenitori({
   selected,
   label,
   loading,
-  description
+  description,
 }: ComboboxGenitoriProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -46,7 +38,7 @@ function ComboboxGenitori({
     </Combobox.Option>
   ));
 
-  const genitore: GenitoriItem | undefined = genitori.find(
+  const genitore: SoggettoWithParentela | undefined = genitori.find(
     (g) => g.soggetto.id == selected
   );
   return (
@@ -66,12 +58,23 @@ function ComboboxGenitori({
           component="button"
           type="button"
           pointer
-          rightSection={loading ? <Loader size={18} /> : <Combobox.Chevron />}
+          rightSection={
+            loading ? (
+              <Loader size={18} data-testid="Loader" />
+            ) : (
+              <Combobox.Chevron />
+            )
+          }
           onClick={() => combobox.toggleDropdown()}
           rightSectionPointerEvents="none"
           multiline
         >
-          {genitore ? (formatAnelletto(genitore.soggetto.rna, genitore.soggetto.numero, genitore.soggetto.anno)
+          {genitore ? (
+            formatAnelletto(
+              genitore.soggetto.rna,
+              genitore.soggetto.numero,
+              genitore.soggetto.anno
+            )
           ) : (
             <Input.Placeholder>Scegli un Soggetto</Input.Placeholder>
           )}

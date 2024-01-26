@@ -1,20 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
+import { IncassoQueryResult } from "@/types/types";
 import { Prisma } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export type IncassiQueryResult = {
-  mese: number;
-  totale: number;
-  anno: number;
-};
 export async function GET(request: NextRequest) {
   try {
     const user = await getServerUser(cookies());
     assert(user);
-    const result = await prisma.$queryRaw<IncassiQueryResult[]>(
+    const result = await prisma.$queryRaw<IncassoQueryResult[]>(
       Prisma.sql`select extract(month from data)::integer AS mese, SUM(prezzo) AS totale,extract(year from data)::integer as anno FROM "transazioni" WHERE prezzo>0 AND profilo_id = ${user.id}::uuid GROUP BY mese,anno`
     );
     return NextResponse.json({ result: result, error: false }, { status: 200 });

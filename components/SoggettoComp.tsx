@@ -71,7 +71,11 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
         {menu.length > 0 ? (
           <Menu shadow="md">
             <Menu.Target>
-              <ActionIcon variant="subtle" color="gray">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                data-testid="MenuButton"
+              >
                 <IconDotsVertical size="14" />
               </ActionIcon>
             </Menu.Target>
@@ -113,6 +117,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
           />
           <Tooltip label="Preferito">
             <ActionIcon
+              data-testid="ButtonPreferito"
               color="dark"
               onClick={handleFavourite}
               loading={isFavouriteLoading}

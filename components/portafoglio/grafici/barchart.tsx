@@ -1,5 +1,4 @@
 "use client";
-import { IncassiQueryResult } from "@/app/api/transazioni/incassi/route";
 import { apiFetch } from "@/lib/apiFetch";
 import { formatValuta, getRangeYears, showNotification } from "@/lib/helper";
 import {
@@ -18,6 +17,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { usePortafoglioContext } from "../portafoglioPage";
 import NessunGrafico from "./NessunGrafico";
+import { IncassoQueryResult } from "@/types/types";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -26,7 +26,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 
 function BarChart() {
   const { state: forceRender } = usePortafoglioContext();
-  const [incassi, setIncassi] = useState<IncassiQueryResult[]>([]);
+  const [incassi, setIncassi] = useState<IncassoQueryResult[]>([]);
   const [incassiAnnui, setIncassiAnnui] = useState<number[]>([]);
   const [listaAnni, setListaAnni] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +38,7 @@ function BarChart() {
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
 
-  const incassiToSeries = (incassi: IncassiQueryResult[]) => {
+  const incassiToSeries = (incassi: IncassoQueryResult[]) => {
     const incassiAnnui = incassi.filter(
       (incasso) => incasso.anno.toString() == selectedItem
     );
@@ -50,7 +50,7 @@ function BarChart() {
   };
 
   const getIncassi = async () => {
-    const result = await apiFetch.get<IncassiQueryResult[]>(
+    const result = await apiFetch.get<IncassoQueryResult[]>(
       "/api/transazioni/incassi"
     );
     if (result.error) {
@@ -74,7 +74,9 @@ function BarChart() {
   }, []);
 
   useEffect(() => {
-    getIncassi();
+    if (!isLoading) {
+      getIncassi();
+    }
   }, [forceRender]);
 
   const options = listaAnni.map((item) => (

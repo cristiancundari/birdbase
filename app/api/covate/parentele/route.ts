@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
-import { SoggettoWithGenitori } from "@/types/types";
+import { SoggettoWithGenitori, SoggettoWithParentela } from "@/types/types";
 import { Soggetto } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
@@ -62,10 +62,7 @@ export async function GET(request: NextRequest) {
 function elaboraSoggetto(
   listaSoggetti: SoggettoWithGenitori[],
   soggetto: SoggettoWithGenitori
-): {
-  soggetto: Soggetto;
-  parentela: { nome: string; percentuale: number; colore: string } | null;
-}[] {
+): SoggettoWithParentela[] {
   const obj: Record<string, SoggettoWithGenitori> = {};
   for (let s of listaSoggetti) {
     obj[s.id] = s;
@@ -84,13 +81,11 @@ function elaboraSoggetto(
           percentuale: percentualeParentela[gradoParentelaStr],
           colore: coloreParentela(percentualeParentela[gradoParentelaStr]),
         },
-        grado: gradoParentela,
       };
     } else {
       return {
         soggetto: { ...partner, covata: undefined } as Soggetto,
         parentela: null,
-        grado: gradoParentela,
       };
     }
   });

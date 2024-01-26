@@ -8,6 +8,11 @@ export default defineConfig({
   test: {
     environment: "jsdom", // or 'jsdom', 'node'
     globals: true,
-    setupFiles: "./setup-test.ts",
+    setupFiles: [
+      "@testing-library/react/dont-cleanup-after-each",
+      "./setup-test.tsx",
+    ],
+    reporters: ["verbose"],
+    css: true,
   },
 });

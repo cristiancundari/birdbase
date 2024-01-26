@@ -15,7 +15,7 @@ async function get<T = any>(url: string) {
   const requestOptions = {
     method: "GET",
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -25,7 +25,7 @@ async function post<T = any>(url: string, body: any = null) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -35,7 +35,7 @@ async function patch<T = any>(url: string, body: any = null) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -45,7 +45,7 @@ async function put<T = any>(url: string, body: any = null) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -54,7 +54,7 @@ async function _delete<T = any>(url: string) {
   const requestOptions = {
     method: "DELETE",
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -111,7 +111,7 @@ async function postFormData<T = any>(url: string, body: FormData) {
     method: "POST",
     body: body,
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -120,7 +120,7 @@ async function patchFormData<T = any>(url: string, body: FormData) {
     method: "PATCH",
     body: body,
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -129,7 +129,7 @@ async function putFormData<T = any>(url: string, body: FormData) {
     method: "PUT",
     body: body,
   };
-  const response = await customFetch(location.origin + url, requestOptions);
+  const response = await customFetch(url, requestOptions);
   return handleResponse<T>(response);
 }
 
@@ -137,6 +137,9 @@ async function customFetch(
   input: string | Request | URL,
   init?: RequestInit | undefined
 ) {
+  if (typeof input == "string" && !input.includes("://")) {
+    input = location.origin + input;
+  }
   try {
     return await fetch(input, init);
   } catch (error: any) {

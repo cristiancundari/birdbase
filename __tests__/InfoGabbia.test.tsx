@@ -1,13 +1,11 @@
-import LayoutProviders from "@/app/layoutProviders";
 import InfoGabbia from "@/components/InfoGabbia";
-import { render, screen } from "@testing-library/react";
+import { render } from "@/setup-test";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 describe("<InfoGabbia />", () => {
   const gabbia = (gabbia: number | null, hideNull: boolean) => (
-    <LayoutProviders>
-      <InfoGabbia gabbia={gabbia} hideNull={hideNull} />
-    </LayoutProviders>
+    <InfoGabbia gabbia={gabbia} hideNull={hideNull} />
   );
   it("dovrebbe visualizzare il - se non è presente il numero della gabbia", () => {
     render(gabbia(null, false));
@@ -16,6 +14,7 @@ describe("<InfoGabbia />", () => {
     expect(icon).toBeInTheDocument();
     expect(text).toBeInTheDocument();
   });
+
   it("dovrebbe visualizzare il numero di gabbia con l'icona", () => {
     render(gabbia(5, false));
     const icon = screen.queryByTestId("IconGabbia");
@@ -23,6 +22,7 @@ describe("<InfoGabbia />", () => {
     expect(icon).toBeInTheDocument();
     expect(text).toBeInTheDocument();
   });
+
   it("dovrebbe nascondere il numero di gabbia se è null", () => {
     render(gabbia(null, true));
     const icon = screen.queryByTestId("IconGabbia");

@@ -37,11 +37,5 @@ export default createTheme({
         return { indicator: {} };
       },
     }),
-    Tooltip: Tooltip.extend({
-      defaultProps: { withinPortal: false },
-    }),
-    Popover: Popover.extend({
-      defaultProps: { withinPortal: false },
-    }),
   },
 });

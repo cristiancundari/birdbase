@@ -23,14 +23,17 @@ function ModalConferma({
   onClose,
   isOpen,
   confirmButton,
+  ...others
 }: ModalConferma) {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <Modal opened={isOpen} onClose={onClose} title={titolo}>
+    <Modal opened={isOpen} onClose={onClose} title={titolo} {...others}>
       <Stack gap="xs" align="center">
         {messages?.map((m, index) => (
-          <Text size="sm" key={index}>{m}</Text>
+          <Text size="sm" key={index}>
+            {m}
+          </Text>
         ))}
       </Stack>
 

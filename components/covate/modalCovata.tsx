@@ -4,6 +4,7 @@ import {
   ApiResponse,
   CovataWithGenitori,
   SoggettoWithGenitori,
+  SoggettoWithParentela,
 } from "@/types/types";
 import {
   Button,
@@ -23,7 +24,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import ComboboxGenitori, { GenitoriItem } from "./comboboxGenitori";
+import ComboboxGenitori from "./comboboxGenitori";
 import { apiFetch } from "@/lib/apiFetch";
 import { useModalInit } from "@/lib/hooks";
 
@@ -50,12 +51,12 @@ const soggettoToGenitoriItem = (s: Soggetto) => ({
 
 function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [initMaschi, setInitMaschi] = useState<GenitoriItem[]>([]);
-  const [initFemmine, setInitFemmine] = useState<GenitoriItem[]>([]);
+  const [initMaschi, setInitMaschi] = useState<SoggettoWithParentela[]>([]);
+  const [initFemmine, setInitFemmine] = useState<SoggettoWithParentela[]>([]);
   const [loadingMaschi, setLoadingMaschi] = useState(false);
   const [loadingFemmine, setLoadingFemmine] = useState(false);
-  const [maschi, setMaschi] = useState<GenitoriItem[]>([]);
-  const [femmine, setFemmine] = useState<GenitoriItem[]>([]);
+  const [maschi, setMaschi] = useState<SoggettoWithParentela[]>([]);
+  const [femmine, setFemmine] = useState<SoggettoWithParentela[]>([]);
   const form = useForm<CovataFormValues>({
     initialValues: {
       padre: "",
@@ -116,12 +117,12 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
         return null;
       }
 
-      const resMadre: GenitoriItem[] = result.data
+      const resMadre: SoggettoWithParentela[] = result.data
         .filter(
           (item: Soggetto) => item.sesso == false && item.isMorto == false
         )
         .map(soggettoToGenitoriItem);
-      const resPadre: GenitoriItem[] = result.data
+      const resPadre: SoggettoWithParentela[] = result.data
         .filter((item: Soggetto) => item.sesso == true && item.isMorto == false)
         .map(soggettoToGenitoriItem);
 
@@ -136,9 +137,9 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
     listaPadreMadre();
   }
 
-  async function getMadrePadre(id: string): Promise<GenitoriItem[]> {
+  async function getMadrePadre(id: string): Promise<SoggettoWithParentela[]> {
     // Chiamiamo l'API per sapere le parentele dei soggetti del sesso opposto
-    const res = await apiFetch.get<GenitoriItem[]>(
+    const res = await apiFetch.get<SoggettoWithParentela[]>(
       `/api/covate/parentele?soggetto=${id}`
     );
     if (res.error) {
@@ -168,6 +169,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
 
   return (
     <Modal
+      data-testid="ModalCovata"
       opened={isOpen}
       onClose={annulla}
       title={modalData == null ? "Aggiungi Covata" : "Modifica Covata"}
@@ -231,7 +233,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
             allowNegative={false}
             allowDecimal={false}
             hideControls
-            label="Uova deposte"
+            label="Uova Deposte"
             {...form.getInputProps("uovaDeposte")}
           />
         </SimpleGrid>
@@ -246,6 +248,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
             Annulla
           </Button>
           <Button
+            data-testid="ButtonSalva"
             color="green"
             leftSection={<IconDeviceFloppy size={14} />}
             type="submit"

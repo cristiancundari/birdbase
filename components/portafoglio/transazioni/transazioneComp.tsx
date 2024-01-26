@@ -1,4 +1,4 @@
-import { formatData, formatValuta } from "@/lib/helper";
+import { formatData, formatValuta, transazioniIconColor } from "@/lib/helper";
 import { TransazioneWithCategoria } from "@/types/types";
 import {
   ActionIcon,
@@ -12,15 +12,10 @@ import {
   Stack,
   Text,
   ThemeIcon,
+  Tooltip,
 } from "@mantine/core";
-import { Transazione } from "@prisma/client";
-import {
-  IconBarrel,
-  IconDotsVertical,
-  IconEdit,
-  IconTrash,
-} from "@tabler/icons-react";
-import { transazioniIconColor } from "@/lib/helper";
+import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
+import { useRef } from "react";
 
 interface TransazioneCompProps {
   transazione: TransazioneWithCategoria;
@@ -36,8 +31,9 @@ function TransazioneComp({
 }: TransazioneCompProps) {
   const MyIcon = transazioniIconColor[transazione.categoria.nome].icon;
   const myColor = transazioniIconColor[transazione.categoria.nome].color;
+
   return (
-    <Box>
+    <Box data-testid="TransazioneComp">
       {printLabel && (
         <Text c="dimmed" fw={500}>
           {formatData(transazione.data)}
@@ -66,7 +62,11 @@ function TransazioneComp({
             <Menu disabled={!transazione.modificabile}>
               <MenuTarget>
                 {transazione.modificabile ? (
-                  <ActionIcon variant="subtle" color="gray">
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    data-testid="MenuButton"
+                  >
                     <IconDotsVertical size={14} />
                   </ActionIcon>
                 ) : (
@@ -81,6 +81,7 @@ function TransazioneComp({
               </MenuTarget>
               <MenuDropdown>
                 <MenuItem
+                  data-testid="ModificaButton"
                   leftSection={<IconEdit size={14} />}
                   onClick={() => {
                     modifica(transazione);
@@ -89,6 +90,7 @@ function TransazioneComp({
                   Modifica
                 </MenuItem>
                 <MenuItem
+                  data-testid="EliminaButton"
                   leftSection={<IconTrash size={14} />}
                   color="red"
                   onClick={() => {
