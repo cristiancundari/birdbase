@@ -7,6 +7,7 @@
 (D) Sistemare le immagini nel bucket di supabase in cartelle differenti (avatar e gare) {cm:2024-01-12}
 (D) Sistemare il loading in caso di errore API {cm:2024-01-26}
 (A) Rendere l'API utilizzabile solo da chi ne ha i permessi
+(A) Generare un errore quando si prova ad eliminare una covata con dei figli associati
 (C) Sistemare l'azione di OnDelete e OnUpdate sullo schema prisma
 (F) Gestire i morti {cm:2024-01-12}
 (F) Valutare la condivisione dello schema zod nei metodi POST e PATCH dell'API che risultano molto simili
@@ -15,5 +16,13 @@
 (E) Modificare layout combobox in ModalAggiungiFiglio in modo che sia visibile la data di nascita, la gabbia e il preferito
 (C) Aggiungere popover a SoggettoComp in modo da poter visualizzare eventuali note {cm:2024-01-26}
 
+(D) Mostrare nel report del portafoglio le opzioni che l'utente ha selezionato per generarlo
 (D) Disattivare il submit di tutti i form quando si preme il tasto invio
 (D) Valutare di aggiungere la funzionalità che permette di aggiungere multipli figli a una covata
+
+----- COMPRAVENDITA -----
+Nella pagina dedicata "marketplace" l'allevatore può creare un inserzione selezionando uno dei propri soggetti che desidera vendere, scegliendo un prezzo e il metodo di spedizione.
+Un secondo allevatore può consultare la stessa pagina del marketplace e visualizzare tutte le inserzioni attive, scegliere il soggetto da acquistare, acquistarlo, e pagare direttamente sulla piattaforma (stripe/paypal).
+In caso di spedizione, un sistema automatico traccerà le spedizioni e qualora risultasse consegnata, verrà inviata una e-mail all'acquirente che entro 48 ore potrà confermare la ricezione dall'app. Una volta confermata verrà rilasciato il pagamento al venditore. In caso di problemi, il pagamento non verrà rilasciato e sarà cura dell'amministratore contattare entrambe le parti della transazione per decidere come gestire il caso. L'amministratore avrà a disposizione una pagina dedicata per visualizzare le varie controversie e agire nel modo secondo lui più congeniale, rilasciando il pagamento al venditore o annullando l'ordine.
+
+Quando una transazione viene confermata, verranno create le relative voci di spesa e incasso nella sezione portafoglio di entrambi venditore e acquirente.

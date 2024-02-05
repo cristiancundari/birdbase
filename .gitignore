@@ -9,6 +9,9 @@
 /coverage
 .vitest-preview
 
+# documentation
+/.crossnote
+
 # next.js
 /.next/
 /out/

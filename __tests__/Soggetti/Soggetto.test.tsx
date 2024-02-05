@@ -338,10 +338,10 @@ describe("Soggetto CRUD", () => {
 
     fireEvent.click(preferitoButton);
 
-    const iconPreferitoAfter = screen.queryByTestId("IconPreferito");
+    const iconPreferitoAfter = await screen.findByTestId("IconPreferito");
     const iconNonPreferitoAfter = screen.queryByTestId("IconNonPreferito");
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(iconPreferitoAfter).toBeInTheDocument();
       expect(iconNonPreferitoAfter).not.toBeInTheDocument();
     });
