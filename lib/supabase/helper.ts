@@ -1,10 +1,6 @@
-import { createClient } from "./server";
-import { NextResponse } from "next/server";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { SupabaseClient } from "@supabase/supabase-js";
 import { prisma } from "../prisma";
-import assert from "assert";
-import { Prisma, Role } from "@prisma/client";
+import { createClient } from "./server";
 
 export async function getServerUserProfile(
   cookieStore: ReadonlyRequestCookies
@@ -15,6 +11,7 @@ export async function getServerUserProfile(
     where: {
       id: user?.id,
     },
+    include: { allevatore: true },
   });
 
   return profile;

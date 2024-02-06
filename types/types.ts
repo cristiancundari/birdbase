@@ -6,6 +6,10 @@ export enum Sesso {
   InAttesa = "In Attesa",
 }
 
+export type ProfiloWithAllevatore = Prisma.ProfiloGetPayload<{
+  include: { allevatore: true };
+}>;
+
 export type GaraWithNazioneAndCountIscrizioni = Prisma.GaraGetPayload<{
   include: { nazione: true; _count: { select: { iscrizioni: true } } };
 }>;

@@ -9,7 +9,7 @@ import { useSupabase } from "@/providers/supabaseProvider";
 import { ApiResponse, GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
-import { Gara as GaraType } from "@prisma/client";
+import { Gara as GaraType, Role } from "@prisma/client";
 import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
@@ -143,7 +143,7 @@ function GarePage() {
 
   return (
     <>
-      {supabase.isAdmin && (
+      {supabase.user?.ruolo === Role.ADMIN && (
         <Box mb="md">
           <Group justify={"flex-end"}>
             <Button

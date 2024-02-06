@@ -1,6 +1,7 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumb";
-import ModalCancellazione from "@/components/ModalCancellazione";
+import ModalConferma from "@/components/ModalConferma";
+import ModalSelezionaSoggetto from "@/components/ModalSelezionaSoggetto";
 import SoggettoComp, { SoggettoMenu } from "@/components/SoggettoComp";
 import ModalSoggetto, { FormValues } from "@/components/home/ModalSoggetto";
 import {
@@ -9,8 +10,8 @@ import {
   togglePreferitoSoggetto,
 } from "@/components/home/functions";
 import { apiFetch } from "@/lib/apiFetch";
-import { showNotification } from "@/lib/helper";
-import { ApiResponse, CovataWithGenitoriAndFigli } from "@/types/types";
+import { formatAnelletto, showNotification } from "@/lib/helper";
+import { CovataWithGenitoriAndFigli } from "@/types/types";
 import { Box, Button, Group, Menu, SimpleGrid, Text } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
@@ -20,13 +21,10 @@ import {
   IconEdit,
   IconHandClick,
   IconPlus,
-  IconSettings,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import InfoCovataHeader from "./infoCovataHeader";
-import ModalAggiungiFiglio from "./ModalAggiungiFiglio";
-import ModalConferma from "@/components/ModalConferma";
 
 interface InfoCovataProps {
   covata: CovataWithGenitoriAndFigli;
@@ -93,11 +91,14 @@ function InfoCovata({ covata }: InfoCovataProps) {
 
   const rimuovi = async () => {
     const formData = new FormData();
-    const data = {covataId: null}
-    formData.append("form", JSON.stringify(data))
+    const data = { covataId: null };
+    formData.append("form", JSON.stringify(data));
 
-    const result = await apiFetch.patchFormData(`/api/soggetti/${modalRemoveId}`, formData);
-    
+    const result = await apiFetch.patchFormData(
+      `/api/soggetti/${modalRemoveId}`,
+      formData
+    );
+
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -106,6 +107,18 @@ function InfoCovata({ covata }: InfoCovataProps) {
         success: true,
       });
       router.refresh();
+    }
+  };
+
+  const getSoggettiFigli = async () => {
+    const result = await apiFetch.get<Soggetto[]>("/api/soggetti?covataId=");
+    if (result.error) {
+      throw new Error(result.message);
+    } else {
+      return result.data.map((item) => ({
+        value: item.id,
+        label: formatAnelletto(item.rna, item.numero, item.anno),
+      }));
     }
   };
 
@@ -122,17 +135,23 @@ function InfoCovata({ covata }: InfoCovataProps) {
 
   const modalAggiungiFiglioSubmit = async (value: string) => {
     const data = {
-      covataId: covata.id
-    }
-    const formData = new FormData()
+      covataId: covata.id,
+    };
+    const formData = new FormData();
     formData.append("form", JSON.stringify(data));
-    
-    const result = await apiFetch.patchFormData(`/api/soggetti/${value}`, formData);
+
+    const result = await apiFetch.patchFormData(
+      `/api/soggetti/${value}`,
+      formData
+    );
 
     if (result.error) {
-      showNotification({message: result.message});
+      showNotification({ message: result.message });
     } else {
-      showNotification({message: "Figlio aggiunto correttamente alla covata", success: true});
+      showNotification({
+        message: "Figlio aggiunto correttamente alla covata",
+        success: true,
+      });
       router.refresh();
     }
   };
@@ -177,7 +196,14 @@ function InfoCovata({ covata }: InfoCovataProps) {
     }
   };
 
-  const menuSoggetto: SoggettoMenu[] = [{ label: "Modifica", fn: editHandler, icon: <IconEdit size={14} />},{ label: "Rimuovi", fn: removeHandler, icon: <IconCircleMinus size={14} />}]
+  const menuSoggetto: SoggettoMenu[] = [
+    { label: "Modifica", fn: editHandler, icon: <IconEdit size={14} /> },
+    {
+      label: "Rimuovi",
+      fn: removeHandler,
+      icon: <IconCircleMinus size={14} />,
+    },
+  ];
 
   return (
     <>
@@ -237,17 +263,22 @@ function InfoCovata({ covata }: InfoCovataProps) {
         submit={modalSoggettoSubmit}
         modalData={modalData}
       />
-      <ModalAggiungiFiglio
-        covataId={covata.id}
+      <ModalSelezionaSoggetto
+        getSoggetti={getSoggettiFigli}
         isOpen={isModalAggiungiFiglioOpen}
         annulla={annullaAggiungiFiglio}
         submit={modalAggiungiFiglioSubmit}
+        description="Sono visualizzati solo i soggetti figli di nessuna covata"
       />
       <ModalConferma
         isOpen={modalRemoveId != ""}
         titolo="Rimuovi Soggetto"
         messages={["Vuoi rimuovere questo soggetto dalla covata?"]}
-        confirmButton={{ label: "Rimuovi", icon: (<IconCircleMinus size={14} />), color: "yellow"}}
+        confirmButton={{
+          label: "Rimuovi",
+          icon: <IconCircleMinus size={14} />,
+          color: "yellow",
+        }}
         onConfirm={rimuovi}
         onClose={annullaRimuovi}
       />

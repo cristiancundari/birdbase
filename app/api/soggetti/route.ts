@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     dataNascita: z.coerce.date(),
     sesso: z.boolean().nullable(),
     gabbia: z.coerce.number().nullish(),
-    rna: z.string(),
+    rna: z.string().toUpperCase(),
     numero: z.string().min(1),
     anno: z.string().min(1),
     avatar: z.string().nullish(),

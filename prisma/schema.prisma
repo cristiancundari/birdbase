@@ -7,17 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model Profilo {
   id          String        @id(map: "Profile_pkey") @db.Uuid
-  name        String
   budget      Float         @default(0)
   ruolo       Role          @default(USER)
+  name        String?       @db.VarChar
+  rna         String        @db.VarChar
   covate      Covata[]
+  allevatore  Allevatore    @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
   soggetti    Soggetto[]
   transazioni Transazione[]
 
@@ -29,20 +26,20 @@ model Soggetto {
   sesso       Boolean?
   dataNascita DateTime     @map("data_nascita") @db.Date
   gabbia      Int?
-  rna         String
   numero      String
-  anno        String
-  note        String       @default("") @db.VarChar
+  rna         String
   preferito   Boolean      @default(false)
   profiloId   String       @map("profilo_id") @db.Uuid
   avatar      String?
   covataId    Int?         @map("covata_id")
   isMorto     Boolean      @default(false) @map("is_morto")
+  anno        String
+  note        String       @default("") @db.VarChar
   covateMadre Covata[]     @relation("covate_id_madreToSoggetto")
   covatePadre Covata[]     @relation("covate_id_padreToSoggetto")
+  iscrizioni  Iscrizione[]
   covata      Covata?      @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profilo     Profilo      @relation(fields: [profiloId], references: [id])
-  iscrizioni  Iscrizione[]
 
   @@map("soggetti")
 }
@@ -54,13 +51,6 @@ model Nazione {
   gare  Gara[]
 
   @@map("nazioni")
-}
-
-enum GaraStatus {
-  BOZZA
-  PUBBLICA
-  VALUTAZIONE
-  COMPLETATA
 }
 
 model Gara {
@@ -75,8 +65,8 @@ model Gara {
   isDeleted  Boolean      @default(false) @map("is_deleted")
   prezzo     Float        @default(0)
   capienza   Int
-  nazione    Nazione      @relation(fields: [nazioneId], references: [id])
   stato      GaraStatus   @default(BOZZA)
+  nazione    Nazione      @relation(fields: [nazioneId], references: [id])
   iscrizioni Iscrizione[]
 
   @@map("gare")
@@ -90,8 +80,8 @@ model Iscrizione {
   importo    Float
   posizione  Int?
   punteggio  Float?
-  soggetto   Soggetto @relation(fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   gara       Gara     @relation(fields: [garaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  soggetto   Soggetto @relation(fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("iscrizioni")
 }
@@ -135,4 +125,33 @@ model Covata {
   figli       Soggetto[] @relation("soggetti_covata_idTocovate")
 
   @@map("covate")
+}
+
+model Allevatore {
+  rna     String    @id @db.VarChar
+  nome    String    @db.VarChar
+  cognome String    @db.VarChar
+  profili Profilo[]
+
+  @@map("allevatori")
+}
+
+model OrdineIscrizioni {
+  id         String   @id @db.VarChar
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  dati       Json
+
+  @@map("ordini_iscrizioni")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum GaraStatus {
+  BOZZA
+  PUBBLICA
+  VALUTAZIONE
+  COMPLETATA
 }

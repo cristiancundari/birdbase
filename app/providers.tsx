@@ -16,11 +16,10 @@ export const Providers = async ({ children }: Props) => {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const userProfile = await getServerUserProfile(cookieStore);
-  const isAdmin = userProfile?.ruolo === Role.ADMIN;
+  const user = await getServerUserProfile(cookieStore);
 
   return (
-    <SupabaseProvider session={session} isAdmin={isAdmin}>
+    <SupabaseProvider session={session} user={user}>
       <LayoutProviders>{children}</LayoutProviders>
     </SupabaseProvider>
   );

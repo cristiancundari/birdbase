@@ -77,7 +77,7 @@ describe("<Budget />", () => {
   it("dovrebbe salvare una modifica al budget", async () => {
     const profilo: Profilo = {
       id: "userid",
-      name: "user",
+      rna: "48XA",
       budget: 199,
       ruolo: "USER",
     };

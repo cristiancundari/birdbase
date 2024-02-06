@@ -87,7 +87,7 @@ function Gara({
             height={160}
             alt={gara.titolo}
           />
-          {supabase.isAdmin && (
+          {supabase.user?.ruolo === Role.ADMIN && (
             <Menu shadow="md">
               <Menu.Target>
                 <ActionIcon
@@ -207,7 +207,7 @@ function Gara({
             </Text>
           </Stack>
         </Group>
-        {!supabase.isAdmin && (
+        {supabase.user?.ruolo !== Role.ADMIN && (
           <Button
             component={Link}
             href={`/app/gare/${gara.id}`}

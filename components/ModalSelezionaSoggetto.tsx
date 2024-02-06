@@ -1,25 +1,33 @@
 "use client";
-import { apiFetch } from "@/lib/apiFetch";
-import { formatAnelletto, showNotification } from "@/lib/helper";
+import { showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
-import { Button, Combobox, ComboboxItem, Group, Loader, Modal, Popover, Select, Text } from "@mantine/core";
+import {
+  Button,
+  Combobox,
+  ComboboxItem,
+  Group,
+  Loader,
+  Modal,
+  Select,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Soggetto } from "@prisma/client";
-import { IconDeviceFloppy, IconInfoCircle, IconX } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 
-interface ModalAggiungiFiglioProps {
+interface ModalSelezionaSoggettoProps {
   isOpen: boolean;
   annulla: () => void;
-  covataId: number;
+  getSoggetti: () => Promise<ComboboxItem[]>;
   submit: (value: string) => Promise<void>;
+  description?: string;
 }
-function ModalAggiungiFiglio({
+function ModalSelezionaSoggetto({
   isOpen,
   annulla,
-  covataId,
+  getSoggetti,
   submit,
-}: ModalAggiungiFiglioProps) {
+  description,
+}: ModalSelezionaSoggettoProps) {
   const [isSelectLoading, setIsSelectLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [soggettiItems, setSoggettiItems] = useState<ComboboxItem[]>([]);
@@ -27,11 +35,14 @@ function ModalAggiungiFiglio({
   useModalInit(() => {
     async function _getSoggetti() {
       setIsSelectLoading(true);
-      const result = await apiFetch.get<Soggetto[]>("/api/soggetti?covataId=")
-      if (result.error) {
-        showNotification({message:result.message})
-      } else {
-        setSoggettiItems(result.data.map((item)=>({value: item.id, label: formatAnelletto(item.rna, item.numero, item.anno)})))
+      try {
+        setSoggettiItems(await getSoggetti());
+      } catch (error) {
+        if (error instanceof Error) {
+          showNotification({ message: error.message });
+        } else {
+          showNotification({ message: "Errore nell'ottenere i soggetti" });
+        }
       }
       setIsSelectLoading(false);
     }
@@ -44,11 +55,11 @@ function ModalAggiungiFiglio({
     },
   });
 
-  useEffect(()=>{
-    if(isOpen) {
+  useEffect(() => {
+    if (isOpen) {
       form.reset();
     }
-  },[isOpen])
+  }, [isOpen]);
 
   return (
     <Modal
@@ -67,12 +78,13 @@ function ModalAggiungiFiglio({
       >
         <Select
           label="Soggetto"
-          description="Sono visualizzati solo i soggetti figli di nessuna covata"
+          description={description}
           data={soggettiItems}
           {...form.getInputProps("soggettoId")}
           rightSection={
             isSelectLoading ? <Loader size={18} /> : <Combobox.Chevron />
           }
+          searchable
         />
 
         <Group mt={"lg"} gap="md" justify="flex-end">
@@ -86,11 +98,11 @@ function ModalAggiungiFiglio({
           </Button>
           <Button
             color="green"
-            leftSection={<IconDeviceFloppy size={14} />}
+            leftSection={<IconCheck size={14} />}
             type="submit"
             loading={isLoading}
           >
-            Salva
+            Seleziona
           </Button>
         </Group>
       </form>
@@ -98,4 +110,4 @@ function ModalAggiungiFiglio({
   );
 }
 
-export default ModalAggiungiFiglio;
+export default ModalSelezionaSoggetto;
