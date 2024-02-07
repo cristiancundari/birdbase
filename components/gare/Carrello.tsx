@@ -9,16 +9,15 @@ import {
 } from "@mantine/core";
 import {
   IconArrowNarrowRight,
-  IconCurrencyEuro,
   IconPlus,
   IconShoppingCart,
 } from "@tabler/icons-react";
-import GaraComp from "./GaraComp";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import CarrelloComp from "./CarrelloComp";
-import { useState } from "react";
-import { format } from "path";
-import { formatValuta } from "@/lib/helper";
+import { useEffect, useState } from "react";
+import { formatAnelletto, formatValuta } from "@/lib/helper";
+import ModalSelezionaSoggetto from "../ModalSelezionaSoggetto";
+import assert from "assert";
 
 const soggetti = [
   {
@@ -103,58 +102,131 @@ const soggetti = [
   },
 ];
 
+const soggettiDaIscrivere = [
+  {
+    id: 21,
+    sesso: true,
+    rna: "48XA",
+    numero: 128,
+    anno: 2023,
+    allevatore: { nome: "Antonello", cognome: "Savoca" },
+  },
+  {
+    id: 22,
+    sesso: false,
+    rna: "72YZ",
+    numero: 256,
+    anno: 2022,
+    allevatore: { nome: "Giovanna", cognome: "Rossi" },
+  },
+  {
+    id: 23,
+    sesso: true,
+    rna: "33BC",
+    numero: 512,
+    anno: 2021,
+    allevatore: { nome: "Luigi", cognome: "Ferrari" },
+  },
+];
+
 function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   const [listaSoggetti, setListaSoggetti] = useState(soggetti);
   const [totale, setTotale] = useState(soggetti.length * gara.prezzo);
+  const [isOpen, setIsOpen] = useState(false);
 
   function onDelete(id: number) {
     const newListaSoggetti = listaSoggetti.filter((s) => s.id !== id);
-    const carrelloTotale = newListaSoggetti.length * gara.prezzo;
     setListaSoggetti(newListaSoggetti);
-    setTotale(carrelloTotale);
   }
 
+  function iscriviSoggettoModal() {
+    setIsOpen(true);
+  }
+  function annulla() {
+    setIsOpen(false);
+  }
+
+  async function submit(value: string) {
+    const soggettoSelezionato = soggettiDaIscrivere.find(
+      (s) => s.id.toString() == value
+    );
+    assert(soggettoSelezionato);
+    setListaSoggetti([...listaSoggetti, soggettoSelezionato]);
+    return;
+  }
+
+  async function getSoggetti() {
+    const optionSoggetti = soggettiDaIscrivere.map((s) => ({
+      value: s.id.toString(),
+      label: formatAnelletto(s.rna, s.numero.toString(), s.anno.toString()),
+    }));
+    return optionSoggetti;
+  }
+
+  useEffect(() => {
+    getSoggetti();
+  }, []);
+
+  useEffect(() => {
+    setTotale(listaSoggetti.length * gara.prezzo);
+  }, [listaSoggetti]);
+
   return (
-    <Stack justify="space-between">
-      <Group justify={"flex-end"} p={"md"}>
-        <Button
-          onClick={() => {}}
-          variant="light"
-          leftSection={<IconPlus size={14} />}
+    <>
+      <Stack justify="space-between">
+        <Group justify={"flex-end"} p={"md"}>
+          <Button
+            onClick={() => {
+              iscriviSoggettoModal();
+            }}
+            variant="light"
+            leftSection={<IconPlus size={14} />}
+          >
+            Iscrivi
+          </Button>
+        </Group>
+
+        <ScrollArea h="300" w="100%">
+          {listaSoggetti.map((soggetto) => (
+            <Box p="sm" key={soggetto.id}>
+              <CarrelloComp
+                soggetto={soggetto}
+                gara={gara}
+                onDelete={onDelete}
+              />
+            </Box>
+          ))}
+        </ScrollArea>
+
+        <Group
+          justify="space-between"
+          style={{
+            background: "linear-gradient(to right, #46b83d, #111e0b)",
+            color: "white",
+          }}
+          p={"md"}
         >
-          Iscrivi
-        </Button>
-      </Group>
-
-      <ScrollArea h="300" w="100%">
-        {listaSoggetti.map((soggetto) => (
-          <Box p="sm">
-            <CarrelloComp soggetto={soggetto} gara={gara} onDelete={onDelete} />
-          </Box>
-        ))}
-      </ScrollArea>
-
-      <Group
-        justify="space-between"
-        style={{
-          background: "linear-gradient(to right, #46b83d, #111e0b)",
-          color: "white",
-        }}
-        p={"md"}
-      >
-        <Group gap="sm">
-          <Text fw={600} size="lg">
-            {formatValuta(totale)}
-          </Text>
+          <Group gap="sm">
+            <Text fw={600} size="lg">
+              {formatValuta(totale)}
+            </Text>
+          </Group>
+          <Group gap="sm">
+            <IconShoppingCart />
+            <ActionIcon variant="transparent" aria-label="Settings">
+              <IconArrowNarrowRight color="white" />
+            </ActionIcon>
+          </Group>
         </Group>
-        <Group gap="sm">
-          <IconShoppingCart />
-          <ActionIcon variant="transparent" aria-label="Settings">
-            <IconArrowNarrowRight color="white" />
-          </ActionIcon>
-        </Group>
-      </Group>
-    </Stack>
+      </Stack>
+
+      <ModalSelezionaSoggetto
+        isOpen={isOpen}
+        annulla={() => annulla()}
+        getSoggetti={getSoggetti}
+        submit={submit}
+      />
+    </>
   );
 }
 

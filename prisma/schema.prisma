@@ -8,16 +8,17 @@ datasource db {
 }
 
 model Profilo {
-  id                String             @id(map: "Profile_pkey") @db.Uuid
-  budget            Float              @default(0)
-  ruolo             Role               @default(USER)
-  name              String?            @db.VarChar
-  rna               String             @db.VarChar
-  covate            Covata[]
-  ordini_iscrizioni OrdineIscrizioni[]
-  allevatore        Allevatore         @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
-  soggetti          Soggetto[]
-  transazioni       Transazione[]
+  id               String             @id(map: "Profile_pkey") @db.Uuid
+  budget           Float              @default(0)
+  ruolo            Role               @default(USER)
+  name             String?            @db.VarChar
+  rna              String             @db.VarChar
+  covate           Covata[]
+  iscrizioni       Iscrizione[]
+  ordiniIscrizioni OrdineIscrizioni[]
+  allevatore       Allevatore         @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
+  soggetti         Soggetto[]
+  transazioni      Transazione[]
 
   @@map("profili")
 }
@@ -55,21 +56,21 @@ model Nazione {
 }
 
 model Gara {
-  id                String             @id(map: "Gara_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  titolo            String
-  data              DateTime           @db.Date
-  tipologia         String
-  citta             String
-  immagine          String?
-  nazioneId         Int                @map("nazione_id")
-  createdAt         DateTime           @default(now()) @map("created_at")
-  isDeleted         Boolean            @default(false) @map("is_deleted")
-  prezzo            Float              @default(0)
-  capienza          Int
-  stato             GaraStatus         @default(BOZZA)
-  nazione           Nazione            @relation(fields: [nazioneId], references: [id])
-  iscrizioni        Iscrizione[]
-  ordini_iscrizioni OrdineIscrizioni[]
+  id               String             @id(map: "Gara_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titolo           String
+  data             DateTime           @db.Date
+  tipologia        String
+  citta            String
+  immagine         String?
+  nazioneId        Int                @map("nazione_id")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  isDeleted        Boolean            @default(false) @map("is_deleted")
+  prezzo           Float              @default(0)
+  capienza         Int
+  stato            GaraStatus         @default(BOZZA)
+  nazione          Nazione            @relation(fields: [nazioneId], references: [id])
+  iscrizioni       Iscrizione[]
+  ordiniIscrizioni OrdineIscrizioni[]
 
   @@map("gare")
 }
@@ -82,7 +83,9 @@ model Iscrizione {
   importo    Float
   posizione  Int?
   punteggio  Float?
+  profiloId  String   @map("profilo_id") @db.Uuid
   gara       Gara     @relation(fields: [garaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo    Profilo  @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   soggetto   Soggetto @relation(fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("iscrizioni")

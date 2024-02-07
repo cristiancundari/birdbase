@@ -27,7 +27,7 @@ function InfoGaraHeader({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
           <Group gap="xs">
             <Text>Posti disponibili:</Text>
             <Text>
-              {gara._count.iscrizioni}/{gara.capienza}
+              {gara.capienza - gara._count.iscrizioni}/{gara.capienza}
             </Text>
           </Group>
           <Group gap="xs">

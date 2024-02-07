@@ -8,85 +8,41 @@ import {
   ScrollArea,
   Text,
 } from "@mantine/core";
-import React from "react";
-import GaraComp from "./GaraComp";
+import React, { useEffect, useState } from "react";
+import IscrizioneComp from "./GaraComp";
 import Carrello from "./Carrello";
 import InfoGaraHeader from "./InfoGaraHeader";
-import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
-const soggetti = [
-  {
-    sesso: true,
-    rna: "48XA",
-    numero: 128,
-    anno: 2023,
-    allevatore: { nome: "Antonello", cognome: "Savoca" },
-  },
-  {
-    sesso: false,
-    rna: "72YZ",
-    numero: 256,
-    anno: 2022,
-    allevatore: { nome: "Giovanna", cognome: "Rossi" },
-  },
-  {
-    sesso: true,
-    rna: "33BC",
-    numero: 512,
-    anno: 2021,
-    allevatore: { nome: "Luigi", cognome: "Ferrari" },
-  },
-  {
-    sesso: false,
-    rna: "89DE",
-    numero: 1024,
-    anno: 2020,
-    allevatore: { nome: "Maria", cognome: "Bianchi" },
-  },
-  {
-    sesso: true,
-    rna: "56FG",
-    numero: 2048,
-    anno: 2019,
-    allevatore: { nome: "Roberto", cognome: "Ricci" },
-  },
-  {
-    sesso: false,
-    rna: "12HI",
-    numero: 4096,
-    anno: 2018,
-    allevatore: { nome: "Laura", cognome: "Perez" },
-  },
-  {
-    sesso: true,
-    rna: "78JK",
-    numero: 8192,
-    anno: 2017,
-    allevatore: { nome: "Michele", cognome: "Lopez" },
-  },
-  {
-    sesso: false,
-    rna: "45LM",
-    numero: 16384,
-    anno: 2016,
-    allevatore: { nome: "Francesca", cognome: "Martin" },
-  },
-  {
-    sesso: true,
-    rna: "23NO",
-    numero: 32768,
-    anno: 2015,
-    allevatore: { nome: "Paolo", cognome: "Gomez" },
-  },
-  {
-    sesso: false,
-    rna: "67PQ",
-    numero: 65536,
-    anno: 2014,
-    allevatore: { nome: "Anna", cognome: "Lee" },
-  },
-];
+import {
+  ApiResponse,
+  GaraWithIscrizioniWithSoggettoAndProfiloWithAllevatore,
+  GaraWithNazioneAndCountIscrizioni,
+  IscrizioneWithSoggettoAndProfiloWithAllevatore,
+} from "@/types/types";
+import { apiFetch } from "@/lib/apiFetch";
+import { showNotification } from "@/lib/helper";
 
 function InfoGara({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
+  const [listaIscrizioni, setListaIscrizioni] = useState<
+    IscrizioneWithSoggettoAndProfiloWithAllevatore[]
+  >([]);
+
+  async function getIscrizioni() {
+    const res =
+      await apiFetch.get<GaraWithIscrizioniWithSoggettoAndProfiloWithAllevatore>(
+        `/api/gare/${gara.id}`
+      );
+    if (res.error) {
+      showNotification({ message: res.message });
+    } else {
+      const iscrizioni = res.data.iscrizioni;
+      setListaIscrizioni(iscrizioni);
+    }
+  }
+
+  useEffect(() => {
+    getIscrizioni();
+  }, []);
+
   return (
     <Container h="100vh">
       <InfoGaraHeader gara={gara} />
@@ -97,9 +53,9 @@ function InfoGara({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
               <Text size="xl" fw="500" p="md">
                 Lista soggetti iscritti
               </Text>
-              {soggetti.map((soggetto) => (
-                <Box p="sm">
-                  <GaraComp soggetto={soggetto} />
+              {listaIscrizioni.map((iscrizione) => (
+                <Box p="sm" key={iscrizione.id}>
+                  <IscrizioneComp iscrizione={iscrizione} />
                 </Box>
               ))}
             </Card>
