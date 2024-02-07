@@ -12,7 +12,7 @@ const paypalCreateOrder = async () => {
   const result = await apiFetch.post("/api/paypal/createorder", {
     descrizione: 'Iscrizione N.X soggetti a "Campionato ornitologico 2021"',
     soggetti: ["IdSogg.1", "IdSogg.2"],
-    gara: "IdGara",
+    garaId: "IdGara",
     prezzo: 10.5,
   });
   if (result.error) {

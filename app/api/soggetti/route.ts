@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { uuid } from "uuidv4";
 import { z } from "zod";
 
-type SoggettoGetFilter = Pick<Prisma.SoggettoWhereInput, "covataId">;
+type SoggettoGetFilter = Pick<Prisma.SoggettoWhereInput, "covataId" | "rna">;
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
         .number()
         .transform((v) => v || null)
         .optional(),
+      rna: z.string().optional(),
     });
     const filters = paramsSchema.parse(paramsObj);
 
