@@ -55,3 +55,23 @@ export type IncassoQueryResult = { mese: number; totale: number; anno: number };
 export type ApiResponse<T = any> =
   | { error: true; message: string }
   | { error: false; result: T };
+
+export type GaraWithIscrizioniWithSoggettoAndProfiloWithAllevatore =
+  Prisma.GaraGetPayload<{
+    include: {
+      iscrizioni: {
+        include: {
+          soggetto: true;
+          profilo: { include: { allevatore: true } };
+        };
+      };
+    };
+  }>;
+
+export type IscrizioneWithSoggettoAndProfiloWithAllevatore =
+  Prisma.IscrizioneGetPayload<{
+    include: {
+      soggetto: true;
+      profilo: { include: { allevatore: true } };
+    };
+  }>;

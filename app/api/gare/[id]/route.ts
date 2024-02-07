@@ -134,3 +134,28 @@ export async function DELETE(
     );
   }
 }
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const res = await prisma.gara.findUniqueOrThrow({
+      where: { id: params.id },
+      include: {
+        iscrizioni: {
+          include: {
+            soggetto: {},
+            profilo: { include: { allevatore: true } },
+          },
+        },
+      },
+    });
+    return NextResponse.json({ error: false, result: res }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: error.message, error: true },
+      { status: 400 }
+    );
+  }
+}

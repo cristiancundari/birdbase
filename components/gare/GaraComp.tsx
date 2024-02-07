@@ -1,23 +1,31 @@
 import { Anchor, Flex, Group, Text } from "@mantine/core";
 import { IconSessoFemale, IconSessoMale } from "../IconsSesso";
+import { IscrizioneWithSoggettoAndProfiloWithAllevatore } from "@/types/types";
+import { formatAnelletto } from "@/lib/helper";
 
-function GaraComp({ soggetto }: { soggetto: any }) {
+function IscrizioneComp({
+  iscrizione,
+}: {
+  iscrizione: IscrizioneWithSoggettoAndProfiloWithAllevatore;
+}) {
+  const soggetto = iscrizione.soggetto;
+  const allevatore = iscrizione.profilo.allevatore;
   return (
     <Flex gap="md" justify="space-between">
       <Group gap="sm">
         {soggetto.sesso ? <IconSessoMale /> : <IconSessoFemale />}
         <Anchor href="/" c="dark">
-          {soggetto.rna}-{soggetto.numero}-{soggetto.anno}
+          {formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}
         </Anchor>
       </Group>
 
       <Group>
         <Text c={"dimmed"}>
-          {soggetto.allevatore.nome} {soggetto.allevatore.cognome}
+          {allevatore.nome} {allevatore.cognome}
         </Text>
       </Group>
     </Flex>
   );
 }
 
-export default GaraComp;
+export default IscrizioneComp;
