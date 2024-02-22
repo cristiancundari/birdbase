@@ -1,4 +1,4 @@
-import Gara from "@/components/gare/gara";
+import GaraCard from "@/components/gare/GaraCard";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { FileWithPath } from "@mantine/dropzone";

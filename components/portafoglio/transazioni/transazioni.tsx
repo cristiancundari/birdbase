@@ -1,5 +1,5 @@
 "use client";
-import { showNotification } from "@/lib/helper";
+import { formatData, showNotification } from "@/lib/helper";
 import { ApiResponse, TransazioneWithCategoria } from "@/types/types";
 import {
   Box,
@@ -170,7 +170,10 @@ function Transazioni() {
                     <TransazioneComp
                       transazione={item}
                       key={item.id}
-                      printLabel={item.data != transazioni[index - 1]?.data}
+                      printLabel={
+                        formatData(item.data) !=
+                        formatData(transazioni[index - 1]?.data)
+                      }
                       elimina={openModalElimina}
                       modifica={openModalModifica}
                     />

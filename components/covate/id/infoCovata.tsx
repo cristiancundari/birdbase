@@ -11,8 +11,17 @@ import {
 } from "@/components/home/functions";
 import { apiFetch } from "@/lib/apiFetch";
 import { formatAnelletto, showNotification } from "@/lib/helper";
+import { useModalInit } from "@/lib/hooks";
 import { CovataWithGenitoriAndFigli } from "@/types/types";
-import { Box, Button, Group, Menu, SimpleGrid, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  ComboboxItem,
+  Group,
+  Menu,
+  SimpleGrid,
+  Text,
+} from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
 import {
@@ -39,9 +48,16 @@ function InfoCovata({ covata }: InfoCovataProps) {
   const [isModalSoggettoOpen, setIsModalSoggettoOpen] = useState(false);
   const [isModalAggiungiFiglioOpen, setIsModalAggiungiFiglioOpen] =
     useState(false);
+  const [isModalAggiungiFiglioLoading, setIsModalAggiungiFiglioLoading] =
+    useState(false);
+  const [figliSelezionabili, setFigliSelezionabili] = useState<Soggetto[]>([]);
   const [modalRemoveId, setModalDeleteId] = useState("");
   const [modalData, setModalData] = useState<Soggetto | null>(null);
   const router = useRouter();
+
+  useModalInit(() => {
+    getSoggettiFigli();
+  }, isModalAggiungiFiglioOpen);
 
   const aggiungi = async ({
     form,
@@ -111,15 +127,14 @@ function InfoCovata({ covata }: InfoCovataProps) {
   };
 
   const getSoggettiFigli = async () => {
+    setIsModalAggiungiFiglioLoading(true);
     const result = await apiFetch.get<Soggetto[]>("/api/soggetti?covataId=");
     if (result.error) {
-      throw new Error(result.message);
+      showNotification({ message: result.message });
     } else {
-      return result.data.map((item) => ({
-        value: item.id,
-        label: formatAnelletto(item.rna, item.numero, item.anno),
-      }));
+      setFigliSelezionabili(result.data);
     }
+    setIsModalAggiungiFiglioLoading(false);
   };
 
   const modalSoggettoSubmit = async (values: {
@@ -133,7 +148,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     }
   };
 
-  const modalAggiungiFiglioSubmit = async (value: string) => {
+  const modalAggiungiFiglioSubmit = async (soggetto: Soggetto) => {
     const data = {
       covataId: covata.id,
     };
@@ -141,7 +156,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     formData.append("form", JSON.stringify(data));
 
     const result = await apiFetch.patchFormData(
-      `/api/soggetti/${value}`,
+      `/api/soggetti/${soggetto.id}`,
       formData
     );
 
@@ -264,7 +279,8 @@ function InfoCovata({ covata }: InfoCovataProps) {
         modalData={modalData}
       />
       <ModalSelezionaSoggetto
-        getSoggetti={getSoggettiFigli}
+        soggetti={figliSelezionabili}
+        isLoading={isModalAggiungiFiglioLoading}
         isOpen={isModalAggiungiFiglioOpen}
         annulla={annullaAggiungiFiglio}
         submit={modalAggiungiFiglioSubmit}

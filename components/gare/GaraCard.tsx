@@ -27,7 +27,7 @@ import { formatValuta, imgPath } from "@/lib/helper";
 import { Role } from "@prisma/client";
 import Link from "next/link";
 
-function Gara({
+function GaraCard({
   gara,
   onDelete,
   onEdit,
@@ -225,4 +225,4 @@ function Gara({
   );
 }
 
-export default Gara;
+export default GaraCard;

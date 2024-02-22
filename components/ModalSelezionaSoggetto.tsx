@@ -1,5 +1,5 @@
 "use client";
-import { showNotification } from "@/lib/helper";
+import { formatAnelletto, showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
 import {
   Button,
@@ -11,47 +11,35 @@ import {
   Select,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { Soggetto } from "@prisma/client";
 import { IconCheck, IconX } from "@tabler/icons-react";
+import assert from "assert";
 import { useEffect, useState } from "react";
 
 interface ModalSelezionaSoggettoProps {
   isOpen: boolean;
   annulla: () => void;
-  getSoggetti: () => Promise<ComboboxItem[]>;
-  submit: (value: string) => Promise<void>;
+  isLoading: boolean;
+  soggetti: Soggetto[];
+  submit: (soggetto: Soggetto) => Promise<void>;
   description?: string;
 }
 function ModalSelezionaSoggetto({
   isOpen,
   annulla,
-  getSoggetti,
+  isLoading,
+  soggetti,
   submit,
   description,
 }: ModalSelezionaSoggettoProps) {
-  const [isSelectLoading, setIsSelectLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [soggettiItems, setSoggettiItems] = useState<ComboboxItem[]>([]);
-
-  useModalInit(() => {
-    async function _getSoggetti() {
-      setIsSelectLoading(true);
-      try {
-        setSoggettiItems(await getSoggetti());
-      } catch (error) {
-        if (error instanceof Error) {
-          showNotification({ message: error.message });
-        } else {
-          showNotification({ message: "Errore nell'ottenere i soggetti" });
-        }
-      }
-      setIsSelectLoading(false);
-    }
-    _getSoggetti();
-  }, isOpen);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   const form = useForm({
     initialValues: {
       soggettoId: "",
+    },
+    validate: {
+      soggettoId: (value) => value === "" && "Seleziona un soggetto",
     },
   });
 
@@ -70,20 +58,23 @@ function ModalSelezionaSoggetto({
     >
       <form
         onSubmit={form.onSubmit(async () => {
-          setIsLoading(true);
-          await submit(form.values.soggettoId);
-          setIsLoading(false);
+          setIsSubmitLoading(true);
+          const soggetto = soggetti.find((s) => s.id == form.values.soggettoId);
+          assert(soggetto);
+          await submit(soggetto);
+          setIsSubmitLoading(false);
           annulla();
         })}
       >
         <Select
           label="Soggetto"
           description={description}
-          data={soggettiItems}
+          data={soggetti.map((s) => ({
+            value: s.id,
+            label: formatAnelletto(s.rna, s.numero, s.anno),
+          }))}
           {...form.getInputProps("soggettoId")}
-          rightSection={
-            isSelectLoading ? <Loader size={18} /> : <Combobox.Chevron />
-          }
+          rightSection={isLoading ? <Loader size={18} /> : <Combobox.Chevron />}
           searchable
         />
 
@@ -100,7 +91,7 @@ function ModalSelezionaSoggetto({
             color="green"
             leftSection={<IconCheck size={14} />}
             type="submit"
-            loading={isLoading}
+            loading={isSubmitLoading}
           >
             Seleziona
           </Button>

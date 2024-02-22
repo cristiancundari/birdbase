@@ -11,7 +11,6 @@ model Profilo {
   id               String             @id(map: "Profile_pkey") @db.Uuid
   budget           Float              @default(0)
   ruolo            Role               @default(USER)
-  name             String?            @db.VarChar
   rna              String             @db.VarChar
   covate           Covata[]
   iscrizioni       Iscrizione[]

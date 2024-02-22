@@ -1,9 +1,9 @@
 import { Anchor, Flex, Group, Text } from "@mantine/core";
-import { IconSessoFemale, IconSessoMale } from "../IconsSesso";
+import { IconSessoFemale, IconSessoMale } from "../../../IconsSesso";
 import { IscrizioneWithSoggettoAndProfiloWithAllevatore } from "@/types/types";
 import { formatAnelletto } from "@/lib/helper";
 
-function IscrizioneComp({
+function IscrizioneItem({
   iscrizione,
 }: {
   iscrizione: IscrizioneWithSoggettoAndProfiloWithAllevatore;
@@ -13,6 +13,9 @@ function IscrizioneComp({
   return (
     <Flex gap="md" justify="space-between">
       <Group gap="sm">
+        {
+          //TODO sistemare sesso e link
+        }
         {soggetto.sesso ? <IconSessoMale /> : <IconSessoFemale />}
         <Anchor href="/" c="dark">
           {formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}
@@ -20,7 +23,7 @@ function IscrizioneComp({
       </Group>
 
       <Group>
-        <Text c={"dimmed"}>
+        <Text c="dimmed">
           {allevatore.nome} {allevatore.cognome}
         </Text>
       </Group>
@@ -28,4 +31,4 @@ function IscrizioneComp({
   );
 }
 
-export default IscrizioneComp;
+export default IscrizioneItem;

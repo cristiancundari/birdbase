@@ -7,6 +7,7 @@ import {
   IconBat,
   IconLayoutGrid,
   IconToolsKitchen2,
+  IconTrophy,
   IconVaccine,
   TablerIconsProps,
 } from "@tabler/icons-react";
@@ -51,7 +52,10 @@ export function formatValuta(value: number) {
   );
 }
 
-export function formatData(value: Date | string) {
+export function formatData(value: Date | string | undefined) {
+  if (value === undefined) {
+    return "";
+  }
   if (typeof value == "string") {
     value = new Date(value);
   }
@@ -70,6 +74,7 @@ export const transazioniIconColor: {
   Medicine: { icon: IconVaccine, color: "yellow" },
   Soggetti: { icon: IconBat, color: "blue" },
   Altro: { icon: IconLayoutGrid, color: "gray" },
+  Gare: { icon: IconTrophy, color: "cyan" },
 };
 
 export const formatAnelletto = (rna: string, numero: string, anno: string) => {

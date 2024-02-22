@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
+import { useProviderColorScheme } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Prisma } from "@prisma/client";
 import assert from "assert";
@@ -9,8 +10,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { uuid } from "uuidv4";
 import { z } from "zod";
 
-type SoggettoGetFilter = Pick<Prisma.SoggettoWhereInput, "covataId" | "rna">;
-
 export async function GET(request: NextRequest) {
   try {
     const user = await getServerUser(cookies());
@@ -18,14 +17,29 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const paramsObj = Object.fromEntries(searchParams.entries());
-    const paramsSchema: z.ZodType<SoggettoGetFilter> = z.object({
+    const paramsSchema = z.object({
       covataId: z.coerce
         .number()
         .transform((v) => v || null)
         .optional(),
       rna: z.string().optional(),
+      isMorto: z
+        .string()
+        .transform((v) => v === "true")
+        .optional()
+        .pipe(z.boolean().optional()),
+      garaId: z.string().optional(),
     });
-    const filters = paramsSchema.parse(paramsObj);
+    const parsedParams = paramsSchema.parse(paramsObj);
+
+    const filters = {
+      covataId: parsedParams.covataId,
+      rna: parsedParams.rna,
+      isMorto: parsedParams.isMorto,
+      iscrizioni: parsedParams.garaId
+        ? { none: { garaId: parsedParams.garaId } }
+        : undefined,
+    };
 
     const result = await prisma.soggetto.findMany({
       where: { ...filters, profiloId: user.id },
@@ -97,7 +111,12 @@ export async function POST(request: NextRequest) {
     }
 
     const controllo = await prisma.soggetto.findFirst({
-      where: { numero: values.numero, rna: values.rna, anno: values.anno },
+      where: {
+        profiloId: user.id,
+        numero: values.numero,
+        rna: values.rna,
+        anno: values.anno,
+      },
     });
     if (controllo) {
       return NextResponse.json(

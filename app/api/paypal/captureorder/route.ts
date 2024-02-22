@@ -2,6 +2,7 @@ import client from "@/lib/paypal/client";
 import { prisma } from "@/lib/prisma";
 import { getServerUserProfile } from "@/lib/supabase/helper";
 import paypal from "@paypal/checkout-server-sdk";
+import { Prisma } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -41,38 +42,42 @@ export async function POST(request: NextRequest) {
       throw new Error("Soggetti da iscrivere validi");
     }
 
-    const gara = await prisma.gara.findUnique({
-      where: {
-        id: ordine.garaId,
-      },
-      include: {
-        _count: {
-          select: {
-            iscrizioni: true,
+    // Inizio transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const gara = await tx.gara.findUnique({
+        where: {
+          id: ordine.garaId,
+        },
+        include: {
+          _count: {
+            select: {
+              iscrizioni: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!gara || gara.isDeleted) {
-      throw new Error("Gara non trovata");
-    }
+      if (!gara || gara.isDeleted) {
+        throw new Error("Gara non trovata");
+      }
 
-    const postiDisponibili = gara.capienza - gara._count.iscrizioni;
-    if (postiDisponibili === 0) {
-      throw new Error("Non ci sono altri posti disponibili");
-    }
+      console.log("Capienza: ", gara.capienza);
+      console.log("Count: ", gara._count.iscrizioni);
 
-    const iscrizioniRichieste = soggetti.data.length;
-    if (iscrizioniRichieste > postiDisponibili) {
-      throw new Error(
-        "Non ci sono abbastanza posti disponibili. Posti rimasti: " +
-          postiDisponibili
-      );
-    }
+      const postiDisponibili = gara.capienza - gara._count.iscrizioni;
+      if (postiDisponibili === 0) {
+        throw new Error("Non ci sono altri posti disponibili");
+      }
 
-    prisma.$transaction(async (tx) => {
-      const result = await tx.iscrizione.createMany({
+      const iscrizioniRichieste = soggetti.data.length;
+      if (iscrizioniRichieste > postiDisponibili) {
+        throw new Error(
+          "Non ci sono abbastanza posti disponibili. Posti rimasti: " +
+            postiDisponibili
+        );
+      }
+
+      const iscrizione = await tx.iscrizione.createMany({
         data: soggetti.data.map((soggetto) => ({
           garaId: ordine.garaId,
           profiloId: ordine.profiloId,
@@ -81,13 +86,29 @@ export async function POST(request: NextRequest) {
         })),
       });
 
+      const transazione = await tx.transazione.create({
+        data: {
+          profiloId: profile.id,
+          data: new Date(),
+          categoriaId: 6, // ID categoria Gare
+          prezzo: -(ordine.prezzoUnitario * soggetti.data.length),
+          descrizione: ordine.descrizione,
+          modificabile: false,
+        },
+      });
+
       const paypalResponse = await PaypalClient.execute(paypalRequest);
       if (paypalResponse.statusCode !== 201) {
         throw new Error("Errore di PayPal");
       }
 
-      return NextResponse.json({ success: true, result: result });
+      return {
+        iscrizione,
+        transazione,
+      };
     });
+
+    return NextResponse.json({ success: true, result: result });
   } catch (err: any) {
     console.log("Err at Capture Order: ", err);
     if (err instanceof z.ZodError) {

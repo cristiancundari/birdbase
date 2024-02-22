@@ -1,6 +1,6 @@
 "use client";
 import ModalCancellazione from "@/components/ModalCancellazione";
-import Gara from "@/components/gare/gara";
+import GaraCard from "@/components/gare/GaraCard";
 import ModalGara, { FormValues } from "@/components/gare/ModalGara";
 import NessunaGara from "@/components/gare/NessunaGara";
 import { apiFetch } from "@/lib/apiFetch";
@@ -164,7 +164,7 @@ function GarePage() {
               .fill(0)
               .map((_, i) => <Skeleton key={i} h={300} />)}
           {gare.map((gara: GaraWithNazioneAndCountIscrizioni) => (
-            <Gara
+            <GaraCard
               key={gara.id}
               gara={gara}
               onDelete={deleteHandler}

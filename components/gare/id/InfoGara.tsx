@@ -6,11 +6,12 @@ import {
   Grid,
   Group,
   ScrollArea,
+  Stack,
   Text,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
-import IscrizioneComp from "./GaraComp";
-import Carrello from "./Carrello";
+import IscrizioneItem from "./iscrizioni/IscrizioneItem";
+import Carrello from "./carrello/Carrello";
 import InfoGaraHeader from "./InfoGaraHeader";
 import {
   ApiResponse,
@@ -20,11 +21,19 @@ import {
 } from "@/types/types";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
+import Breadcrumb from "@/components/Breadcrumb";
+import Iscrizioni from "@/components/gare/id/iscrizioni/Iscrizioni";
+
+const breadcrumbsItems = [
+  { title: "Gare", href: "/app/gare" },
+  { title: "Info gara", href: "#" },
+];
 
 function InfoGara({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   const [listaIscrizioni, setListaIscrizioni] = useState<
     IscrizioneWithSoggettoAndProfiloWithAllevatore[]
   >([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   async function getIscrizioni() {
     const res =
@@ -40,33 +49,28 @@ function InfoGara({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   }
 
   useEffect(() => {
-    getIscrizioni();
-  }, []);
+    async function _getIscrizioni() {
+      setIsLoading(true);
+      await getIscrizioni();
+      setIsLoading(false);
+    }
+    _getIscrizioni();
+  }, [gara]);
 
   return (
-    <Container h="100vh">
-      <InfoGaraHeader gara={gara} />
-      <Grid grow mt={"sm"}>
-        <Grid.Col span={4}>
-          <ScrollArea h="500" w="100%">
-            <Card>
-              <Text size="xl" fw="500" p="md">
-                Lista soggetti iscritti
-              </Text>
-              {listaIscrizioni.map((iscrizione) => (
-                <Box p="sm" key={iscrizione.id}>
-                  <IscrizioneComp iscrizione={iscrizione} />
-                </Box>
-              ))}
-            </Card>
-          </ScrollArea>
-        </Grid.Col>
-        <Grid.Col span={1}>
-          <Card p={0} pos="relative">
+    <Container h="100%">
+      <Stack gap={0}>
+        <Breadcrumb items={breadcrumbsItems} />
+        <InfoGaraHeader gara={gara} />
+        <Grid grow mt="sm">
+          <Grid.Col span={4}>
+            <Iscrizioni iscrizioni={listaIscrizioni} isLoading={isLoading} />
+          </Grid.Col>
+          <Grid.Col span={1}>
             <Carrello gara={gara} />
-          </Card>
-        </Grid.Col>
-      </Grid>
+          </Grid.Col>
+        </Grid>
+      </Stack>
     </Container>
   );
 }

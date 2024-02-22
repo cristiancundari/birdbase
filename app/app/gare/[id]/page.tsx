@@ -1,4 +1,4 @@
-import InfoGara from "@/components/gare/InfoGara";
+import InfoGara from "@/components/gare/id/InfoGara";
 import { prisma } from "@/lib/prisma";
 import { getServerUser, getServerUserProfile } from "@/lib/supabase/helper";
 import { Role } from "@prisma/client";

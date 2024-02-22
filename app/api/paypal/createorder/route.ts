@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
     descrizione: z.string().min(1),
     soggetti: z.array(z.string().min(1)),
     garaId: z.string().min(1),
-    prezzo: z.coerce.number(),
   });
 
   try {
@@ -21,6 +20,13 @@ export async function POST(request: NextRequest) {
 
     const dati = await request.json();
     const datiParsed = datiSchema.parse(dati);
+
+    const gara = await prisma.gara.findUnique({
+      where: { id: datiParsed.garaId },
+    });
+    if (!gara || gara.isDeleted) {
+      throw new Error("Impossibile iscrivere i soggetti alla gara selezionata");
+    }
 
     const PaypalClient = client();
     //This code is lifted from https://github.com/paypal/Checkout-NodeJS-SDK
@@ -33,7 +39,7 @@ export async function POST(request: NextRequest) {
           description: datiParsed.descrizione,
           amount: {
             currency_code: "EUR",
-            value: (datiParsed.soggetti.length * datiParsed.prezzo).toString(),
+            value: (datiParsed.soggetti.length * gara.prezzo).toString(),
           },
         },
       ],
@@ -41,23 +47,19 @@ export async function POST(request: NextRequest) {
         shipping_preference: "NO_SHIPPING",
       },
     });
+
     const paypalResponse = await PaypalClient.execute(paypalRequest);
     if (paypalResponse.statusCode !== 201) {
-      return NextResponse.json(
-        {
-          error: true,
-          message: "Errore di PayPal",
-        },
-        { status: 500 }
-      );
+      throw new Error("Errore di PayPal");
     }
+
     const result = await prisma.ordineIscrizioni.create({
       data: {
         id: paypalResponse.result.id,
         descrizione: datiParsed.descrizione,
         garaId: datiParsed.garaId,
         profiloId: profile.id,
-        prezzoUnitario: datiParsed.prezzo,
+        prezzoUnitario: gara.prezzo,
         soggetti: datiParsed.soggetti,
       },
     });

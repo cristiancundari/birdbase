@@ -3,14 +3,14 @@ import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { ActionIcon, Anchor, Group, Text } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import React from "react";
-import { IconSessoFemale, IconSessoMale } from "../IconsSesso";
+import { IconSessoFemale, IconSessoMale } from "../../../IconsSesso";
 
 interface CarrelloCompProps {
   soggetto: any;
   gara: GaraWithNazioneAndCountIscrizioni;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
-function CarrelloComp({ soggetto, gara, onDelete }: CarrelloCompProps) {
+function CarrelloItem({ soggetto, gara, onDelete }: CarrelloCompProps) {
   return (
     <Group justify="space-between">
       <Group gap="sm">
@@ -34,4 +34,4 @@ function CarrelloComp({ soggetto, gara, onDelete }: CarrelloCompProps) {
   );
 }
 
-export default CarrelloComp;
+export default CarrelloItem;
