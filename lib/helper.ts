@@ -12,6 +12,15 @@ import {
   TablerIconsProps,
 } from "@tabler/icons-react";
 import React from "react";
+import { getServerUserProfile } from "./supabase/helper";
+import {
+  User,
+  alexaSkillLinked,
+  deactivateSkill,
+} from "@/lib/amazon/alexaService";
+import { ProfiloWithAllevatoreAndAmazonAccount } from "@/types/types";
+import { cookies } from "next/headers";
+import { prisma } from "./prisma";
 
 interface ShowNotificationType {
   message: string;
@@ -91,4 +100,54 @@ export const getRangeYears = (transazioni: { anno: number }[]) => {
     { length: currentAnno - minAnno + 1 },
     (_, index) => currentAnno - index
   );
+};
+
+export const isAmazonAccountLinked = async (
+  userProfile: ProfiloWithAllevatoreAndAmazonAccount
+) => {
+  if (userProfile && userProfile.amazonAccount) {
+    const user: User = {
+      amazonAccessToken: userProfile.amazonAccount.accessToken,
+      amazonRefreshDate: userProfile.amazonAccount.refreshDate.toISOString(),
+      amazonRefreshToken: userProfile.amazonAccount.refreshToken,
+    };
+    const isLinked = await alexaSkillLinked(user);
+    if (!isLinked) {
+      await prisma.profilo.update({
+        where: { id: userProfile.id },
+        data: { amazonAccount: { delete: true } },
+      });
+    }
+    return isLinked;
+  }
+  return false;
+};
+
+export const deactivateAlexaSkill = async (
+  userProfile: ProfiloWithAllevatoreAndAmazonAccount
+) => {
+  if (userProfile && userProfile.amazonAccount) {
+    const user: User = {
+      amazonAccessToken: userProfile.amazonAccount.accessToken,
+      amazonRefreshDate: userProfile.amazonAccount.refreshDate.toISOString(),
+      amazonRefreshToken: userProfile.amazonAccount.refreshToken,
+    };
+    const isLinked = await alexaSkillLinked(user);
+    if (!isLinked) {
+      await prisma.profilo.update({
+        where: { id: userProfile.id },
+        data: { amazonAccount: { delete: true } },
+      });
+    } else {
+      const res = await deactivateSkill(user);
+      if (res) {
+        await prisma.profilo.update({
+          where: { id: userProfile.id },
+          data: { amazonAccount: { delete: true } },
+        });
+        return true;
+      }
+    }
+  }
+  return false;
 };

@@ -22,7 +22,7 @@ function Login() {
   const supabase = useSupabase();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/app/home";
+  const callbackUrl = searchParams.get("callback") || "/app/home";
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,7 +46,7 @@ function Login() {
         password: values.password,
       });
       if (!res?.error) {
-        return router.push(callbackUrl);
+        return router.push(decodeURIComponent(callbackUrl));
       } else {
         setError(
           "Se non ricordi le credenziali contatta un amministratore per il reset"
@@ -68,7 +68,12 @@ function Login() {
         h="100vh"
       >
         <Center h="100%">
-          <Paper shadow="sm" w="100%" px={{ base: "3rem", xs: "8rem" }} py="7rem">
+          <Paper
+            shadow="sm"
+            w="100%"
+            px={{ base: "3rem", xs: "8rem" }}
+            py="7rem"
+          >
             <Title order={1} ta="center">
               {"Accedi"}
             </Title>

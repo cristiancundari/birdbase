@@ -11,7 +11,7 @@ export async function getServerUserProfile(
     where: {
       id: user?.id,
     },
-    include: { allevatore: true },
+    include: { allevatore: true, amazonAccount: true },
   });
 
   return profile;

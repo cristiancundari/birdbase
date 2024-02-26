@@ -10,6 +10,10 @@ export type ProfiloWithAllevatore = Prisma.ProfiloGetPayload<{
   include: { allevatore: true };
 }>;
 
+export type ProfiloWithAllevatoreAndAmazonAccount = Prisma.ProfiloGetPayload<{
+  include: { allevatore: true; amazonAccount: true };
+}>;
+
 export type GaraWithNazioneAndCountIscrizioni = Prisma.GaraGetPayload<{
   include: { nazione: true; _count: { select: { iscrizioni: true } } };
 }>;

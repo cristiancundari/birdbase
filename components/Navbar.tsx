@@ -8,6 +8,7 @@ import {
   IconEggCracked,
   IconHome,
   IconLogout,
+  IconSettings,
   IconTrophy,
   IconWallet,
 } from "@tabler/icons-react";
@@ -44,6 +45,11 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       icon: <IconTrophy />,
       label: "Gare",
       url: "/app/gare",
+    },
+    {
+      icon: <IconSettings />,
+      label: "Impostazioni",
+      url: "/app/impostazioni",
     },
   ];
 
