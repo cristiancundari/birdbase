@@ -12,6 +12,8 @@ import {
   TablerIconsProps,
 } from "@tabler/icons-react";
 import React from "react";
+import { $Enums } from "@prisma/client";
+import { MantineColor } from "@mantine/core";
 
 interface ShowNotificationType {
   message: string;
@@ -91,4 +93,10 @@ export const getRangeYears = (transazioni: { anno: number }[]) => {
     { length: currentAnno - minAnno + 1 },
     (_, index) => currentAnno - index
   );
+};
+
+export const coloriPriorita: { [key in $Enums.Priorita]: MantineColor } = {
+  BASSA: "green",
+  MEDIA: "yellow",
+  ALTA: "red",
 };

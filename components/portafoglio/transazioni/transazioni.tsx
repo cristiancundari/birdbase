@@ -7,13 +7,12 @@ import {
   Group,
   Paper,
   ScrollArea,
-  Skeleton,
   Stack,
   Text,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ModalTransazione, { FormValues } from "./modalTransazione";
 import TransazioneComp, { TransazioneCompSkeleton } from "./transazioneComp";
 import ModalCancellazione from "../../ModalCancellazione";

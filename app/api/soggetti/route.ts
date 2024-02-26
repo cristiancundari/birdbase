@@ -1,9 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
-import { useProviderColorScheme } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
-import { Prisma } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
