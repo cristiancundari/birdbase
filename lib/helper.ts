@@ -21,6 +21,8 @@ import {
 import { ProfiloWithAllevatoreAndAmazonAccount } from "@/types/types";
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
+import { $Enums } from "@prisma/client";
+import { MantineColor } from "@mantine/core";
 
 interface ShowNotificationType {
   message: string;
@@ -150,4 +152,10 @@ export const deactivateAlexaSkill = async (
     }
   }
   return false;
+};
+
+export const coloriPriorita: { [key in $Enums.Priorita]: MantineColor } = {
+  BASSA: "green",
+  MEDIA: "yellow",
+  ALTA: "red",
 };

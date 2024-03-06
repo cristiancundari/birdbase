@@ -5,6 +5,7 @@ import { AppShell, Burger, Button, Group, NavLink, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBat,
+  IconClock,
   IconEggCracked,
   IconHome,
   IconLogout,
@@ -45,6 +46,11 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       icon: <IconTrophy />,
       label: "Gare",
       url: "/app/gare",
+    },
+    {
+      icon: <IconClock />,
+      label: "Promemoria",
+      url: "/app/promemoria",
     },
     {
       icon: <IconSettings />,
