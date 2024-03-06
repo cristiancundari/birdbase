@@ -117,7 +117,11 @@ export const alexaLinkingUrl = (
   clientId: string,
   scope: string
 ): string => {
-  return `https://www.amazon.com/ap/oa?client_id=${clientId}&scope=${scope}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_AMAZON_REDIRECT_URI}&state=${state}`;
+  return `https://www.amazon.com/ap/oa?client_id=${encodeURIComponent(
+    clientId
+  )}&scope=${encodeURIComponent(scope)}&response_type=code&redirect_uri=${
+    process.env.NEXT_PUBLIC_AMAZON_REDIRECT_URI
+  }&state=${encodeURIComponent(state)}`;
 };
 
 /**

@@ -1,7 +1,16 @@
 "use client";
 import { useSupabase } from "@/providers/supabaseProvider";
 import "@/styles/navLink.css";
-import { AppShell, Burger, Button, Group, NavLink, Text } from "@mantine/core";
+import {
+  AppShell,
+  Box,
+  Burger,
+  Button,
+  Group,
+  NavLink,
+  ScrollArea,
+  Text,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBat,
@@ -9,6 +18,7 @@ import {
   IconEggCracked,
   IconHome,
   IconLogout,
+  IconMessages,
   IconSettings,
   IconTrophy,
   IconWallet,
@@ -53,6 +63,11 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       url: "/app/promemoria",
     },
     {
+      icon: <IconMessages />,
+      label: "Messaggi",
+      url: "/app/messaggi",
+    },
+    {
       icon: <IconSettings />,
       label: "Impostazioni",
       url: "/app/impostazioni",
@@ -76,7 +91,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        <AppShell.Section grow>
+        <AppShell.Section grow component={ScrollArea}>
           {links.map((link, index) => (
             <NavLink
               key={index}
@@ -99,7 +114,13 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        <ScrollArea h="calc(100dvh - var(--app-shell-header-height, 0px) - var(--app-shell-footer-height, 0px) - 2*var(--app-shell-padding))">
+          <Box h="calc(100dvh - var(--app-shell-header-height, 0px) - var(--app-shell-footer-height, 0px) - 2*var(--app-shell-padding))">
+            {children}
+          </Box>
+        </ScrollArea>
+      </AppShell.Main>
     </AppShell>
   );
 }

@@ -1,3 +1,4 @@
+"use client";
 import { Box, MantineProvider } from "@mantine/core";
 import { DatesProvider } from "@mantine/dates";
 import { ModalsProvider } from "@mantine/modals";

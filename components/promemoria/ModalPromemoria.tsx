@@ -42,7 +42,6 @@ function ModalPromemoria({
   useEffect(() => {
     if (isOpen) {
       if (modalData) {
-        console.log(modalData);
         const date = modalData.data.toISOString().split("T");
         const time = modalData.ora.toISOString().split("T");
         const date1 = date[0] + "T" + time[1];

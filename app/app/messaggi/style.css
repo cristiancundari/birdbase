@@ -1,0 +1,89 @@
+#stream-chat-root {
+    display: flex;
+    height: 100%;
+}
+
+#stream-chat-root .str-chat-channel-list {
+    position: fixed;
+    z-index: 1;
+    width: 0;
+}
+
+#stream-chat-root .str-chat-channel-list--open {
+    width: 100%;
+}
+
+#stream-chat-root .str-chat-channel {
+    width: 100%;
+}
+
+#stream-chat-root .str-chat__thread {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+}
+
+#stream-chat-root .str-chat__channel-header .str-chat__header-hamburger {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+#stream-chat-root .str-chat__channel-header .str-chat__header-hamburger svg {
+    width: 25px;
+    height: 25px;
+}
+
+#stream-chat-root .str-chat__channel-header .str-chat__header-hamburger:hover svg path {
+    fill: var(--primary-color);
+}
+
+@media screen and (min-width: $mantine-breakpoint-md) {
+    #stream-chat-root .str-chat-channel-list {
+        width: 30%;
+        max-width: 420px;
+        position: initial;
+        z-index: 0;
+    }
+
+    #stream-chat-root .str-chat__thread {
+        position: initial;
+        z-index: 0;
+    }
+
+    #stream-chat-root .str-chat__channel-header .str-chat__header-hamburger {
+        display: none;
+    }
+}
+
+@media screen and (min-width: $mantine-breakpoint-lg) {
+    #stream-chat-root .str-chat__thread {
+        width: 45%;
+    }
+
+    #stream-chat-root .str-chat__channel-header .str-chat__header-hamburger {
+        display: none;
+    }
+}
+
+.str-chat {
+    --str-chat__channel-preview-color: var(--mantine-color-dark);
+    --str-chat__channel-preview-latest-message-secondary-color: var(--mantine-color-dimmed);
+    --str-chat__channel-header-color: var(--mantine-color-dark);
+    --str-chat__channel-header-info-color: var(--mantine-color-dimmed);
+}
+
+.str-chat__channel-preview-messenger--last-message {
+    font-size: var(--mantine-font-size-sm);
+    color: var(--mantine-color-dimmed);
+}
+
+.str-chat__channel-preview .str-chat__channel-preview-end {
+    row-gap: 0 !important;
+}

@@ -11,8 +11,6 @@ model Profilo {
   id               String             @id(map: "Profile_pkey") @db.Uuid
   budget           Float              @default(0)
   ruolo            Role               @default(USER)
-  name             String?            @db.VarChar
-  name             String?            @db.VarChar
   rna              String             @db.VarChar
   amazonAccount    AmazonAccount?
   covate           Covata[]
@@ -178,7 +176,7 @@ model Promemoria {
   profiloId   String   @map("profilo_id") @db.Uuid
   id          Int      @id @default(autoincrement())
   ora         DateTime @db.Time(6)
-  profili     Profilo  @relation(fields: [profiloId], references: [id])
+  profilo     Profilo  @relation(fields: [profiloId], references: [id])
 
   @@map("promemoria")
 }

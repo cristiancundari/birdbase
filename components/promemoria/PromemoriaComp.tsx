@@ -18,6 +18,7 @@ import {
   IconEdit,
   IconTrash,
 } from "@tabler/icons-react";
+import { format } from "date-fns";
 
 interface PromemoriaCompProps {
   value: Promemoria;
@@ -31,15 +32,12 @@ function PromemoriaComp({
   modalModifica,
 }: PromemoriaCompProps) {
   const printTime = () => {
-    const ora = value?.ora?.getHours();
-    const minuti = value?.ora?.getMinutes();
-    const orario = pad(ora) + ":" + pad(minuti);
-    return orario;
-
-    function pad(num: any) {
-      return num < 10 ? "0" + num : num;
-    }
+    const ora = value.ora.getUTCHours();
+    const minuti = value.ora.getUTCMinutes();
+    const time = new Date(0, 0, 0, ora, minuti);
+    return format(time, "HH:mm");
   };
+
   return (
     <>
       <Group align="center">

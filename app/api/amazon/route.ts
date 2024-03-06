@@ -33,16 +33,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const paramsObj = Object.fromEntries(searchParams.entries());
 
+    console.log(paramsObj.state && decodeURIComponent(paramsObj.state));
+
     // Init request.
     // Check if the user is already linked. Otherwise, redirect to the account linking page.
-    if (paramsObj.state === "init") {
+    if (paramsObj.state && decodeURIComponent(paramsObj.state) === "init") {
       if (await isAmazonAccountLinked(userProfile)) {
         return NextResponse.redirect(`${origin}${REDIRECT_URL}`);
       } else {
         return NextResponse.redirect(
           encodeURI(
             alexaLinkingUrl(
-              encodeURIComponent(JSON.stringify({ type: "profile" })),
+              JSON.stringify({ type: "profile" }),
               process.env.NEXT_PUBLIC_AMAZON_SECPROFILE_CLIENT_ID!,
               "profile"
             )
@@ -53,7 +55,7 @@ export async function GET(request: NextRequest) {
 
     // Unlink request.
     // Check if the user is linked and deactivate skill
-    if (paramsObj.state === "unlink") {
+    if (paramsObj.state && decodeURIComponent(paramsObj.state) === "unlink") {
       if (await deactivateAlexaSkill(userProfile)) {
         return NextResponse.redirect(`${origin}${REDIRECT_URL}?unlinked=true`);
       } else {
@@ -62,8 +64,12 @@ export async function GET(request: NextRequest) {
     }
 
     const paramsSchema = z.object({
-      code: z.string({ required_error: "No code provided" }),
-      state: z.string({ required_error: "No state provided" }),
+      code: z
+        .string({ required_error: "No code provided" })
+        .transform(decodeURIComponent),
+      state: z
+        .string({ required_error: "No state provided" })
+        .transform(decodeURIComponent),
     });
     const params = paramsSchema.parse(paramsObj);
 
@@ -78,14 +84,12 @@ export async function GET(request: NextRequest) {
 
     if (state.type === "profile") {
       const redirectUri = alexaLinkingUrl(
-        encodeURIComponent(
-          JSON.stringify({
-            type: "account_linking",
-            code: params.code,
-          })
-        ),
+        JSON.stringify({
+          type: "account_linking",
+          code: params.code,
+        }),
         process.env.NEXT_PUBLIC_AMAZON_CLIENT_ID!,
-        "alexa::skills:account_linking"
+        "alexa::skills:account_linking alexa::ask:skills:readwrite alexa::ask:models:readwrite alexa::ask:skills:test alexa::alerts:reminders:skill:readwrite"
       );
       return NextResponse.redirect(redirectUri);
     } else if (state.type === "account_linking") {

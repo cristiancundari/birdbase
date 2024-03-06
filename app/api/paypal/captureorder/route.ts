@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Inizio transaction
+    // TODO: sistemare transazione
     const result = await prisma.$transaction(async (tx) => {
       const gara = await tx.gara.findUnique({
         where: {
@@ -60,9 +61,6 @@ export async function POST(request: NextRequest) {
       if (!gara || gara.isDeleted) {
         throw new Error("Gara non trovata");
       }
-
-      console.log("Capienza: ", gara.capienza);
-      console.log("Count: ", gara._count.iscrizioni);
 
       const postiDisponibili = gara.capienza - gara._count.iscrizioni;
       if (postiDisponibili === 0) {
@@ -110,7 +108,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, result: result });
   } catch (err: any) {
-    console.log("Err at Capture Order: ", err);
     if (err instanceof z.ZodError) {
       return NextResponse.json(
         {

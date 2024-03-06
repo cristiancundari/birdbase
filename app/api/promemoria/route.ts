@@ -61,12 +61,26 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const paramsObj = Object.fromEntries(searchParams.entries());
     const paramsSchema = z.object({
-      data: z.coerce.date().optional(),
+      mese_anno: z
+        .string()
+        .refine((val) => {
+          return val.match(/^\d{1,2}\/\d{4}$/);
+        }, "Formato non valido")
+        .optional(),
     });
     const parsedParams = paramsSchema.parse(paramsObj);
-    const filters = {
-      data: parsedParams.data,
-    };
+
+    var filters = {}; // Declare the filters variable
+    if (parsedParams.mese_anno) {
+      const [mese, anno] = parsedParams.mese_anno.split("/");
+      filters = {
+        data: {
+          gte: new Date(parseInt(anno), parseInt(mese) - 1, 1 - 6),
+          lt: new Date(parseInt(anno), parseInt(mese), 1 + 6),
+        },
+      };
+    }
+
     const res = await prisma.promemoria.findMany({
       where: { ...filters, profiloId: user.id },
     });
