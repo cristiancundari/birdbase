@@ -1,3 +1,4 @@
+"use client";
 import { Badge, Group, Indicator } from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons-react";
 import React from "react";

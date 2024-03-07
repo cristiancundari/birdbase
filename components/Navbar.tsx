@@ -24,6 +24,7 @@ import {
   IconWallet,
 } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
+import UserLogoutNav from "./UserLogoutNav";
 
 export default function Navbar({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
@@ -103,14 +104,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
           ))}
         </AppShell.Section>
         <AppShell.Section>
-          <Button
-            leftSection={<IconLogout />}
-            variant="outline"
-            w="100%"
-            onClick={logout}
-          >
-            Logout
-          </Button>
+          <UserLogoutNav logout={logout} />
         </AppShell.Section>
       </AppShell.Navbar>
 

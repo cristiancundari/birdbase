@@ -1,6 +1,7 @@
 #stream-chat-root {
   display: flex;
   height: 100%;
+  flex-direction: row;
 }
 
 #stream-chat-root .str-chat-channel-list {
