@@ -1,6 +1,6 @@
 import { notifications } from "@mantine/notifications";
-import errorNotificationClasses from "@/styles/errorNotification.module.css";
-import successNotificationClasses from "@/styles/successNotification.module.css";
+import errorNotificationClasses from "@/styles/errorNotification.module.scss";
+import successNotificationClasses from "@/styles/successNotification.module.scss";
 import { format } from "date-fns";
 import {
   IconBarrel,
