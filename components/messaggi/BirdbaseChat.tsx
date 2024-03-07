@@ -14,7 +14,15 @@ import { useSupabase } from "@/providers/supabaseProvider";
 import { ProfiloWithAllevatore } from "@/types/types";
 import { Box, Card, Center, Group, Loader, Tooltip } from "@mantine/core";
 import debounce from "lodash.debounce";
-import { Channel, DefaultGenerics, StreamChat, UserFilters } from "stream-chat";
+import {
+  Channel,
+  DefaultGenerics,
+  StreamChat,
+  UserFilters,
+  ChannelSort,
+  ChannelOptions,
+  ChannelFilters,
+} from "stream-chat";
 import {
   Channel as ChannelComp,
   ChannelHeader,
@@ -23,6 +31,7 @@ import {
   ChannelSearchFunctionParams,
   Chat,
   ChatDownProps,
+  DefaultStreamChatGenerics,
   InfiniteScroll,
   LoadingIndicator,
   MessageInput,
@@ -43,9 +52,9 @@ import {
   IconMoodSmile,
   IconPaperclip,
 } from "@tabler/icons-react";
+import { User } from "stream-chat";
 import { CustomSearchBar } from "./custom_components/CustomSearchBar";
-
-const apiKey = process.env.NEXT_PUBLIC_STREAM_KEY || "";
+import { useStreamClient } from "./useClientHook";
 
 const FileUploadIcon = () => (
   <>
@@ -64,7 +73,14 @@ const EmojiIcon = () => (
 );
 
 export default function BirdbaseChat() {
-  const [client, setClient] = useState<StreamChat | null>(null);
+  const [streamUser, setStreamUser] = useState<{ user?: User; token?: string }>(
+    { user: undefined, token: undefined }
+  );
+  const client = useStreamClient(
+    streamUser
+      ? { user: streamUser.user, tokenOrProvider: streamUser.token }
+      : { user: undefined, tokenOrProvider: undefined }
+  );
   const [channel, setChannel] = useState<Channel<DefaultGenerics> | undefined>(
     undefined
   );
@@ -120,70 +136,73 @@ export default function BirdbaseChat() {
 
   useEffect(() => {
     async function init() {
-      const chatClient = StreamChat.getInstance(apiKey);
-
       const request = await apiFetch.post<{
         user: ProfiloWithAllevatore;
+        streamUsers: User[];
         userToken: string;
       }>("/auth/signup", {});
-      if (request.error) {
+      if (request.error || request.data.streamUsers.length === 0) {
         showNotification({
           message: "Errore durante la connessione al servizio di messaggistica",
         });
         return;
       }
 
-      await chatClient.connectUser(request.data.user, request.data.userToken);
+      setStreamUser({ user: request.data.user, token: request.data.userToken });
 
       setChannel(undefined);
-      setClient(chatClient);
-
-      if (client) return () => client.disconnectUser();
     }
 
     init();
-  }, [client]);
+  }, []);
 
   if (!client)
     return (
-      <Center>
+      <Center w="100%" h="100%">
         <LoadingIndicator size={30} />
       </Center>
     );
-  return (
-    <Group gap={0}>
-      <Chat client={client}>
-        <ChannelList
-          filters={{ members: { $in: [supabase.user!.id] } }}
-          Paginator={InfiniteScroll}
-          showChannelSearch
-          additionalChannelSearchProps={{
-            searchFunction: debouncedCustomSearchFunction,
-            ExitSearchIcon: IconArrowLeft,
-            SearchBar: CustomSearchBar,
-          }}
-          Preview={CustomPreview}
-        />
 
-        <ChannelComp
-          channel={channel}
-          EmojiPicker={() =>
-            EmojiPicker({
-              pickerProps: { i18n },
-              ButtonIconComponent: EmojiIcon,
-            })
-          }
-          SendButton={CustomSendButton}
-          FileUploadIcon={FileUploadIcon}
-        >
-          <Window>
-            <CustomChannelHeader />
-            <MessageList />
-            <MessageInput maxRows={4} grow />
-          </Window>
-          <Thread />
-        </ChannelComp>
-      </Chat>
-    </Group>
+  const filters: ChannelFilters<DefaultStreamChatGenerics> = {
+    members: { $in: [supabase.user!.id] },
+  };
+  const options: ChannelOptions = { presence: true, state: true, watch: true };
+  const sort: ChannelSort<DefaultStreamChatGenerics> = { last_message_at: -1 };
+
+  return (
+    <Chat client={client}>
+      <ChannelList
+        filters={filters}
+        options={options}
+        sort={sort}
+        Paginator={InfiniteScroll}
+        showChannelSearch
+        additionalChannelSearchProps={{
+          searchFunction: debouncedCustomSearchFunction,
+          ExitSearchIcon: IconArrowLeft,
+          SearchBar: CustomSearchBar,
+        }}
+        Preview={CustomPreview}
+      />
+
+      <ChannelComp
+        channel={channel}
+        EmojiPicker={() =>
+          EmojiPicker({
+            pickerProps: { i18n },
+            ButtonIconComponent: EmojiIcon,
+          })
+        }
+        SendButton={CustomSendButton}
+        FileUploadIcon={FileUploadIcon}
+      >
+        <Window>
+          <CustomChannelHeader />
+          <MessageList />
+          <MessageInput maxRows={4} grow />
+        </Window>
+        <Thread />
+      </ChannelComp>
+    </Chat>
   );
 }

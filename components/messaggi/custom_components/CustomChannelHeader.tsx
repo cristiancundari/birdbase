@@ -1,7 +1,7 @@
 "use client";
 import { Badge, Group, Indicator } from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AvatarProps,
   DefaultStreamChatGenerics,
@@ -11,6 +11,7 @@ import {
   useTranslationContext,
   useChannelPreviewInfo,
 } from "stream-chat-react";
+import { EventHandler, Event } from "stream-chat";
 
 export type ChannelHeaderProps = {
   /** UI component to display a user's avatar, defaults to and accepts same props as: [Avatar](https://github.com/GetStream/stream-chat-react/blob/master/src/components/Avatar/Avatar.tsx) */
@@ -38,8 +39,35 @@ const UnMemoizedChannelHeader = <
     title: overrideTitle,
   } = props;
 
-  const { channel, watcher_count } =
-    useChannelStateContext<StreamChatGenerics>("ChannelHeader");
+  const { channel } = useChannelStateContext();
+  const { client } = useChatContext();
+  const [channelUsers, setChannelUsers] = useState<
+    Array<{ name: string; online: boolean }>
+  >([]);
+
+  useEffect(() => {
+    const updateChannelUsers = (event?: Event) => {
+      // test if the updated user is a member of this channel
+      if (!event || channel.state.members[event.user!.id] !== undefined) {
+        setChannelUsers(
+          Object.values(channel.state.members).map((user) => ({
+            name: user.user_id!,
+            online: !!user.user!.online,
+          }))
+        );
+      }
+    };
+
+    updateChannelUsers();
+
+    //
+    client.on("user.presence.changed", updateChannelUsers);
+
+    return () => {
+      client.off("user.presence.changed", updateChannelUsers);
+    };
+  }, [client, channel]);
+
   const { openMobileNav } = useChatContext<StreamChatGenerics>("ChannelHeader");
   const { t } = useTranslationContext("ChannelHeader");
   const { displayImage, displayTitle } = useChannelPreviewInfo({
@@ -49,6 +77,7 @@ const UnMemoizedChannelHeader = <
   });
 
   const { member_count, subtitle } = channel?.data || {};
+  const watcherCount = channelUsers.filter((u) => u.online).length;
 
   return (
     <div className="str-chat__header-livestream str-chat__channel-header">
@@ -79,13 +108,13 @@ const UnMemoizedChannelHeader = <
             {subtitle}
           </p>
         )}
-        <p className="str-chat__header-livestream-left--members str-chat__channel-header-info">
+        <span className="str-chat__header-livestream-left--members str-chat__channel-header-info">
           {!live &&
             !!member_count &&
             member_count > 0 &&
             (member_count == 2 ? (
               <>
-                {watcher_count == 2 && (
+                {watcherCount == 2 && (
                   <Group gap={5}>
                     <Badge size="10" color="teal" circle />
                     {t<string>("Online")}
@@ -99,11 +128,11 @@ const UnMemoizedChannelHeader = <
                 }) +
                   ", " +
                   t<string>("{{ watcherCount }} online", {
-                    watcherCount: watcher_count,
+                    watcherCount: watcherCount,
                   })}
               </>
             ))}
-        </p>
+        </span>
       </div>
     </div>
   );

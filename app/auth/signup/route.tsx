@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
         error: false,
         result: {
           user,
+          streamUsers: upsertResponse.users,
           userToken: token,
         },
       },
