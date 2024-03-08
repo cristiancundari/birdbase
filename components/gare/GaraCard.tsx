@@ -22,7 +22,7 @@ import {
   IconPencil,
   IconTrash,
 } from "@tabler/icons-react";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import { formatValuta, imgPath } from "@/lib/helper";
 import { Role } from "@prisma/client";
 import Link from "next/link";

@@ -1,4 +1,4 @@
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import {
   Avatar,
   Group,

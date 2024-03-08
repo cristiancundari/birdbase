@@ -1,8 +1,10 @@
-import React from "react";
+"use client";
 import Navbar from "@/components/Navbar";
+import StreamChatStoreInit from "@/store/StreamChatStoreInit";
 import { Container } from "@mantine/core";
+import React from "react";
 
-function layout({ children }: { children: React.ReactNode }) {
+function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar>
@@ -10,8 +12,9 @@ function layout({ children }: { children: React.ReactNode }) {
           {children}
         </Container>
       </Navbar>
+      <StreamChatStoreInit />
     </>
   );
 }
 
-export default layout;
+export default Layout;

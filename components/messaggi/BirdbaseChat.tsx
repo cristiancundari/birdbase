@@ -10,7 +10,7 @@ import {
 
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import { ProfiloWithAllevatore } from "@/types/types";
 import { Box, Card, Center, Group, Loader, Tooltip } from "@mantine/core";
 import debounce from "lodash.debounce";
@@ -54,7 +54,7 @@ import {
 } from "@tabler/icons-react";
 import { User } from "stream-chat";
 import { CustomSearchBar } from "./custom_components/CustomSearchBar";
-import { useStreamClient } from "./useClientHook";
+import { useStreamChatStore } from "@/store/StreamChatStore";
 
 const FileUploadIcon = () => (
   <>
@@ -73,17 +73,8 @@ const EmojiIcon = () => (
 );
 
 export default function BirdbaseChat() {
-  const [streamUser, setStreamUser] = useState<{ user?: User; token?: string }>(
-    { user: undefined, token: undefined }
-  );
-  const client = useStreamClient(
-    streamUser
-      ? { user: streamUser.user, tokenOrProvider: streamUser.token }
-      : { user: undefined, tokenOrProvider: undefined }
-  );
-  const [channel, setChannel] = useState<Channel<DefaultGenerics> | undefined>(
-    undefined
-  );
+  const client = useStreamChatStore((state) => state.chatClient);
+  const [channel, setChannel] = useState<Channel<DefaultGenerics>>();
   const supabase = useSupabase();
 
   const customFetchResults = useCallback(
@@ -133,28 +124,6 @@ export default function BirdbaseChat() {
     },
     [client, customFetchResults]
   );
-
-  useEffect(() => {
-    async function init() {
-      const request = await apiFetch.post<{
-        user: ProfiloWithAllevatore;
-        streamUsers: User[];
-        userToken: string;
-      }>("/auth/signup", {});
-      if (request.error || request.data.streamUsers.length === 0) {
-        showNotification({
-          message: "Errore durante la connessione al servizio di messaggistica",
-        });
-        return;
-      }
-
-      setStreamUser({ user: request.data.user, token: request.data.userToken });
-
-      setChannel(undefined);
-    }
-
-    init();
-  }, []);
 
   if (!client)
     return (

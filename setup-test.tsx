@@ -11,7 +11,7 @@ import {
   render as testingLibraryRender,
 } from "@testing-library/react";
 import { afterAll, afterEach, vi } from "vitest";
-import LayoutProviders from "./app/layoutProviders";
+import LayoutProviders from "./providers/LayoutWrapper";
 import { act } from "react-dom/test-utils";
 import { debug } from "vitest-preview";
 

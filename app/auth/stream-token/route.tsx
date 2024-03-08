@@ -1,4 +1,4 @@
-import { getServerUser, getServerUserProfile } from "@/lib/supabase/helper";
+import { getServerUserProfile } from "@/lib/supabase/helper";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";

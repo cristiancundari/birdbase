@@ -5,7 +5,7 @@ import ModalGara, { FormValues } from "@/components/gare/ModalGara";
 import NessunaGara from "@/components/gare/NessunaGara";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import { ApiResponse, GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";

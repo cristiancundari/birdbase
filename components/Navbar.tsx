@@ -1,8 +1,9 @@
 "use client";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import "@/styles/navLink.css";
 import {
   AppShell,
+  Badge,
   Box,
   Burger,
   Button,
@@ -25,17 +26,43 @@ import {
 } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import UserLogoutNav from "./UserLogoutNav";
+import { useCallback, useEffect, useState } from "react";
+import { Event } from "stream-chat";
+import { useStreamChatStore } from "@/store/StreamChatStore";
+import Link from "next/link";
 
 export default function Navbar({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
   const router = useRouter();
   const supabase = useSupabase();
   const pathname = usePathname();
+  const client = useStreamChatStore((state) => state.chatClient);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const callback = useCallback((event: Event) => {
+    if (event.total_unread_count !== undefined) {
+      setUnreadCount(event.total_unread_count);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!client) return;
+
+    client.on(callback);
+
+    return () => {
+      client.off(callback);
+    };
+  }, [client, callback]);
 
   const logout = async () => {
     await supabase.client.auth.signOut();
+    await client?.disconnectUser();
     router.push(`/auth/login?callbackUrl=${pathname}`);
   };
+
+  const messaggiBadge =
+    unreadCount > 0 ? <Badge color="red">{unreadCount}</Badge> : null;
 
   const links = [
     {
@@ -67,6 +94,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
       icon: <IconMessages />,
       label: "Messaggi",
       url: "/app/messaggi",
+      badge: messaggiBadge,
     },
     {
       icon: <IconSettings />,
@@ -95,11 +123,13 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
         <AppShell.Section grow component={ScrollArea}>
           {links.map((link, index) => (
             <NavLink
+              component={Link}
               key={index}
               href={link.url}
               leftSection={link.icon}
               label={link.label}
               active={pathname.startsWith(link.url)}
+              rightSection={link.badge}
             />
           ))}
         </AppShell.Section>

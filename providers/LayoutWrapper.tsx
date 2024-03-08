@@ -4,13 +4,10 @@ import { DatesProvider } from "@mantine/dates";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import "dayjs/locale/it";
-import theme from "./mantine-theme";
+import theme from "../lib/mantine-theme";
+import { PropsWithChildren } from "react";
 
-type Props = {
-  children?: React.ReactNode;
-};
-
-function LayoutProviders({ children }: Props) {
+function LayoutProviders({ children }: PropsWithChildren) {
   return (
     <MantineProvider defaultColorScheme="light" theme={theme}>
       <DatesProvider

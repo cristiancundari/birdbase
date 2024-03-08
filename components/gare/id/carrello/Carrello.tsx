@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/apiFetch";
 import { formatValuta, showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import {
   ActionIcon,

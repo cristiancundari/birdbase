@@ -86,6 +86,9 @@
     var(--str-chat__surface-color);
   --str-chat__message-send-color: black;
   --str-chat__primary-color: var(--mantine-primary-color-filled) !important;
+  --str-chat__own-message-bubble-background-color: var(
+    --mantine-primary-color-light
+  );
 }
 
 .str-chat__channel-list

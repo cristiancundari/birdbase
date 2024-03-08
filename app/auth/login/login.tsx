@@ -16,7 +16,7 @@ import { useForm } from "@mantine/form";
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 
 function Login() {
   const supabase = useSupabase();

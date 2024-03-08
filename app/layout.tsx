@@ -1,4 +1,3 @@
-import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
@@ -6,8 +5,8 @@ import "@mantine/dropzone/styles.css";
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Providers } from "@/app/providers";
 import { ColorSchemeScript } from "@mantine/core";
+import { SupabaseWrapper } from "@/providers/SupabaseWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +26,7 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <SupabaseWrapper>{children}</SupabaseWrapper>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 "use client";
-import { useSupabase } from "@/providers/supabaseProvider";
+import { useSupabase } from "@/providers/SupabaseProvider";
 import { Box, Text } from "@mantine/core";
 import { Role } from "@prisma/client";
 import React from "react";
