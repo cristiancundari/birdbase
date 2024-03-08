@@ -5,7 +5,7 @@ import "@mantine/dropzone/styles.css";
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ColorSchemeScript } from "@mantine/core";
+import { Box, ColorSchemeScript } from "@mantine/core";
 import { SupabaseWrapper } from "@/providers/SupabaseWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,7 +26,9 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={inter.className}>
-        <SupabaseWrapper>{children}</SupabaseWrapper>
+        <SupabaseWrapper>
+          <Box bg="gray.0">{children}</Box>
+        </SupabaseWrapper>
       </body>
     </html>
   );

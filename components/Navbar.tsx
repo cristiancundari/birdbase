@@ -3,105 +3,42 @@ import { useSupabase } from "@/providers/SupabaseProvider";
 import "@/styles/navLink.css";
 import {
   AppShell,
-  Badge,
   Box,
   Burger,
-  Button,
   Group,
   NavLink,
   ScrollArea,
   Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconBat,
-  IconClock,
-  IconEggCracked,
-  IconHome,
-  IconLogout,
-  IconMessages,
-  IconSettings,
-  IconTrophy,
-  IconWallet,
-} from "@tabler/icons-react";
-import { usePathname, useRouter } from "next/navigation";
-import UserLogoutNav from "./UserLogoutNav";
-import { useCallback, useEffect, useState } from "react";
-import { Event } from "stream-chat";
-import { useStreamChatStore } from "@/store/StreamChatStore";
+import { IconBat } from "@tabler/icons-react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { PropsWithChildren } from "react";
+import UserLogoutNav from "./UserLogoutNav";
 
-export default function Navbar({ children }: { children: React.ReactNode }) {
+interface NavbarProps {
+  links: {
+    icon: React.ReactNode;
+    label: string;
+    url: string;
+    badge?: React.ReactNode;
+  }[];
+}
+
+export default function Navbar({
+  children,
+  links,
+}: PropsWithChildren<NavbarProps>) {
   const [opened, { toggle }] = useDisclosure();
   const router = useRouter();
   const supabase = useSupabase();
   const pathname = usePathname();
-  const client = useStreamChatStore((state) => state.chatClient);
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  const callback = useCallback((event: Event) => {
-    if (event.total_unread_count !== undefined) {
-      setUnreadCount(event.total_unread_count);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!client) return;
-
-    client.on(callback);
-
-    return () => {
-      client.off(callback);
-    };
-  }, [client, callback]);
 
   const logout = async () => {
     await supabase.client.auth.signOut();
-    await client?.disconnectUser();
     router.push(`/auth/login?callbackUrl=${pathname}`);
   };
-
-  const messaggiBadge =
-    unreadCount > 0 ? <Badge color="red">{unreadCount}</Badge> : null;
-
-  const links = [
-    {
-      icon: <IconHome />,
-      label: "Home",
-      url: "/app/home",
-    },
-    {
-      icon: <IconWallet />,
-      label: "Portafoglio",
-      url: "/app/portafoglio",
-    },
-    {
-      icon: <IconEggCracked />,
-      label: "Covate",
-      url: "/app/covate",
-    },
-    {
-      icon: <IconTrophy />,
-      label: "Gare",
-      url: "/app/gare",
-    },
-    {
-      icon: <IconClock />,
-      label: "Promemoria",
-      url: "/app/promemoria",
-    },
-    {
-      icon: <IconMessages />,
-      label: "Messaggi",
-      url: "/app/messaggi",
-      badge: messaggiBadge,
-    },
-    {
-      icon: <IconSettings />,
-      label: "Impostazioni",
-      url: "/app/impostazioni",
-    },
-  ];
 
   return (
     <AppShell

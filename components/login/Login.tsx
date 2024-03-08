@@ -1,9 +1,11 @@
 "use client";
 import {
   Alert,
+  Anchor,
   Button,
   Center,
   Container,
+  Group,
   Paper,
   PasswordInput,
   Stack,
@@ -17,6 +19,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useSupabase } from "@/providers/SupabaseProvider";
+import Link from "next/link";
 
 function Login() {
   const supabase = useSupabase();
@@ -99,6 +102,14 @@ function Login() {
                 </Button>
               </Stack>
             </form>
+
+            <Text mt="lg" ta="center" size="sm" c="dimmed">
+              {"Sei un allevatore ma non hai ancora un account? "}
+              <Anchor component={Link} href="/auth/register">
+                {"Registrati"}
+              </Anchor>
+            </Text>
+
             {error && (
               <Alert
                 mt="lg"

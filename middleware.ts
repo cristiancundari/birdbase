@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/middleware";
+import { Role } from "@prisma/client";
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
   try {
     // This `try/catch` block is only here for the interactive tutorial.
     // Feel free to remove once you have Supabase connected.
@@ -25,6 +27,18 @@ export async function middleware(request: NextRequest) {
       );
     }
 
+    if (pathname.startsWith("/admin")) {
+      const profilo = await supabase
+        .from("profili")
+        .select("id")
+        .eq("id", session?.user.id)
+        .eq("ruolo", Role.ADMIN)
+        .single();
+      if (!profilo.data) {
+        return NextResponse.redirect(new URL("/app/home", request.url));
+      }
+    }
+
     return response;
   } catch (e) {
     // If you are here, a Supabase client could not be created!
@@ -39,5 +53,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/api/:path*"],
+  matcher: ["/app/:path*", "/api/:path*", "/admin/:path*"],
 };

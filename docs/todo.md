@@ -19,6 +19,7 @@
 (D) Mostrare nel report del portafoglio le opzioni che l'utente ha selezionato per generarlo
 (D) Disattivare il submit di tutti i form quando si preme il tasto invio
 (D) Valutare di aggiungere la funzionalità che permette di aggiungere multipli figli a una covata
+(C) Proteggere l'accesso ai bucket di supabase (al momento pubblici)
 
 ----- COMPRAVENDITA -----
 Nella pagina dedicata "marketplace" l'allevatore può creare un inserzione selezionando uno dei propri soggetti che desidera vendere, scegliendo un prezzo e il metodo di spedizione.

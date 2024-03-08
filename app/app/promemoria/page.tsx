@@ -164,11 +164,6 @@ function Promemoria() {
 
   return (
     <>
-      <Button
-        onClick={() => {
-          showNotification({ message: "Notifica di prova" });
-        }}
-      ></Button>
       <Box mb="md">
         <Group justify={"flex-end"}>
           <Button

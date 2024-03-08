@@ -11,6 +11,7 @@ model Profilo {
   id               String             @id(map: "Profile_pkey") @db.Uuid
   budget           Float              @default(0)
   ruolo            Role               @default(USER)
+  name             String?            @db.VarChar
   rna              String             @db.VarChar
   amazonAccount    AmazonAccount?
   covate           Covata[]
@@ -179,6 +180,20 @@ model Promemoria {
   profilo     Profilo  @relation(fields: [profiloId], references: [id])
 
   @@map("promemoria")
+}
+
+model RichiestaRegistrazione {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  nome        String    @db.VarChar
+  cognome     String    @db.VarChar
+  email       String    @db.VarChar
+  rna         String    @db.VarChar
+  docIdentita String    @map("doc_identita") @db.VarChar
+  docFoi      String    @map("doc_foi") @db.VarChar
+  abilitatoIl DateTime? @map("abilitato_il") @db.Timestamptz(6)
+
+  @@map("richieste_registrazione")
 }
 
 enum Role {

@@ -1,5 +1,5 @@
 import React from "react";
-import Login from "./login";
+import Login from "../../../components/login/Login";
 import { RedirectType, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
