@@ -1,7 +1,6 @@
 import { getServerUserProfile } from "@/lib/supabase/helper";
 import { createClient } from "@/lib/supabase/server";
 import SupabaseProvider from "@/providers/SupabaseProvider";
-import "dayjs/locale/it";
 import { cookies } from "next/headers";
 import LayoutProviders from "./LayoutWrapper";
 import { PropsWithChildren } from "react";

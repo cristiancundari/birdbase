@@ -45,7 +45,6 @@ export default function Navbar({
       header={{ height: 60 }}
       navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }}
       padding="md"
-      bg="gray.0"
     >
       <AppShell.Header>
         <Group h="100%" px="md">

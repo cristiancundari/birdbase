@@ -1,7 +1,7 @@
 import React from "react";
 
-function RegistrazioniPage() {
+function RegistrazioniAdminPage() {
   return <div>RegistrazioniPage</div>;
 }
 
-export default RegistrazioniPage;
+export default RegistrazioniAdminPage;

@@ -34,7 +34,6 @@ export function showNotification({
   message,
   success,
 }: ShowNotificationType) {
-  console.log(errorNotificationClasses);
   if (success) {
     notifications.show({
       message: message,

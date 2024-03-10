@@ -77,12 +77,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-
-  // ... save to database
-  return {
-    status: 200,
-    body: {
-      message: "Registrazione presa in carico",
-    },
-  };
 }

@@ -20,12 +20,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import Link from "next/link";
+import { Role } from "@prisma/client";
 
 function Login() {
   const supabase = useSupabase();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callback") || "/app/home";
+  const callbackUrl = searchParams.get("callback");
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,8 +49,25 @@ function Login() {
         email: `${values.username}@gmail.com`,
         password: values.password,
       });
-      if (!res?.error) {
-        return router.push(decodeURIComponent(callbackUrl));
+      if (!res.error) {
+        // Login successful
+        // Check if the user is an admin
+        const profile = await supabase.client
+          .from("profili")
+          .select("id")
+          .eq("id", res.data.user.id)
+          .eq("ruolo", Role.ADMIN)
+          .single();
+        if (profile.data) {
+          // User is an admin. Redirect to admin home
+          router.push(decodeURIComponent(callbackUrl || "/admin/home"));
+          router.refresh();
+          return;
+        }
+        // User is a user. Redirect to user home
+        router.push(decodeURIComponent(callbackUrl || "/app/home"));
+        router.refresh();
+        return;
       } else {
         setError(
           "Se non ricordi le credenziali contatta un amministratore per il reset"

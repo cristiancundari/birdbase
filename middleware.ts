@@ -27,16 +27,20 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    if (pathname.startsWith("/admin")) {
-      const profilo = await supabase
-        .from("profili")
-        .select("id")
-        .eq("id", session?.user.id)
-        .eq("ruolo", Role.ADMIN)
-        .single();
-      if (!profilo.data) {
-        return NextResponse.redirect(new URL("/app/home", request.url));
-      }
+    if (pathname.startsWith("/api")) return response;
+
+    const profilo = await supabase
+      .from("profili")
+      .select("id")
+      .eq("id", session.user.id)
+      .eq("ruolo", Role.ADMIN)
+      .single();
+
+    if (pathname.startsWith("/admin") && !profilo.data) {
+      return NextResponse.redirect(new URL("/app/home", request.url));
+    }
+    if (pathname.startsWith("/app") && profilo.data) {
+      return NextResponse.redirect(new URL("/admin/home", request.url));
     }
 
     return response;
