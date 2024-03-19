@@ -38,6 +38,10 @@ export type SoggettoWithGenitori = Prisma.SoggettoGetPayload<{
   include: { covata: { select: { idMadre: true; idPadre: true } } };
 }>;
 
+export type SoggettoWithGara = Prisma.SoggettoGetPayload<{
+  include: { iscrizioni: { include: { gara: true } } };
+}>;
+
 export type BudgetRequest = {
   budget: Prisma.ProfiloGetPayload<{ select: { budget: true } }>;
   spese: Prisma.GetTransazioneAggregateType<{ _sum: { prezzo: true } }>;

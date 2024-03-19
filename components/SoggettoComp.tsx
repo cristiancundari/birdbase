@@ -64,7 +64,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
         {sogg.sesso == false && <IconSessoFemale size="25" />}
         {sogg.sesso == null && <IconSessoAgender size="25" />}
         <Text>
-          <Anchor href="https://mantine.dev/" target="_blank" c="dark">
+          <Anchor href={`/app/home/${sogg.id}`} c="dark">
             {formatAnelletto(sogg.rna, sogg.numero, sogg.anno)}
           </Anchor>
         </Text>
