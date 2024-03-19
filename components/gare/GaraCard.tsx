@@ -23,9 +23,10 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useSupabase } from "@/providers/SupabaseProvider";
-import { formatValuta, imgPath } from "@/lib/helper";
+import { formatValuta, getBucketImgPath } from "@/lib/helper";
 import { Role } from "@prisma/client";
 import Link from "next/link";
+import InfoNazione from "../InfoNazione";
 
 function GaraCard({
   gara,
@@ -81,7 +82,7 @@ function GaraCard({
           <Image
             src={
               gara.immagine
-                ? imgPath + gara.immagine
+                ? getBucketImgPath("img", gara.immagine)
                 : `https://images.placeholders.dev/?width=200&height=90&fontSize=8&text=${gara.titolo}`
             }
             height={160}
@@ -175,19 +176,7 @@ function GaraCard({
               {gara.citta}
             </Text>
           </Group>
-          <Tooltip label={gara.nazione.nome}>
-            <Group gap={"xs"} align="center">
-              <Image
-                src={`https://flagcdn.com/h20/${gara.nazione.sigla.toLocaleLowerCase()}.jpg`}
-                style={{ boxShadow: "0px 0px 5px 0px #00000047" }}
-                alt={gara.nazione.nome}
-                height={16}
-              />
-              <Text size="xs" c="dimmed">
-                {gara.nazione.sigla}
-              </Text>
-            </Group>
-          </Tooltip>
+          <InfoNazione nazione={gara.nazione} />
         </Group>
         <Box style={{ flexGrow: 1 }}></Box>
         <Divider my="md" variant="dashed" />

@@ -79,7 +79,7 @@ function Budget() {
             <>
               <Group>
                 <Text>Il tuo budget mensile: </Text>
-                {budget ? (
+                {budget !== null ? (
                   <Text>{formatValuta(budget)}</Text>
                 ) : (
                   <Skeleton w={100} h={14} data-testid="SkeletonBudget" />
@@ -136,7 +136,7 @@ function Budget() {
         <Stack gap={0}>
           <Group>
             <Text>Bilancio: </Text>
-            {bilancio ? (
+            {bilancio !== null ? (
               <Text c={bilancio >= 0 ? "green" : "red"}>
                 {formatValuta(bilancio)}
               </Text>

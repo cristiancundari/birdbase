@@ -80,7 +80,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar links={links}>
-        <Container size="xl" p={0} h="100%">
+        <Container size="xl" p="sm" h="100%">
           {children}
         </Container>
       </Navbar>

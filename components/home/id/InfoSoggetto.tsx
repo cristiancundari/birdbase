@@ -1,27 +1,35 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumb";
-import { IconSessoFemale, IconSessoMale } from "@/components/IconsSesso";
+import { getIconSesso } from "@/components/IconsSesso";
 import InfoGabbia from "@/components/InfoGabbia";
-import { formatAnelletto, formatData, imgPath } from "@/lib/helper";
-import { SoggettoWithGara } from "@/types/types";
+import InfoNazione from "@/components/InfoNazione";
+import { apiFetch } from "@/lib/apiFetch";
 import {
-  Text,
-  Card,
-  Group,
-  Box,
+  formatAnelletto,
+  formatData,
+  getBucketImgPath,
+  showNotification,
+} from "@/lib/helper";
+import {
+  SoggettoWithIscrizioniWithGaraWithNazione,
+  SoggettoWithParentela,
+} from "@/types/types";
+import {
   Avatar,
-  Fieldset,
-  Stack,
   Button,
+  Card,
+  Center,
+  Fieldset,
+  Group,
+  Loader,
+  Pill,
+  Stack,
+  Text,
 } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
-import {
-  IconBarrel,
-  IconGenderFemale,
-  IconGenderMale,
-  IconPrinter,
-} from "@tabler/icons-react";
-import React, { useRef } from "react";
+import { IconPrinter } from "@tabler/icons-react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const breadcrumbsItems = [
@@ -29,11 +37,62 @@ const breadcrumbsItems = [
   { title: "Info soggetto", href: "#" },
 ];
 
-function InfoSoggetto({ soggetto }: { soggetto: SoggettoWithGara }) {
+function InfoSoggetto({
+  soggetto,
+}: {
+  soggetto: SoggettoWithIscrizioniWithGaraWithNazione;
+}) {
+  const [listaParenti, setListaParenti] = useState<Map<string, Soggetto[]>>(
+    new Map()
+  );
+  const [isLoading, setIsLoading] = useState(true);
   const componentRef = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
+
+  async function getParentele() {
+    setIsLoading(true);
+
+    const response = await apiFetch.get<SoggettoWithParentela[]>(
+      `/api/covate/parentele?soggetto=${soggetto.id}`
+    );
+    if (response.error) {
+      setIsLoading(false);
+      return showNotification({ message: response.message });
+    }
+
+    setListaParenti(calcolaListaParenti(response.data));
+
+    setIsLoading(false);
+  }
+
+  function calcolaListaParenti(parentele: SoggettoWithParentela[]) {
+    const parenti = new Map<string, Soggetto[]>();
+    parentele.forEach((p) => {
+      const soggetti = parenti.get(p.parentela!.plurale);
+      if (soggetti) {
+        soggetti.push(p.soggetto);
+      } else {
+        parenti.set(p.parentela!.plurale, [p.soggetto]);
+      }
+    });
+
+    parenti.forEach((soggetti) => {
+      soggetti.sort((a, b) => {
+        if (a.sesso === b.sesso) {
+          return a.dataNascita.getTime() - b.dataNascita.getTime();
+        }
+        return a.sesso ? -1 : 1;
+      });
+    });
+
+    return parenti;
+  }
+
+  useEffect(() => {
+    getParentele();
+  }, []);
 
   return (
     <>
@@ -55,7 +114,7 @@ function InfoSoggetto({ soggetto }: { soggetto: SoggettoWithGara }) {
             size="xl"
             src={
               soggetto.avatar
-                ? imgPath + soggetto.avatar
+                ? getBucketImgPath("img", soggetto.avatar)
                 : `https://images.placeholders.dev/?width=50&height=50&textWrap=true&text=${formatAnelletto(
                     soggetto.rna,
                     soggetto.numero,
@@ -71,7 +130,7 @@ function InfoSoggetto({ soggetto }: { soggetto: SoggettoWithGara }) {
             </Text>
             <Group gap="0">
               Sesso:
-              {soggetto.sesso ? <IconSessoMale /> : <IconSessoFemale />}
+              {getIconSesso(soggetto.sesso)}
             </Group>
             <InfoGabbia gabbia={soggetto.gabbia} />
             <Text>Data di nascita: {formatData(soggetto.dataNascita)}</Text>
@@ -79,65 +138,71 @@ function InfoSoggetto({ soggetto }: { soggetto: SoggettoWithGara }) {
           {soggetto.note && <Text mt="md">Note: {soggetto.note}</Text>}
         </Fieldset>
         <Fieldset legend="Informazioni Parentele" mb="md">
-          <Text>Padre: </Text>
-          <Text>Madre: </Text>
-          <Text>Fratelli: </Text>
+          {isLoading ? (
+            <Center p="lg">
+              <Loader size="sm" />
+            </Center>
+          ) : (
+            listaParenti.size === 0 && <Center>Nessun parente</Center>
+          )}
+          <Stack>
+            {Array.from(listaParenti.entries()).map(([parentela, soggetti]) => (
+              <Stack gap={"xs"} key={parentela}>
+                <Text fw={700}>{parentela}</Text>
+                <Group>
+                  {soggetti.map((s) => (
+                    <Link key={s.id} href={`/app/home/${s.id}`}>
+                      <Pill>
+                        <Group gap="xs" wrap="nowrap">
+                          {getIconSesso(s.sesso, 14)}
+                          {formatAnelletto(s.rna, s.numero, s.anno)}
+                        </Group>
+                      </Pill>
+                    </Link>
+                  ))}
+                </Group>
+              </Stack>
+            ))}
+          </Stack>
         </Fieldset>
+
         <Fieldset legend="Dossier Gare" mb="md">
-          <Stack gap={"xs"} my={"xl"}>
-            <Group justify="space-between">
-              <Text fw={700}>{}</Text>
-              <Text>Anno:2024</Text>
-            </Group>
-            <Group justify="space-between">
-              <Text>voto: 87/100</Text>
-              <Group gap="0">
-                <Text size="xl">🥈</Text>
-                <Text c="dimmed">classificato</Text>
-              </Group>
-            </Group>
-          </Stack>
-
-          <Stack gap={"xs"} my={"xl"}>
-            <Group justify="space-between">
-              <Text fw={700}>Campionato mondiale 🇮🇹</Text>
-              <Text>Anno:2023</Text>
-            </Group>
-            <Group justify="space-between">
-              <Text>voto: 100/100</Text>
-              <Group gap="0">
-                <Text size="xl">🥇</Text>
-                <Text c="dimmed">classificato</Text>
-              </Group>
-            </Group>
-          </Stack>
-
-          <Stack gap={"xs"} my={"xl"}>
-            <Group justify="space-between">
-              <Text fw={700}>Campionato mondiale 🇩🇪</Text>
-              <Text>Anno:2022</Text>
-            </Group>
-            <Group justify="space-between">
-              <Text>voto: 75/100</Text>
-              <Group gap="0">
-                <Text size="xl">🥉</Text>
-                <Text c="dimmed">classificato</Text>
-              </Group>
-            </Group>
-          </Stack>
-
-          <Stack gap={"xs"} my={"xl"}>
-            <Group justify="space-between">
-              <Text fw={700}>Campionato mondiale 🇦🇺</Text>
-              <Text>Anno:2021</Text>
-            </Group>
-            <Group justify="space-between">
-              <Text>voto: 99/100</Text>
-              <Group gap="0">
-                <Text size="xl">🥇</Text>
-                <Text c="dimmed">classificato</Text>
-              </Group>
-            </Group>
+          {soggetto.iscrizioni.length === 0 && (
+            <Center>Nessuna iscrizione a gare</Center>
+          )}
+          <Stack>
+            {soggetto.iscrizioni.map((iscrizione) => (
+              <Stack gap="xs" key={iscrizione.id}>
+                <Group justify="space-between" align="end">
+                  <Stack gap={3}>
+                    <Text fw={700}>{iscrizione.gara.titolo}</Text>
+                    <Text size="sm">
+                      Data: {formatData(iscrizione.gara.data)}
+                    </Text>
+                    <Group gap="xs">
+                      <Text size="xs" c="dimmed">
+                        {iscrizione.gara.citta}
+                      </Text>
+                      <InfoNazione
+                        nazione={iscrizione.gara.nazione}
+                        flagSize="sm"
+                      />
+                    </Group>
+                  </Stack>
+                  <Stack gap={3}>
+                    <Text>Voto: {iscrizione.voto}/100</Text>
+                    <Group gap="xs">
+                      <Text size="lg" span>
+                        {iscrizione.posizione + "°"}
+                      </Text>
+                      <Text c="dimmed" span>
+                        {"classificato"}
+                      </Text>
+                    </Group>
+                  </Stack>
+                </Group>
+              </Stack>
+            ))}
           </Stack>
         </Fieldset>
       </Card>

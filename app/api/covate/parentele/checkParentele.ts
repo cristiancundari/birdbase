@@ -1,16 +1,48 @@
-import { SoggettoWithGenitori } from "@/types/types";
+import { SoggettoWithGenitori, SoggettoWithParentela } from "@/types/types";
+import { Soggetto } from "@prisma/client";
 
-/* export function calcolaLivelliParentelaOld(
-  partner: SoggettoWithGenitori,
-  soggetti: Record<string, SoggettoWithGenitori>
-): [string, string][][] {
-  const res: [string, string][][] = [];
-  res.push([[partner.id, ""]]);
-  for (let i = 1; i <= 4; i++) {
-    res.push(calcolaParenti(soggetti, partner, i));
+export function elaboraSoggetto(
+  listaSoggetti: SoggettoWithGenitori[],
+  soggetto: SoggettoWithGenitori,
+  onlyPartners?: boolean
+): SoggettoWithParentela[] {
+  const obj: Record<string, SoggettoWithGenitori> = {};
+  for (let s of listaSoggetti) {
+    obj[s.id] = s;
   }
-  return res;
-} */
+  const parentiSoggetto = calcolaLivelliParentela(soggetto, obj);
+  const partners = onlyPartners
+    ? listaSoggetti.filter((s) => s.sesso == !soggetto.sesso)
+    : listaSoggetti;
+  const result = partners.map((partner) => {
+    const parentiPartner = calcolaLivelliParentela(partner, obj);
+    const gradoParentela = checkParentele(parentiSoggetto, parentiPartner);
+    if (gradoParentela) {
+      const gradoParentelaStr = `${gradoParentela[0]},${gradoParentela[1]}`;
+      return {
+        soggetto: { ...partner, covata: undefined } as Soggetto,
+        parentela: {
+          nome: datiParentela[gradoParentelaStr].nome,
+          plurale: datiParentela[gradoParentelaStr].plurale,
+          percentuale: datiParentela[gradoParentelaStr].percentuale,
+          colore: coloreParentela(datiParentela[gradoParentelaStr].percentuale),
+        },
+      };
+    } else {
+      return {
+        soggetto: { ...partner, covata: undefined } as Soggetto,
+        parentela: null,
+      };
+    }
+  });
+
+  return onlyPartners
+    ? result
+    : result
+        .filter((p) => p.parentela !== null && p.soggetto.id !== soggetto.id)
+        .sort((a, b) => b.parentela!.percentuale - a.parentela!.percentuale);
+}
+
 export function calcolaLivelliParentela(
   partner: SoggettoWithGenitori,
   soggetti: Record<string, SoggettoWithGenitori>
@@ -35,27 +67,6 @@ export function calcolaLivelliParentela(
   }
   return res;
 }
-
-/* 
-function calcolaParenti(
-  soggetti: Record<string, SoggettoWithGenitori>,
-  soggetto: SoggettoWithGenitori,
-  livello: number
-): [string, string][] {
-  if (soggetto.covata == null) {
-    return [];
-  }
-  const madre = soggetto.covata.idMadre;
-  const padre = soggetto.covata.idPadre;
-  if (livello == 1) {
-    return [[madre, padre]];
-  } else {
-    return [
-      ...calcolaParenti(soggetti, soggetti[madre], livello - 1),
-      ...calcolaParenti(soggetti, soggetti[padre], livello - 1),
-    ];
-  }
-} */
 
 export function checkParentele(
   a: [string, string][][],
@@ -101,60 +112,50 @@ function confrontaTuple(a: [string, string], b: [string, string]) {
   return false;
 }
 
-export const nomeParentela: { [key: string]: string } = {
-  "0,0": "",
-  "0,1": "Figlio",
-  "0,2": "Nipote (nonno)",
-  "0,3": "Bisnipote",
-  "0,4": "Trisnipote",
-  "1,0": "Genitore",
-  "1,1": "Fratello",
-  "1,2": "Nipote",
-  "1,3": "Pronipote",
-  "1,4": "Pro-pronipote",
-  "2,0": "Nonno",
-  "2,1": "Zio",
-  "2,2": "Cugino",
-  "2,3": "Procugino",
-  "2,4": "Pro-procugino",
-  "3,0": "Bisnonno",
-  "3,1": "Prozio (nonno)",
-  "3,2": "Procugino (nonno)",
-  "3,3": "Cugino 2°",
-  "3,4": "Procugino 2°",
-  "4,0": "Trisnonno",
-  "4,1": "Prozio (bisnonno)",
-  "4,2": "Pro-procugino (bisnonno)",
-  "4,3": "Procugino 2° (bisnonno)",
-  "4,4": "Cugino 3°",
-};
-
-export const percentualeParentela: { [key: string]: number } = {
-  "0,0": 100,
-  "0,1": 90,
-  "0,2": 70,
-  "0,3": 40,
-  "0,4": 20,
-  "1,0": 90,
-  "1,1": 80,
-  "1,2": 60,
-  "1,3": 35,
-  "1,4": 18,
-  "2,0": 70,
-  "2,1": 60,
-  "2,2": 50,
-  "2,3": 30,
-  "2,4": 13,
-  "3,0": 40,
-  "3,1": 35,
-  "3,2": 30,
-  "3,3": 25,
-  "3,4": 8,
-  "4,0": 20,
-  "4,1": 18,
-  "4,2": 13,
-  "4,3": 8,
-  "4,4": 5,
+export const datiParentela: {
+  [key: string]: { nome: string; percentuale: number; plurale: string };
+} = {
+  "0,0": { nome: "", percentuale: 100, plurale: "" },
+  "0,1": { nome: "Figlio", percentuale: 90, plurale: "Figli" },
+  "0,2": { nome: "Nipote (nonno)", percentuale: 70, plurale: "Nipoti (nonno)" },
+  "0,3": { nome: "Bisnipote", percentuale: 40, plurale: "Bisnipoti" },
+  "0,4": { nome: "Trisnipote", percentuale: 20, plurale: "Trisnipoti" },
+  "1,0": { nome: "Genitore", percentuale: 90, plurale: "Genitori" },
+  "1,1": { nome: "Fratello", percentuale: 80, plurale: "Fratelli" },
+  "1,2": { nome: "Nipote", percentuale: 60, plurale: "Nipoti" },
+  "1,3": { nome: "Pronipote", percentuale: 35, plurale: "Pronipoti" },
+  "1,4": { nome: "Pro-pronipote", percentuale: 18, plurale: "Pro-pronipoti" },
+  "2,0": { nome: "Nonno", percentuale: 70, plurale: "Nonni" },
+  "2,1": { nome: "Zio", percentuale: 60, plurale: "Zii" },
+  "2,2": { nome: "Cugino", percentuale: 50, plurale: "Cugini" },
+  "2,3": { nome: "Procugino", percentuale: 30, plurale: "Procugini" },
+  "2,4": { nome: "Pro-procugino", percentuale: 13, plurale: "Pro-procugini" },
+  "3,0": { nome: "Bisnonno", percentuale: 40, plurale: "Bisnonni" },
+  "3,1": { nome: "Prozio (nonno)", percentuale: 35, plurale: "Prozii (nonno)" },
+  "3,2": {
+    nome: "Procugino (nonno)",
+    percentuale: 30,
+    plurale: "Procugini (nonno)",
+  },
+  "3,3": { nome: "Cugino 2°", percentuale: 25, plurale: "Cugini 2°" },
+  "3,4": { nome: "Procugino 2°", percentuale: 8, plurale: "Procugini 2°" },
+  "4,0": { nome: "Trisnonno", percentuale: 20, plurale: "Trisnonni" },
+  "4,1": {
+    nome: "Prozio (bisnonno)",
+    percentuale: 18,
+    plurale: "Prozii (bisnonno)",
+  },
+  "4,2": {
+    nome: "Pro-procugino (bisnonno)",
+    percentuale: 13,
+    plurale: "Pro-procugini (bisnonno)",
+  },
+  "4,3": {
+    nome: "Procugino 2° (bisnonno)",
+    percentuale: 8,
+    plurale: "Procugini 2° (bisnonno)",
+  },
+  "4,4": { nome: "Cugino 3°", percentuale: 5, plurale: "Cugini 3°" },
 };
 
 export function coloreParentela(percentuale: number) {

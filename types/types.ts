@@ -1,4 +1,5 @@
-import { Prisma, Soggetto } from "@prisma/client";
+import { Prisma, RichiestaRegistrazione, Soggetto } from "@prisma/client";
+import { Pagination } from "@supabase/supabase-js";
 
 export enum Sesso {
   Maschio = "Maschio",
@@ -38,9 +39,12 @@ export type SoggettoWithGenitori = Prisma.SoggettoGetPayload<{
   include: { covata: { select: { idMadre: true; idPadre: true } } };
 }>;
 
-export type SoggettoWithGara = Prisma.SoggettoGetPayload<{
-  include: { iscrizioni: { include: { gara: true } } };
-}>;
+export type SoggettoWithIscrizioniWithGaraWithNazione =
+  Prisma.SoggettoGetPayload<{
+    include: {
+      iscrizioni: { include: { gara: { include: { nazione: true } } } };
+    };
+  }>;
 
 export type BudgetRequest = {
   budget: Prisma.ProfiloGetPayload<{ select: { budget: true } }>;
@@ -55,7 +59,12 @@ export type SpesaQueryResult = {
 
 export type SoggettoWithParentela = {
   soggetto: Soggetto;
-  parentela: { nome: string; percentuale: number; colore: string } | null;
+  parentela: {
+    nome: string;
+    plurale: string;
+    percentuale: number;
+    colore: string;
+  } | null;
 };
 
 export type IncassoQueryResult = { mese: number; totale: number; anno: number };
@@ -83,3 +92,8 @@ export type IscrizioneWithSoggettoAndProfiloWithAllevatore =
       profilo: { include: { allevatore: true } };
     };
   }>;
+
+export type RichiestaRegistrazioneWithCount = {
+  richiesteRegistrazione: RichiestaRegistrazione[];
+  count: number;
+};

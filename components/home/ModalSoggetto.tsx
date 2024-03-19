@@ -20,7 +20,7 @@ import {
 } from "@mantine/core";
 
 import { dateParser } from "@/lib/DateParser";
-import { imgPath } from "@/lib/helper";
+import { getBucketImgPath } from "@/lib/helper";
 import { Sesso } from "@/types/types";
 import { DateInput } from "@mantine/dates";
 import { FileWithPath } from "@mantine/dropzone";
@@ -137,7 +137,7 @@ function ModalSoggetto({
   let preview = files.length > 0 ? URL.createObjectURL(files[0]) : null;
 
   if (preview == null && form.values.avatar !== null) {
-    preview = imgPath + form.values.avatar;
+    preview = getBucketImgPath("img", form.values.avatar);
   }
 
   return (

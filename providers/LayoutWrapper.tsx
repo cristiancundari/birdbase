@@ -6,6 +6,7 @@ import { Notifications } from "@mantine/notifications";
 import "dayjs/locale/it";
 import theme from "../lib/mantine-theme";
 import { PropsWithChildren } from "react";
+import NextTopLoader from "nextjs-toploader";
 
 function LayoutProviders({ children }: PropsWithChildren) {
   return (
@@ -18,6 +19,7 @@ function LayoutProviders({ children }: PropsWithChildren) {
       >
         <ModalsProvider>
           <Notifications position="bottom-right" zIndex={1000} />
+          <NextTopLoader color="var(--mantine-primary-color-5)" height={5} />
           <Box>{children}</Box>
         </ModalsProvider>
       </DatesProvider>

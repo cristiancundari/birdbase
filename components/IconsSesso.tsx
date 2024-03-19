@@ -38,3 +38,14 @@ export function IconSessoAgender(props: TablerIconsProps) {
     </Tooltip>
   );
 }
+
+export function getIconSesso(sesso: boolean | null, iconSize?: number) {
+  if (!iconSize) iconSize = 25;
+
+  if (sesso === true) {
+    return <IconSessoMale size={iconSize} />;
+  } else if (sesso === false) {
+    return <IconSessoFemale size={iconSize} />;
+  }
+  return <IconSessoAgender size={iconSize} />;
+}

@@ -140,7 +140,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
   async function getMadrePadre(id: string): Promise<SoggettoWithParentela[]> {
     // Chiamiamo l'API per sapere le parentele dei soggetti del sesso opposto
     const res = await apiFetch.get<SoggettoWithParentela[]>(
-      `/api/covate/parentele?soggetto=${id}`
+      `/api/covate/parentele?soggetto=${id}&only_partners=true`
     );
     if (res.error) {
       showNotification({ message: res.message });

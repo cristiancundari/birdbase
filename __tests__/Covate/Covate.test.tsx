@@ -108,15 +108,18 @@ describe("Covate CRUD", () => {
           { status: 200 }
         );
       }),
-      http.get(`/api/covate/parentele?soggetto=${soggettoPadre.id}`, () => {
-        return HttpResponse.json(
-          {
-            result: parentele,
-            error: false,
-          },
-          { status: 200 }
-        );
-      })
+      http.get(
+        `/api/covate/parentele?soggetto=${soggettoPadre.id}&only_partners=true`,
+        () => {
+          return HttpResponse.json(
+            {
+              result: parentele,
+              error: false,
+            },
+            { status: 200 }
+          );
+        }
+      )
     );
     render(<CovatePage />);
 

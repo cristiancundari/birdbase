@@ -40,6 +40,8 @@ export default function Navbar({
     router.push(`/auth/login?callbackUrl=${pathname}`);
   };
 
+  const changePassword = () => {};
+
   return (
     <AppShell
       header={{ height: 60 }}
@@ -70,7 +72,7 @@ export default function Navbar({
           ))}
         </AppShell.Section>
         <AppShell.Section>
-          <UserLogoutNav logout={logout} />
+          <UserLogoutNav logout={logout} changePassword={changePassword} />
         </AppShell.Section>
       </AppShell.Navbar>
 

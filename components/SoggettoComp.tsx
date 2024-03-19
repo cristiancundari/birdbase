@@ -1,4 +1,5 @@
 "use client";
+import { formatAnelletto, getBucketImgPath } from "@/lib/helper";
 import {
   ActionIcon,
   Anchor,
@@ -14,19 +15,14 @@ import {
 } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
 import {
-  IconBarrel,
   IconDotsVertical,
-  IconGrave,
   IconHeart,
   IconHeartFilled,
-  IconPencil,
-  IconTrash,
 } from "@tabler/icons-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { useState } from "react";
-import { IconSessoAgender, IconSessoFemale, IconSessoMale } from "./IconsSesso";
-import { formatAnelletto, imgPath } from "@/lib/helper";
+import { getIconSesso } from "./IconsSesso";
 import InfoGabbia from "./InfoGabbia";
 import InfoMorto from "./InfoMorto";
 import InfoNote from "./InfoNote";
@@ -60,9 +56,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
   return (
     <Card shadow="sm" withBorder data-testid="SoggettoComp">
       <Group gap="xs" justify="space-between">
-        {sogg.sesso && <IconSessoMale size="25" />}
-        {sogg.sesso == false && <IconSessoFemale size="25" />}
-        {sogg.sesso == null && <IconSessoAgender size="25" />}
+        {getIconSesso(sogg.sesso)}
         <Text>
           <Anchor href={`/app/home/${sogg.id}`} c="dark">
             {formatAnelletto(sogg.rna, sogg.numero, sogg.anno)}
@@ -107,7 +101,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
             size="xl"
             src={
               sogg.avatar
-                ? imgPath + sogg.avatar
+                ? getBucketImgPath("img", sogg.avatar)
                 : `https://images.placeholders.dev/?width=50&height=50&textWrap=true&text=${formatAnelletto(
                     sogg.rna,
                     sogg.numero,

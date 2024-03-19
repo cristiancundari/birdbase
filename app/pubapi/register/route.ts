@@ -31,6 +31,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      !datiParsed.documentoIdentita.type.startsWith("image/") ||
+      !datiParsed.documentoIscrizione.type.startsWith("image/")
+    ) {
+      throw new Error(
+        "Il formato dei file non è supportato. Caricare solo immagini."
+      );
+    }
+
     const docIdentitaPath = `identita/${uuid()}`;
     const docFoiPath = `foi/${uuid()}`;
 

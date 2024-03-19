@@ -83,7 +83,7 @@ model Iscrizione {
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   importo    Float
   posizione  Int?
-  punteggio  Float?
+  voto       Float?
   profiloId  String   @map("profilo_id") @db.Uuid
   gara       Gara     @relation(fields: [garaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profilo    Profilo  @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -190,7 +190,9 @@ model RichiestaRegistrazione {
   rna         String    @db.VarChar
   docIdentita String    @map("doc_identita") @db.VarChar
   docFoi      String    @map("doc_foi") @db.VarChar
-  abilitatoIl DateTime? @map("abilitato_il") @db.Timestamptz(6)
+  approvatoIl DateTime? @map("approvato_il") @db.Timestamptz(6)
+  rifiutatoIl DateTime? @map("rifiutato_il") @db.Timestamptz(6)
+  spiegazione String?
 
   @@map("richieste_registrazione")
 }

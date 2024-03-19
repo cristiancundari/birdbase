@@ -33,7 +33,7 @@ function Login() {
 
   const form = useForm({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -46,7 +46,7 @@ function Login() {
     try {
       setIsLoading(true);
       const res = await supabase.client.auth.signInWithPassword({
-        email: `${values.username}@gmail.com`,
+        email: values.email,
         password: values.password,
       });
       if (!res.error) {
@@ -105,9 +105,9 @@ function Login() {
               <Stack mt="md" gap="lg">
                 <TextInput
                   size="md"
-                  label="Username"
-                  placeholder="MarioRossi"
-                  {...form.getInputProps("username")}
+                  label="Email"
+                  placeholder="mario.rossi@mail.com"
+                  {...form.getInputProps("email")}
                 />
                 <PasswordInput
                   size="md"

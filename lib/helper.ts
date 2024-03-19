@@ -51,8 +51,9 @@ export function showNotification({
   }
 }
 
-export const imgPath =
-  "https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/img/";
+export const getBucketImgPath = (bucket: string, path: string) => {
+  return `https://yhpgtvnrcgqnqdkdbnqo.supabase.co/storage/v1/object/public/${bucket}/${path}`;
+};
 
 export function formatValuta(value: number) {
   return (
@@ -72,6 +73,17 @@ export function formatData(value: Date | string | undefined) {
   }
 
   return format(value, "dd/MM/yyyy");
+}
+
+export function formatDataOra(value: Date | string | undefined) {
+  if (value === undefined) {
+    return "";
+  }
+  if (typeof value == "string") {
+    value = new Date(value);
+  }
+
+  return format(value, "dd/MM/yyyy HH:mm");
 }
 
 export const transazioniIconColor: {

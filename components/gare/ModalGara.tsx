@@ -17,7 +17,7 @@ import {
 
 import { dateParser } from "@/lib/DateParser";
 import { apiFetch } from "@/lib/apiFetch";
-import { imgPath, showNotification } from "@/lib/helper";
+import { getBucketImgPath, showNotification } from "@/lib/helper";
 import { DateInput } from "@mantine/dates";
 import { FileWithPath } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
@@ -177,7 +177,7 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
   let preview = files.length > 0 ? URL.createObjectURL(files[0]) : null;
 
   if (preview == null && form.values.immagine !== null) {
-    preview = imgPath + form.values.immagine;
+    preview = getBucketImgPath("img", form.values.immagine);
   }
 
   return (

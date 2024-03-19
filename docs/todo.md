@@ -20,6 +20,8 @@
 (D) Disattivare il submit di tutti i form quando si preme il tasto invio
 (D) Valutare di aggiungere la funzionalità che permette di aggiungere multipli figli a una covata
 (C) Proteggere l'accesso ai bucket di supabase (al momento pubblici)
+(C) Verificare un dominio su Resend.com e modificare l'invio di email in modo da inviarle all'utente effettivo invece che a "delivered@resend.dev"
+(C) Creare dei template HTML per le email
 
 ----- COMPRAVENDITA -----
 Nella pagina dedicata "marketplace" l'allevatore può creare un inserzione selezionando uno dei propri soggetti che desidera vendere, scegliendo un prezzo e il metodo di spedizione.

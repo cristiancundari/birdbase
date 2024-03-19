@@ -3,7 +3,12 @@ import Navbar from "@/components/Navbar";
 import { useStreamChatStore } from "@/store/StreamChatStore";
 import StreamChatStoreInit from "@/store/StreamChatStoreInit";
 import { Badge, Container } from "@mantine/core";
-import { IconMessages } from "@tabler/icons-react";
+import {
+  IconMessages,
+  IconShield,
+  IconTrophy,
+  IconUsers,
+} from "@tabler/icons-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { Event } from "stream-chat";
 
@@ -32,16 +37,25 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   const links = [
     {
+      icon: <IconTrophy />,
+      label: "Gare",
+      url: "/admin/gare",
+    },
+    {
       icon: <IconMessages />,
       label: "Messaggi",
       url: "/admin/messaggi",
       badge: messaggiBadge,
     },
     {
-      icon: <IconMessages />,
+      icon: <IconShield />,
       label: "Registrazioni",
       url: "/admin/registrazioni",
-      badge: messaggiBadge,
+    },
+    {
+      icon: <IconUsers />,
+      label: "Utenti",
+      url: "/admin/utenti",
     },
   ];
 

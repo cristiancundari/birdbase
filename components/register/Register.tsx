@@ -156,7 +156,7 @@ function Register() {
                       ref={documentoIdentitaRef}
                       clearable
                       label="Documento di identità"
-                      accept="image/*,.pdf"
+                      accept="image/*"
                       {...form.getInputProps("documentoIdentita")}
                       style={
                         form.values.documentoIdentita == null
@@ -203,7 +203,7 @@ function Register() {
                       ref={documentoIscrizioneRef}
                       clearable
                       label="Documento iscrizione FOI"
-                      accept="image/*,.pdf"
+                      accept="image/*"
                       {...form.getInputProps("documentoIscrizione")}
                       style={
                         form.values.documentoIscrizione == null
