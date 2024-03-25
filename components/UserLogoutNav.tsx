@@ -15,10 +15,9 @@ import { useState } from "react";
 
 interface UserLogoutNavProps {
   logout: () => void;
-  changePassword: () => void;
 }
 
-function UserLogoutNav({ logout, changePassword }: UserLogoutNavProps) {
+function UserLogoutNav({ logout }: UserLogoutNavProps) {
   const supabase = useSupabase();
   const user = supabase.user;
   assert(user, "Non autenticato");

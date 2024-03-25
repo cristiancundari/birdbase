@@ -14,7 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconBat } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
 import UserLogoutNav from "./UserLogoutNav";
 
 interface NavbarProps {
@@ -30,7 +30,7 @@ export default function Navbar({
   children,
   links,
 }: PropsWithChildren<NavbarProps>) {
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, { toggle, close }] = useDisclosure();
   const router = useRouter();
   const supabase = useSupabase();
   const pathname = usePathname();
@@ -40,7 +40,9 @@ export default function Navbar({
     router.push(`/auth/login?callbackUrl=${pathname}`);
   };
 
-  const changePassword = () => {};
+  useEffect(() => {
+    close();
+  }, [pathname, close]);
 
   return (
     <AppShell
@@ -72,7 +74,7 @@ export default function Navbar({
           ))}
         </AppShell.Section>
         <AppShell.Section>
-          <UserLogoutNav logout={logout} changePassword={changePassword} />
+          <UserLogoutNav logout={logout} />
         </AppShell.Section>
       </AppShell.Navbar>
 

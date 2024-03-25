@@ -9,7 +9,6 @@ import { formatData, showNotification } from "@/lib/helper";
 import {
   Box,
   Button,
-  Card,
   Group,
   Indicator,
   SimpleGrid,
@@ -20,9 +19,8 @@ import { DatePicker, DatePickerProps } from "@mantine/dates";
 import { useDebouncedState } from "@mantine/hooks";
 import { Promemoria } from "@prisma/client";
 import { IconPlus } from "@tabler/icons-react";
-import { format, set } from "date-fns";
-import { it } from "date-fns/locale";
-import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 
 function Promemoria() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -195,7 +193,7 @@ function Promemoria() {
           </Group>
           <Box>
             <Text fz="xl" fw={700} c="blue" mb="lg">
-              {value && format(value, "dd MMMM", { locale: it })}
+              {value && dayjs(value).utc().format("DD MMMM")}
             </Text>
             <Box
               style={{
