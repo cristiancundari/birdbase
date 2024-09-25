@@ -89,8 +89,9 @@ export async function POST(request: NextRequest) {
     const form = JSON.parse(formJSON);
     const values = datiSchema.parse(form);
 
+    let covata = null;
     if (values.covataId) {
-      const covata = await prisma.covata.findFirst({
+      covata = await prisma.covata.findFirst({
         where: { id: values.covataId, profiloId: user.id },
         include: { figli: true },
       });
@@ -128,6 +129,15 @@ export async function POST(request: NextRequest) {
       values.avatar = imgName;
     }
     const result = await prisma.$transaction(async (tx) => {
+      // Se stiamo aggiungendo l'ultimo figlio alla covata impostiamo la covata come completata
+      if (covata && covata.figli.length == covata.uovaDeposte - 1) {
+        await tx.covata.update({
+          where: { id: covata.id },
+          data: {
+            completata: true,
+          },
+        });
+      }
       const res = await tx.soggetto.create({
         data: { ...values, profiloId: user.id },
       });

@@ -107,20 +107,23 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
     router.refresh();
   };
 
+  const postiDisponibili = gara.capienza - gara._count.iscrizioni;
   return (
     <Stack>
       <Card p={0} shadow="xs">
         <Stack gap={0}>
           <Group justify="flex-end" p="md">
-            <Button
-              onClick={() => {
-                iscriviSoggettoModal();
-              }}
-              variant="light"
-              leftSection={<IconPlus size={14} />}
-            >
-              Iscrivi
-            </Button>
+            {postiDisponibili > 0 && (
+              <Button
+                onClick={() => {
+                  iscriviSoggettoModal();
+                }}
+                variant="light"
+                leftSection={<IconPlus size={14} />}
+              >
+                Iscrivi
+              </Button>
+            )}
           </Group>
 
           <ScrollArea h="300" px="md">
@@ -129,7 +132,9 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
                 <>
                   <Box c="dimmed">
                     <Text>
-                      Aggiungi nel carrello i soggetti che vuoi iscrivere
+                      {postiDisponibili > 0
+                        ? "Aggiungi nel carrello i soggetti che vuoi iscrivere"
+                        : "La gara è al completo"}
                     </Text>
                   </Box>
                 </>

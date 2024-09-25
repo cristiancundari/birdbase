@@ -206,7 +206,7 @@ function GaraCard({
             mt="md"
             radius="md"
           >
-            Iscriviti
+            Visualizza
           </Button>
         )}
       </Stack>

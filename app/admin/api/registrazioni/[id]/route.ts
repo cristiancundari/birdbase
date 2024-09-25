@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
+import { assert } from "console";
 
 function capitalizeWords(inputString: string) {
   return inputString
@@ -87,18 +88,22 @@ export async function POST(
           rna: res.rna.toUpperCase(),
         },
       });
-      resend.emails.send({
-        from: "onboarding@resend.dev",
-        to: "delivered@resend.dev",
+
+      const emailRes = await resend.emails.send({
+        from: "noreply@cristiansmarthome.loan",
+        to: authUser.data.user.email || "",
         subject: "Birdbase - Welcome! 🎉",
         html:
           "<p>Benvenuto su Birdbase.</p><p>La tua richiesta di registrazione è stata approvata.</p><p>Le tue credenziali di accesso sono:</p><p>Email: " +
           res.email +
           "</p><p>Password: " +
           pwd +
-          "</p>",
+          "</p>" +
+          datiParsed.spiegazione
+            ? `<p>Messaggio dell'amministratore: ${datiParsed.spiegazione}</p>`
+            : "",
       });
-      console.log("password: ", pwd);
+
       return NextResponse.json({ error: false, result: res }, { status: 200 });
     } else {
       // Reject
@@ -118,8 +123,8 @@ export async function POST(
           { status: 400 }
         );
       }
-      resend.emails.send({
-        from: "onboarding@resend.dev",
+      const emailRes = await resend.emails.send({
+        from: "noreply@cristiansmarthome.loan",
         to: "delivered@resend.dev",
         subject: "Birdbase - Richiesta di registrazione rifiutata",
         html:

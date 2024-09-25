@@ -23,9 +23,15 @@ export async function POST(request: NextRequest) {
 
     const gara = await prisma.gara.findUnique({
       where: { id: datiParsed.garaId },
+      include: { _count: { select: { iscrizioni: true } } },
     });
     if (!gara || gara.isDeleted) {
       throw new Error("Impossibile iscrivere i soggetti alla gara selezionata");
+    }
+
+    const postiDisponibili = gara.capienza - gara._count.iscrizioni;
+    if (postiDisponibili < datiParsed.soggetti.length) {
+      throw new Error(`Ci sono solo ${postiDisponibili} posti disponibili`);
     }
 
     const PaypalClient = client();
@@ -64,7 +70,7 @@ export async function POST(request: NextRequest) {
       },
     });
     return NextResponse.json({ error: false, result: result });
-  } catch (err) {
+  } catch (err: any) {
     if (err instanceof z.ZodError) {
       return NextResponse.json(
         {
@@ -77,7 +83,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: true,
-        message: "Qualcosa è andato storto durante creazione dell'ordine.",
+        message:
+          err.message ||
+          "Qualcosa è andato storto durante creazione dell'ordine.",
       },
       { status: 500 }
     );

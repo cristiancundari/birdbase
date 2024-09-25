@@ -40,6 +40,14 @@ export async function PATCH(
     const form = JSON.parse(dati.get("form") as string);
     const values = datiSchema.parse(form);
 
+    //otteniamo il soggetto da modificare
+    const soggetto = await prisma.soggetto.findFirst({
+      where: { id: params.id },
+    });
+    if (!soggetto) {
+      throw new Error("Il soggetto non esiste");
+    }
+
     let result: Soggetto | null = null;
     const imgName = `soggetti/${uuid()}`;
     if (imgFile) {
@@ -59,7 +67,25 @@ export async function PATCH(
           throw new Error("L'upload non è andato a buon fine");
         }
       }
+
+      if (values.covataId && soggetto.covataId != values.covataId) {
+        //otteniamo la covata
+        const covata = await tx.covata.findFirstOrThrow({
+          where: { id: values.covataId },
+          include: { _count: { select: { figli: true } } },
+        });
+        if (covata.uovaDeposte < covata._count.figli) {
+          throw new Error("La covata non può avere altri figli");
+        }
+        if (covata.uovaDeposte == covata._count.figli) {
+          await tx.covata.update({
+            where: { id: covata.id },
+            data: { completata: true },
+          });
+        }
+      }
     });
+
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
