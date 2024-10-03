@@ -1,3 +1,16 @@
+(C) #GARE - Se non ci sono posti disponibili inibire l'iscrizione {cm:2024-09-20}
+(C) #COVATE - Impostare il flag completato quando si aggiunge l'ultimo figlio {cm:2024-10-01}
+(D) #PROMEMORIA - Sistemare badge di presenza evento nel calendario che risulta nella data successiva
+(D) #PROMEMORIA - Impostare la priorità del promemoria a bassa di default
+(C) #PROMEMORIA - Sincronizzare il calendario con google
+(F) #PROMEMORIA - Impostare la data del promemoria che viene creato uguale alla data selezionata sul calendario
+(D) #IMPOSTAZIONI - Rimuovere alexa e aggiungere google se necessario
+(B) #MESSAGGI - Verificare corretto funzionamento badge di notifica (non visualizza il badge di nuove notifiche al caricamento della pagina)
+(B) #MESSAGGI - Implementare la gestione dei canali
+(A) #COVATE - Generare un errore quando si prova ad eliminare una covata con dei figli associati
+(E) #GARE - Evitare l'iscrizione di più soggetti di quanti sono i posti disponibili
+(C) #PROMEMORIA - Aspettare che si concluda l'operazione di inserimento nuovo promemoria utilizzando un loader sul pulsante
+
 (A) Visualizzare foto dopo il caricamento nel modal di inserimento di una gara {cm:2023-11-14}
 (A) Aggiustare API soggetto con transazione durante l'inserimento e l'upload + gestione errori {cm:2023-11-15}
 (A) Assicurarsi che la validazione errorri dei form lato client sia conforme a quella del server

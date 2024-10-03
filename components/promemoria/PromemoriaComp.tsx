@@ -31,18 +31,11 @@ function PromemoriaComp({
   modalElimina,
   modalModifica,
 }: PromemoriaCompProps) {
-  const printTime = () => {
-    const ora = value.ora.getUTCHours();
-    const minuti = value.ora.getUTCMinutes();
-    const time = new Date(0, 0, 0, ora, minuti);
-    return format(time, "HH:mm");
-  };
-
   return (
     <>
       <Group align="center">
         <Text c={"blue"} fw={700}>
-          {printTime()}
+          {format(value.ora, "HH:mm")}
         </Text>
       </Group>
 

@@ -10,7 +10,6 @@ import NessunSoggetto from "@/components/home/NessunSoggetto";
 import ModalCancellazione from "@/components/ModalCancellazione";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
-import { ApiResponse } from "@/types/types";
 import { Box, Button, Group, SimpleGrid, Skeleton } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";

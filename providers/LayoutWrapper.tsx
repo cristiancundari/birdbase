@@ -13,7 +13,6 @@ import utc from "dayjs/plugin/utc";
 
 function LayoutProviders({ children }: PropsWithChildren) {
   dayjs.extend(customParseFormat);
-  dayjs.extend(utc);
   dayjs.locale("it");
 
   return (
@@ -21,7 +20,6 @@ function LayoutProviders({ children }: PropsWithChildren) {
       <DatesProvider
         settings={{
           locale: "it",
-          timezone: "UTC",
         }}
       >
         <ModalsProvider>

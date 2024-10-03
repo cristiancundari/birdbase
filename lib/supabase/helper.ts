@@ -11,7 +11,7 @@ export async function getServerUserProfile(
     where: {
       id: user?.id,
     },
-    include: { allevatore: true, amazonAccount: true },
+    include: { allevatore: true },
   });
 
   return profile;
@@ -24,3 +24,4 @@ export async function getServerUser(cookieStore: ReadonlyRequestCookies) {
   } = await supabase.auth.getSession();
   return session?.user;
 }
+

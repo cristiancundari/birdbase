@@ -8,18 +8,18 @@ datasource db {
 }
 
 model Profilo {
-  id               String             @id(map: "Profile_pkey") @db.Uuid
-  budget           Float              @default(0)
-  ruolo            Role               @default(USER)
-  rna              String             @db.VarChar
-  amazonAccount    AmazonAccount?
-  covate           Covata[]
-  iscrizioni       Iscrizione[]
-  ordiniIscrizioni OrdineIscrizioni[]
-  allevatore       Allevatore         @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
-  promemoria       Promemoria[]
-  soggetti         Soggetto[]
-  transazioni      Transazione[]
+  id                 String             @id(map: "Profile_pkey") @db.Uuid
+  budget             Float              @default(0)
+  ruolo              Role               @default(USER)
+  rna                String             @db.VarChar
+  googleRefreshToken String?
+  covate             Covata[]
+  iscrizioni         Iscrizione[]
+  ordiniIscrizioni   OrdineIscrizioni[]
+  allevatore         Allevatore         @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
+  promemoria         Promemoria[]
+  soggetti           Soggetto[]
+  transazioni        Transazione[]
 
   @@map("profili")
 }
@@ -156,27 +156,17 @@ model OrdineIscrizioni {
   @@map("ordini_iscrizioni")
 }
 
-model AmazonAccount {
-  userId       String   @id @map("user_id")
-  accessToken  String   @map("access_token")
-  refreshToken String   @map("refresh_token")
-  refreshDate  DateTime @map("refresh_date")
-  profiloId    String   @unique @map("profilo_id") @db.Uuid
-  profilo      Profilo  @relation(fields: [profiloId], references: [id])
-
-  @@map("amazon_accounts")
-}
-
 model Promemoria {
-  titolo      String
-  descrizione String
-  priorita    Priorita @default(BASSA)
-  completato  Boolean
-  data        DateTime @db.Date
-  profiloId   String   @map("profilo_id") @db.Uuid
-  id          Int      @id @default(autoincrement())
-  ora         DateTime @db.Time(6)
-  profilo     Profilo  @relation(fields: [profiloId], references: [id])
+  titolo             String
+  descrizione        String
+  priorita           Priorita @default(BASSA)
+  completato         Boolean
+  data               DateTime @db.Date
+  profiloId          String   @map("profilo_id") @db.Uuid
+  id                 Int      @id @default(autoincrement())
+  ora                DateTime @db.Time(6)
+  profilo            Profilo  @relation(fields: [profiloId], references: [id])
+  googlePromemoriaId String?  @map("google_promemoria_id")
 
   @@map("promemoria")
 }

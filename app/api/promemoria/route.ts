@@ -1,5 +1,6 @@
+import { createGoogleEvent } from "@/lib/googleapis";
 import { prisma } from "@/lib/prisma";
-import { getServerUser } from "@/lib/supabase/helper";
+import { getServerUser, getServerUserProfile } from "@/lib/supabase/helper";
 import { $Enums } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
@@ -17,10 +18,25 @@ export async function POST(request: NextRequest) {
 
   try {
     const dati = await request.json();
-
     const datiParser = datiSchema.parse(dati);
-    const user = await getServerUser(cookies());
-    assert(user);
+
+    const user = await getServerUserProfile(cookies());
+    assert(user, "Non autorizzato");
+
+    let googlePromemoriaId = null;
+    if (user.googleRefreshToken) {
+      const testData = {
+        userProfile: user,
+        title: datiParser.titolo,
+        date: datiParser.dataOra,
+        location: datiParser.descrizione,
+        minutes: 30,
+      };
+
+      const testResponse = await createGoogleEvent(testData);
+      googlePromemoriaId = testResponse.data.id;
+    }
+
     const result = await prisma.promemoria.create({
       data: {
         completato: datiParser.completato,
@@ -30,8 +46,10 @@ export async function POST(request: NextRequest) {
         priorita: datiParser.priorita,
         descrizione: datiParser.descrizione,
         profiloId: user.id,
+        googlePromemoriaId: googlePromemoriaId,
       },
     });
+
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
     if (error instanceof ZodError) {
@@ -60,6 +78,7 @@ export async function GET(request: NextRequest) {
     assert(user);
     const searchParams = request.nextUrl.searchParams;
     const paramsObj = Object.fromEntries(searchParams.entries());
+
     const paramsSchema = z.object({
       mese_anno: z
         .string()

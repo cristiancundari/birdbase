@@ -22,7 +22,7 @@ import { IconPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
-function Promemoria() {
+function PromemoriaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [value, setValue] = useState<Date | null>(new Date());
   const [modalData, setModalData] = useState<Promemoria | null>(null);
@@ -235,4 +235,4 @@ function Promemoria() {
   );
 }
 
-export default Promemoria;
+export default PromemoriaPage;
