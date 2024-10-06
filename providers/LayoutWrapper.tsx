@@ -10,10 +10,13 @@ import dayjs from "dayjs";
 import "dayjs/locale/it";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
+import { it } from "date-fns/locale";
+import { setDefaultOptions } from "date-fns";
 
 function LayoutProviders({ children }: PropsWithChildren) {
   dayjs.extend(customParseFormat);
   dayjs.locale("it");
+  setDefaultOptions({ locale: it });
 
   return (
     <MantineProvider defaultColorScheme="light" theme={theme}>

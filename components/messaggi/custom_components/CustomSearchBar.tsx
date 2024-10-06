@@ -18,10 +18,12 @@ import {
 import {
   IconArrowLeft,
   IconMenu2,
+  IconPlus,
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
+import { ActionIcon, Tooltip } from "@mantine/core";
 
 export type AppMenuProps = {
   close?: () => void;
@@ -70,6 +72,8 @@ export type AdditionalSearchBarProps = {
   SearchInput?: React.ComponentType<SearchInputProps>;
   /** Custom icon used to indicate search input. */
   SearchInputIcon?: React.ComponentType;
+
+  onCreateChannel?: () => void;
 };
 
 export type SearchBarProps = AdditionalSearchBarProps &
@@ -89,6 +93,7 @@ export const CustomSearchBar = (props: SearchBarProps) => {
     searchBarRef,
     SearchInput = DefaultSearchInput,
     SearchInputIcon = IconSearch,
+    onCreateChannel,
     ...inputProps
   } = props;
 
@@ -159,7 +164,7 @@ export const CustomSearchBar = (props: SearchBarProps) => {
       data-testid="search-bar"
       ref={searchBarRef}
     >
-      {inputIsFocused || navOpen ? (
+      {navOpen ? (
         <SearchBarButton
           className="str-chat__channel-search-bar-button--exit-search"
           onClick={() => {
@@ -188,15 +193,27 @@ export const CustomSearchBar = (props: SearchBarProps) => {
           <SearchInputIcon />
         </div>
         <SearchInput {...inputProps} />
-        <button
-          className="str-chat__channel-search-input--clear-button"
-          data-testid="clear-input-button"
-          disabled={!inputProps.query}
-          onClick={handleClearClick}
-        >
-          <ClearInputIcon />
-        </button>
+        {inputProps.query && (
+          <button
+            className="str-chat__channel-search-input--clear-button"
+            data-testid="clear-input-button"
+            onClick={handleClearClick}
+          >
+            <ClearInputIcon />
+          </button>
+        )}
       </div>
+      <Tooltip label="Crea canale">
+        <ActionIcon
+          ms="sm"
+          variant="light"
+          color="var(--str-chat__primary-color)"
+          radius="xl"
+          onClick={() => onCreateChannel && onCreateChannel()}
+        >
+          <IconPlus size={14} />
+        </ActionIcon>
+      </Tooltip>
       {menuIsOpen && AppMenu && (
         <div ref={appMenuRef}>
           <AppMenu close={closeAppMenu} />

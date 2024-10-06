@@ -19,6 +19,7 @@ import { DatePicker, DatePickerProps } from "@mantine/dates";
 import { useDebouncedState } from "@mantine/hooks";
 import { Promemoria } from "@prisma/client";
 import { IconPlus } from "@tabler/icons-react";
+import { format } from "date-fns";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
@@ -117,9 +118,9 @@ function PromemoriaPage() {
 
   const submit = async (value: FormValues) => {
     if (modalData) {
-      modificaPromemoria(value);
+      await modificaPromemoria(value);
     } else {
-      aggiungiPromemoria(value);
+      await aggiungiPromemoria(value);
     }
   };
 
@@ -193,7 +194,7 @@ function PromemoriaPage() {
           </Group>
           <Box>
             <Text fz="xl" fw={700} c="blue" mb="lg">
-              {value && dayjs(value).utc().format("DD MMMM")}
+              {value && format(value, "dd MMMM")}
             </Text>
             <Box
               style={{

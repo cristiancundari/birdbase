@@ -42,6 +42,10 @@
   height: 25px;
 }
 
+#stream-chat-root .str-chat__channel-search-result {
+  cursor: pointer;
+}
+
 @media screen and (min-width: $mantine-breakpoint-md) {
   #stream-chat-root .str-chat-channel-list {
     width: 30%;

@@ -67,7 +67,7 @@ function ModalPromemoria({
       titolo: "",
       descrizione: "",
       dataOra: null,
-      priorita: null,
+      priorita: $Enums.Priorita.BASSA,
       completato: false,
     },
     validate: {

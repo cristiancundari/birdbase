@@ -5,11 +5,16 @@ import React from "react";
 
 function MessaggiPage() {
   return (
-    <Box p="lg" h="100%">
-      <Card radius="lg" id="stream-chat-root" shadow="md" withBorder p={0}>
-        <BirdbaseChat />
-      </Card>
-    </Box>
+    <Card
+      radius="lg"
+      shadow="md"
+      withBorder
+      p={0}
+      w="100%"
+      id="stream-chat-root"
+    >
+      <BirdbaseChat />
+    </Card>
   );
 }
 

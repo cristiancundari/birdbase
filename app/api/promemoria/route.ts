@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     let googlePromemoriaId = null;
     if (user.googleRefreshToken) {
       const testData = {
-        userProfile: user,
+        googleToken: user.googleRefreshToken,
         title: datiParser.titolo,
         date: datiParser.dataOra,
         location: datiParser.descrizione,
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       };
 
       const testResponse = await createGoogleEvent(testData);
-      googlePromemoriaId = testResponse.data.id;
+      googlePromemoriaId = testResponse.data?.data.id;
     }
 
     const result = await prisma.promemoria.create({

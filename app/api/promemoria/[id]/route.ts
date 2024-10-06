@@ -1,5 +1,6 @@
+import { deleteGoogleEvent, editGoogleEvent } from "@/lib/googleapis";
 import { prisma } from "@/lib/prisma";
-import { getServerUser } from "@/lib/supabase/helper";
+import { getServerUser, getServerUserProfile } from "@/lib/supabase/helper";
 import { $Enums } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
@@ -11,11 +12,20 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getServerUser(cookies());
+    const user = await getServerUserProfile(cookies());
     assert(user);
+
     const result = await prisma.promemoria.delete({
       where: { profiloId: user.id, id: Number(params.id) },
     });
+
+    if (user.googleRefreshToken && result.googlePromemoriaId) {
+      await deleteGoogleEvent({
+        eventId: result.googlePromemoriaId,
+        googleToken: user.googleRefreshToken,
+      });
+    }
+
     return NextResponse.json({ result: result, error: false }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
@@ -40,7 +50,7 @@ export async function PATCH(
   try {
     const dati = await request.json();
     const datiParser = datiSchema.parse(dati);
-    const user = await getServerUser(cookies());
+    const user = await getServerUserProfile(cookies());
     assert(user);
     const result = await prisma.promemoria.update({
       data: {
@@ -57,6 +67,18 @@ export async function PATCH(
         profiloId: user.id,
       },
     });
+
+    if (user.googleRefreshToken && result.googlePromemoriaId) {
+      await editGoogleEvent({
+        googleToken: user.googleRefreshToken,
+        title: result.titolo,
+        date: datiParser.dataOra,
+        location: result.descrizione,
+        eventId: result.googlePromemoriaId,
+        minutes: 30,
+      });
+    }
+
     return NextResponse.json({ error: false, result: result }, { status: 200 });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
