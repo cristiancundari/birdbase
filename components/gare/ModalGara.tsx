@@ -97,6 +97,8 @@ function ModalGara({ isOpen, annulla, submit, modalData }: ModalGaraProps) {
       titolo: (titolo) => (titolo.length == 0 ? "Inserire Titolo" : null),
       data: (data) => (data == null ? "Inserire Data" : null),
       citta: (citta) => (citta.length == 0 ? "Inserire la città" : null),
+      capienza: (capienza) =>
+        Number(capienza) <= 0 ? "La capienza deve essere maggiore di 0" : null,
     },
   });
 

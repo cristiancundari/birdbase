@@ -1,32 +1,25 @@
+import PayPalButton from "@/components/PayPalButton";
 import { apiFetch } from "@/lib/apiFetch";
 import { formatValuta, showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import {
-  ActionIcon,
   Box,
   Button,
   Card,
   Group,
-  Paper,
   ScrollArea,
   Stack,
   Text,
 } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
-import {
-  IconArrowNarrowRight,
-  IconPlus,
-  IconShoppingCart,
-} from "@tabler/icons-react";
+import { IconPlus, IconShoppingCart } from "@tabler/icons-react";
 import assert from "assert";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import ModalSelezionaSoggetto from "../../../ModalSelezionaSoggetto";
 import CarrelloItem from "./CarrelloItem";
-import PayPalButton from "@/components/PayPalButton";
-import { usePathname, useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
 function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   const [soggettiNelCarrello, setSoggettiNelCarrello] = useState<Soggetto[]>(
@@ -107,23 +100,20 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
     router.refresh();
   };
 
-  const postiDisponibili = gara.capienza - gara._count.iscrizioni;
   return (
     <Stack>
       <Card p={0} shadow="xs">
         <Stack gap={0}>
           <Group justify="flex-end" p="md">
-            {postiDisponibili > 0 && (
-              <Button
-                onClick={() => {
-                  iscriviSoggettoModal();
-                }}
-                variant="light"
-                leftSection={<IconPlus size={14} />}
-              >
-                Iscrivi
-              </Button>
-            )}
+            <Button
+              onClick={() => {
+                iscriviSoggettoModal();
+              }}
+              variant="light"
+              leftSection={<IconPlus size={14} />}
+            >
+              Iscrivi
+            </Button>
           </Group>
 
           <ScrollArea h="300" px="md">
@@ -132,9 +122,7 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
                 <>
                   <Box c="dimmed">
                     <Text>
-                      {postiDisponibili > 0
-                        ? "Aggiungi nel carrello i soggetti che vuoi iscrivere"
-                        : "La gara è al completo"}
+                      {"Aggiungi nel carrello i soggetti che vuoi iscrivere"}
                     </Text>
                   </Box>
                 </>

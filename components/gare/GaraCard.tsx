@@ -106,7 +106,7 @@ function GaraCard({
                 <Menu.Item
                   leftSection={<IconEye size="14" />}
                   component="a"
-                  href={`/app/gare/${gara.id}`}
+                  href={`/admin/gare/${gara.id}`}
                 >
                   Dettagli
                 </Menu.Item>
