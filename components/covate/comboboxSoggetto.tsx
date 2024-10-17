@@ -7,34 +7,34 @@ import {
   useCombobox,
 } from "@mantine/core";
 import React, { useState } from "react";
-import ComboboxGenitoriItem from "./comboboxGenitoriItem";
+import ComboboxSoggettoItem from "./comboboxSoggettoItem";
 import { Soggetto } from "@prisma/client";
 import { formatAnelletto } from "@/lib/helper";
 import { SoggettoWithParentela } from "@/types/types";
 
-interface ComboboxGenitoriProps {
+interface ComboboxSoggettoProps {
   genitori: SoggettoWithParentela[];
   onComboboxChange: (val: string) => void;
-  selected: string;
+  selected?: string;
   label: string;
   loading: boolean;
   description?: string;
 }
 
-function ComboboxGenitori({
+function ComboboxSoggetto({
   genitori,
   onComboboxChange,
   selected,
   label,
   loading,
   description,
-}: ComboboxGenitoriProps) {
+}: ComboboxSoggettoProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
   const options = genitori.map((g) => (
     <Combobox.Option value={g.soggetto.id} key={g.soggetto.id}>
-      <ComboboxGenitoriItem soggetto={g.soggetto} parentela={g.parentela} />
+      <ComboboxSoggettoItem soggetto={g.soggetto} parentela={g.parentela} />
     </Combobox.Option>
   ));
 
@@ -92,4 +92,4 @@ function ComboboxGenitori({
   );
 }
 
-export default ComboboxGenitori;
+export default ComboboxSoggetto;

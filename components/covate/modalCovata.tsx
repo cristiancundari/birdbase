@@ -24,7 +24,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import ComboboxGenitori from "./comboboxGenitori";
+import ComboboxGenitori from "./comboboxSoggetto";
 import { apiFetch } from "@/lib/apiFetch";
 import { useModalInit } from "@/lib/hooks";
 

@@ -20,6 +20,7 @@ import {
   Group,
   Menu,
   SimpleGrid,
+  Stack,
   Text,
 } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
@@ -289,7 +290,6 @@ function InfoCovata({ covata }: InfoCovataProps) {
       <ModalConferma
         isOpen={modalRemoveId != ""}
         titolo="Rimuovi Soggetto"
-        messages={["Vuoi rimuovere questo soggetto dalla covata?"]}
         confirmButton={{
           label: "Rimuovi",
           icon: <IconCircleMinus size={14} />,
@@ -297,7 +297,13 @@ function InfoCovata({ covata }: InfoCovataProps) {
         }}
         onConfirm={rimuovi}
         onClose={annullaRimuovi}
-      />
+      >
+        <Stack gap="xs" align="center">
+          <Text size="sm">
+            {"Vuoi rimuovere questo soggetto dalla covata?"}
+          </Text>
+        </Stack>
+      </ModalConferma>
     </>
   );
 }

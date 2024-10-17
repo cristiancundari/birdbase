@@ -11,6 +11,8 @@ import {
   IconClock,
   IconMessages,
   IconSettings,
+  IconMoneybag,
+  IconBuildingStore,
 } from "@tabler/icons-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { Event } from "stream-chat";
@@ -74,6 +76,11 @@ function Layout({ children }: { children: React.ReactNode }) {
       icon: <IconSettings />,
       label: "Impostazioni",
       url: "/app/impostazioni",
+    },
+    {
+      icon: <IconBuildingStore />,
+      label: "Marketplace",
+      url: "/app/marketplace",
     },
   ];
 

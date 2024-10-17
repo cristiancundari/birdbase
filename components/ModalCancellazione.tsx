@@ -2,6 +2,7 @@
 import { IconTrash } from "@tabler/icons-react";
 import React from "react";
 import ModalConferma from "./ModalConferma";
+import { Stack, Text } from "@mantine/core";
 
 function ModalCancellazione({
   titolo,
@@ -22,16 +23,17 @@ function ModalCancellazione({
       onConfirm={onDelete}
       onClose={onClose}
       titolo={titolo}
-      messages={[
-        "Sei sicuro di procedere con l'eliminazione?",
-        "Questa azione non potrà essere annullata.",
-      ]}
       confirmButton={{
         icon: <IconTrash size={14} />,
         label: "Elimina",
         color: "red",
       }}
-    />
+    >
+      <Stack gap="xs" align="center">
+        <Text size="sm">{"Sei sicuro di procedere con l'eliminazione?"}</Text>
+        <Text size="sm">{"Questa azione non potrà essere annullata."}</Text>
+      </Stack>
+    </ModalConferma>
   );
 }
 

@@ -20,6 +20,7 @@ model Profilo {
   promemoria         Promemoria[]
   soggetti           Soggetto[]
   transazioni        Transazione[]
+  inserzioni        Inserzione[]
 
   @@map("profili")
 }
@@ -43,6 +44,8 @@ model Soggetto {
   iscrizioni  Iscrizione[]
   covata      Covata?      @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profilo     Profilo      @relation(fields: [profiloId], references: [id])
+  inserzioniVendita     Inserzione[] @relation("soggettoVendita")
+  inserzioniAcquisto     Inserzione[] @relation("soggettoAcquisto")
 
   @@map("soggetti")
 }
@@ -185,6 +188,21 @@ model RichiestaRegistrazione {
   spiegazione String?
 
   @@map("richieste_registrazione")
+}
+
+model Inserzione {
+  id             String   @id @db.VarChar
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  soggettoId     String   @map("soggetto_id") @db.Uuid
+  soggettoCopiaId     String?   @map("soggetto_copia_id") @db.Uuid
+  profiloId      String   @map("profilo_id") @db.Uuid
+  prezzo          Float 
+  descrizione    String
+  soggetto       Soggetto @relation(name: "soggettoVendita", fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  soggettoCopia      Soggetto? @relation(name: "soggettoAcquisto", fields: [soggettoCopiaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo        Profilo  @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("inserzioni")
 }
 
 enum Role {

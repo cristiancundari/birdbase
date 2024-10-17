@@ -10,14 +10,16 @@ interface comboboxGenitoriItemProps {
   parentela: { nome: string; percentuale: number; colore: string } | null;
 }
 
-function comboboxGenitoriItem({
+function ComboboxSoggettoItem({
   soggetto,
   parentela,
 }: comboboxGenitoriItemProps) {
   return (
     <Group grow>
       <Stack gap="0">
-        <Text size="sm">{formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}</Text>
+        <Text size="sm">
+          {formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}
+        </Text>
         <Text size="xs" c="dimmed">
           {formatData(soggetto.dataNascita)}
         </Text>
@@ -31,18 +33,19 @@ function comboboxGenitoriItem({
         </Group>
       </Stack>
       {parentela && (
-      <Stack gap="0">
-        <Text size="xs" c="dimmed">
-          {parentela.nome}
-        </Text>
-        <Progress
-          size="md"
-          value={parentela.percentuale}
-          color={parentela.colore}
-        ></Progress>
-      </Stack>)}
+        <Stack gap="0">
+          <Text size="xs" c="dimmed">
+            {parentela.nome}
+          </Text>
+          <Progress
+            size="md"
+            value={parentela.percentuale}
+            color={parentela.colore}
+          ></Progress>
+        </Stack>
+      )}
     </Group>
   );
 }
 
-export default comboboxGenitoriItem;
+export default ComboboxSoggettoItem;

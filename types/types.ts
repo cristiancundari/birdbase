@@ -93,3 +93,10 @@ export type RichiestaRegistrazioneWithCount = {
   richiesteRegistrazione: RichiestaRegistrazione[];
   count: number;
 };
+
+export type InserzioneWithSoggettoAndProfilo = Prisma.InserzioneGetPayload<{
+  include: {
+    soggetto: true;
+    profilo: true;
+  };
+}>;
