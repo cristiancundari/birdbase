@@ -1,5 +1,13 @@
 "use client";
-import { Badge, Group, Indicator } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Group,
+  Indicator,
+  Stack,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 import { IconMenu2 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import {
@@ -42,7 +50,7 @@ const UnMemoizedChannelHeader = <
   const { channel } = useChannelStateContext();
   const { client } = useChatContext();
   const [channelUsers, setChannelUsers] = useState<
-    Array<{ name: string; online: boolean }>
+    Array<{ id: string; name: string; online: boolean }>
   >([]);
 
   useEffect(() => {
@@ -51,7 +59,8 @@ const UnMemoizedChannelHeader = <
       if (!event || channel.state.members[event.user!.id] !== undefined) {
         setChannelUsers(
           Object.values(channel.state.members).map((user) => ({
-            name: user.user_id!,
+            id: user.user_id!,
+            name: user.user!.name!,
             online: !!user.user!.online,
           }))
         );
@@ -77,7 +86,10 @@ const UnMemoizedChannelHeader = <
   });
 
   const { member_count, subtitle } = channel?.data || {};
-  const watcherCount = channelUsers.filter((u) => u.online).length;
+  const onlineUsers = channelUsers.filter(
+    (u) => u.online && u.id !== client.userID
+  );
+  const watcherCount = onlineUsers.length;
 
   return (
     <div className="str-chat__header-livestream str-chat__channel-header">
@@ -96,7 +108,7 @@ const UnMemoizedChannelHeader = <
       />
       <div className="str-chat__header-livestream-left str-chat__channel-header-end">
         <p className="str-chat__header-livestream-left--title str-chat__channel-header-title">
-          {displayTitle}{" "}
+          {displayTitle}
           {live && (
             <span className="str-chat__header-livestream-left--livelabel">
               {t<string>("live")}
@@ -123,13 +135,57 @@ const UnMemoizedChannelHeader = <
               </>
             ) : (
               <>
-                {t<string>("{{ memberCount }} members", {
-                  memberCount: member_count,
-                }) +
-                  ", " +
-                  t<string>("{{ watcherCount }} online", {
-                    watcherCount: watcherCount,
-                  })}
+                <Tooltip
+                  multiline
+                  label={
+                    <Stack gap={0}>
+                      {channelUsers.slice(0, 5).map((u) => (
+                        <Text size="xs" key={u.id}>
+                          {u.name}
+                        </Text>
+                      ))}
+                      {channelUsers.length > 5 && (
+                        <Text size="xs">
+                          {"...e altri " + (channelUsers.length - 5)}
+                        </Text>
+                      )}
+                    </Stack>
+                  }
+                >
+                  <span>
+                    {t<string>("{{ memberCount }} members", {
+                      memberCount: member_count,
+                    })}
+                  </span>
+                </Tooltip>
+                {watcherCount > 0 && (
+                  <>
+                    {", "}
+                    <Tooltip
+                      multiline
+                      label={
+                        <Stack gap={0}>
+                          {onlineUsers.slice(0, 5).map((u) => (
+                            <Text size="xs" key={u.id}>
+                              {u.name}
+                            </Text>
+                          ))}
+                          {onlineUsers.length > 5 && (
+                            <Text size="xs">
+                              {"...e altri " + (onlineUsers.length - 5)}
+                            </Text>
+                          )}
+                        </Stack>
+                      }
+                    >
+                      <span>
+                        {t<string>("{{ watcherCount }} online", {
+                          watcherCount: watcherCount,
+                        })}
+                      </span>
+                    </Tooltip>
+                  </>
+                )}
               </>
             ))}
         </span>

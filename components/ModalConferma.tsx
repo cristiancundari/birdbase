@@ -1,14 +1,14 @@
 "use client";
-import { Button, Group, Modal, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
 
 interface ModalConferma {
   titolo: string;
-  messages?: string[];
   onConfirm: () => Promise<void>;
   onClose: () => void;
   isOpen: boolean;
+  closeOnSubmit?: boolean;
   confirmButton: {
     label: string;
     icon: React.ReactNode;
@@ -18,24 +18,19 @@ interface ModalConferma {
 
 function ModalConferma({
   titolo,
-  messages,
   onConfirm,
   onClose,
   isOpen,
   confirmButton,
+  closeOnSubmit = true,
+  children,
   ...others
-}: ModalConferma) {
+}: PropsWithChildren<ModalConferma>) {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
     <Modal opened={isOpen} onClose={onClose} title={titolo} {...others}>
-      <Stack gap="xs" align="center">
-        {messages?.map((m, index) => (
-          <Text size="sm" key={index}>
-            {m}
-          </Text>
-        ))}
-      </Stack>
+      <Box>{children}</Box>
 
       <Group mt={"lg"} gap="md" justify="flex-end">
         <Button
@@ -54,7 +49,7 @@ function ModalConferma({
             setIsLoading(true);
             await onConfirm();
             setIsLoading(false);
-            onClose();
+            closeOnSubmit && onClose();
           }}
         >
           {confirmButton.label}
