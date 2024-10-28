@@ -1,6 +1,6 @@
 import PayPalButton from "@/components/PayPalButton";
 import { apiFetch } from "@/lib/apiFetch";
-import { formatValuta, showNotification } from "@/lib/helper";
+import { formatValuta, initialOptions, showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalSelezionaSoggetto from "../../../ModalSelezionaSoggetto";
 import CarrelloItem from "./CarrelloItem";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   const [soggettiNelCarrello, setSoggettiNelCarrello] = useState<Soggetto[]>(
@@ -82,11 +83,12 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   }, [soggettiNelCarrello, gara.prezzo]);
 
   const paypalCreateOrder = async () => {
-    const result = await apiFetch.post("/api/paypal/createorder", {
+    const result = await apiFetch.post("/api/paypal/iscrizioni/createorder", {
       descrizione: `Iscrizione N.${soggettiNelCarrello.length} soggetti a "${gara.titolo}"`,
       soggetti: soggettiNelCarrello.map((s) => s.id),
       garaId: gara.id,
     });
+    console.log(result);
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -95,9 +97,20 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
     return "";
   };
 
-  const completed = () => {
-    setSoggettiNelCarrello([]);
-    router.refresh();
+  const payPalCaptureOrder = async (orderId: string) => {
+    const result = await apiFetch.post("/api/paypal/iscrizioni/captureorder", {
+      orderId,
+    });
+    if (result.error) {
+      showNotification({ message: result.message });
+    } else {
+      showNotification({
+        message: "Ordine creato correttamente",
+        success: true,
+      });
+      setSoggettiNelCarrello([]);
+      router.refresh();
+    }
   };
 
   return (
@@ -163,12 +176,14 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
           isLoading={isLoading}
         />
       </Card>
-      <PayPalButton
-        createOrder={paypalCreateOrder}
-        disabled={soggettiNelCarrello.length == 0}
-        forceReRender={[totale]}
-        completed={completed}
-      />
+      <PayPalScriptProvider options={initialOptions}>
+        <PayPalButton
+          createOrder={paypalCreateOrder}
+          disabled={soggettiNelCarrello.length == 0}
+          forceReRender={[totale]}
+          captureOrder={payPalCaptureOrder}
+        />
+      </PayPalScriptProvider>
     </Stack>
   );
 }

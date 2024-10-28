@@ -29,7 +29,7 @@ export function IconSessoFemale(props: TablerIconsProps) {
 
 export function IconSessoAgender(props: TablerIconsProps) {
   return (
-    <Tooltip label="In attesa">
+    <Tooltip label="Non definito">
       <IconGenderAgender
         color="#d6d6d6"
         {...props}

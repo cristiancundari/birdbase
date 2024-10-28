@@ -5,9 +5,11 @@ import {
   Group,
   NumberInput,
   rem,
+  Stack,
   Text,
 } from "@mantine/core";
 import {
+  getIconSesso,
   IconSessoAgender,
   IconSessoFemale,
   IconSessoMale,
@@ -41,28 +43,21 @@ function IscrizioneItem({
   return (
     <Grid grow align="center">
       <Grid.Col span={8}>
-        <Flex gap="md" justify="space-between">
+        <Group gap={0}>
           <Group gap="sm">
-            {soggetto.sesso === true ? (
-              <IconSessoMale />
-            ) : soggetto.sesso == false ? (
-              <IconSessoFemale />
-            ) : (
-              <IconSessoAgender />
-            )}
-            <Anchor href="#" c="dark">
-              {formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}
-            </Anchor>
+            {getIconSesso(soggetto.sesso)}
+            <Stack gap={0}>
+              <Anchor href={`/app/home/${soggetto.id}`} c="dark">
+                {formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}
+              </Anchor>
+              {!isPersonale && (
+                <Text c="dimmed" size="xs">
+                  {allevatore.nome} {allevatore.cognome}
+                </Text>
+              )}
+            </Stack>
           </Group>
-
-          {!isPersonale && (
-            <Group>
-              <Text c="dimmed">
-                {allevatore.nome} {allevatore.cognome}
-              </Text>
-            </Group>
-          )}
-        </Flex>
+        </Group>
       </Grid.Col>
 
       {((isAdmin && garaStatus === "VALUTAZIONE") ||

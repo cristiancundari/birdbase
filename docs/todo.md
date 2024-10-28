@@ -10,6 +10,8 @@
 (E) #GARE - Evitare l'iscrizione di più soggetti di quanti sono i posti disponibili {cm:2024-10-10}
 (C) #PROMEMORIA - Aspettare che si concluda l'operazione di inserimento nuovo promemoria utilizzando un loader sul pulsante {cm:2024-10-11}
 (C) #GARE - Chiedere all'amministratore dopo l'inserimento dei voti se impostare la gara con lo status COMPLETATA tramite un popup {cm:2024-10-11}
+(F) #SOGGETTO - Considerare i numeri degli anelletti che iniziano con zero (attenzione ai duplicati es. 48XA-2023-02 48XA-2023-2)
+(B) #COVATE - Sistemare la logica delle parentele. Calcolare le parentele solo sui propri soggetti ma tenendo conto delle relazioni con i soggetti non propri
 
 (A) Visualizzare foto dopo il caricamento nel modal di inserimento di una gara {cm:2023-11-14}
 (A) Aggiustare API soggetto con transazione durante l'inserimento e l'upload + gestione errori {cm:2023-11-15}

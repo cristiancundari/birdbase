@@ -1,17 +1,24 @@
 import { Button, Modal, NumberInput, Text, TextInput } from "@mantine/core";
 import ComboboxSoggetto from "../covate/comboboxSoggetto";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalConferma from "../ModalConferma";
 import { IconCheck } from "@tabler/icons-react";
 import { useModalInit } from "@/lib/hooks";
 import { apiFetch } from "@/lib/apiFetch";
-import { Soggetto } from "@prisma/client";
+import { Inserzione, Soggetto } from "@prisma/client";
 import { SoggettoWithParentela } from "@/types/types";
 import { useForm } from "@mantine/form";
+
+export interface FormValues {
+  descrizione: string;
+  soggetto: string;
+  prezzo: number;
+}
 
 interface ModalInserzioneProps {
   onClose: () => void;
   isOpen: boolean;
+  modalData: Inserzione | null;
   onConfirm: ({
     soggetto,
     descrizione,
@@ -23,10 +30,15 @@ interface ModalInserzioneProps {
   }) => Promise<void>;
 }
 
-function ModalInserzione({ onClose, isOpen, onConfirm }: ModalInserzioneProps) {
+function ModalInserzione({
+  onClose,
+  isOpen,
+  onConfirm,
+  modalData,
+}: ModalInserzioneProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [soggetti, setSoggetti] = useState<SoggettoWithParentela[]>([]);
-  const form = useForm({
+  const form = useForm<FormValues>({
     initialValues: { soggetto: "", descrizione: "", prezzo: 10 },
   });
   useModalInit(() => {
@@ -47,6 +59,21 @@ function ModalInserzione({ onClose, isOpen, onConfirm }: ModalInserzioneProps) {
     getSoggetti();
   }, isOpen);
 
+  useEffect(() => {
+    if (isOpen) {
+      if (modalData) {
+        form.setValues({
+          descrizione: modalData.descrizione,
+          prezzo: modalData.prezzo,
+          soggetto: modalData.soggettoId,
+        });
+      } else {
+        form.reset();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalData, isOpen]);
+
   return (
     <ModalConferma
       confirmButton={{
@@ -59,7 +86,7 @@ function ModalInserzione({ onClose, isOpen, onConfirm }: ModalInserzioneProps) {
       }}
       onClose={onClose}
       isOpen={isOpen}
-      titolo="Inserisci inserzione"
+      titolo={modalData ? "Modifica inserzione" : "Inserisci inserzione"}
     >
       <ComboboxSoggetto
         genitori={soggetti}

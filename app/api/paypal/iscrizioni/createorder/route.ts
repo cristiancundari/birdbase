@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
     });
 
     const paypalResponse = await PaypalClient.execute(paypalRequest);
+
     if (paypalResponse.statusCode !== 201) {
       throw new Error("Errore di PayPal");
     }

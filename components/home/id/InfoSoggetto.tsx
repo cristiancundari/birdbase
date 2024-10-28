@@ -11,6 +11,7 @@ import {
   showNotification,
 } from "@/lib/helper";
 import {
+  IscrizioniWithGaraWithNazione,
   SoggettoWithIscrizioniWithGaraWithNazione,
   SoggettoWithParentela,
 } from "@/types/types";
@@ -165,49 +166,54 @@ function InfoSoggetto({
             ))}
           </Stack>
         </Fieldset>
-
-        <Fieldset legend="Dossier Gare" mb="md">
-          {soggetto.iscrizioni.length === 0 && (
-            <Center>Nessuna iscrizione a gare</Center>
-          )}
-          <Stack>
-            {soggetto.iscrizioni.map((iscrizione) => (
-              <Stack gap="xs" key={iscrizione.id}>
-                <Group justify="space-between" align="end">
-                  <Stack gap={3}>
-                    <Text fw={700}>{iscrizione.gara.titolo}</Text>
-                    <Text size="sm">
-                      Data: {formatData(iscrizione.gara.data)}
-                    </Text>
-                    <Group gap="xs">
-                      <Text size="xs" c="dimmed">
-                        {iscrizione.gara.citta}
-                      </Text>
-                      <InfoNazione
-                        nazione={iscrizione.gara.nazione}
-                        flagSize="sm"
-                      />
-                    </Group>
-                  </Stack>
-                  <Stack gap={3}>
-                    <Text>Voto: {iscrizione.voto}/100</Text>
-                    <Group gap="xs">
-                      <Text size="lg" span>
-                        {iscrizione.posizione + "°"}
-                      </Text>
-                      <Text c="dimmed" span>
-                        {"classificato"}
-                      </Text>
-                    </Group>
-                  </Stack>
-                </Group>
-              </Stack>
-            ))}
-          </Stack>
-        </Fieldset>
+        <Dossier iscrizioni={soggetto.iscrizioni} />
       </Card>
     </>
   );
 }
+
+export const Dossier = ({
+  iscrizioni,
+}: {
+  iscrizioni: IscrizioniWithGaraWithNazione[];
+}) => {
+  return (
+    <Fieldset legend="Dossier Gare" mb="md">
+      {iscrizioni.length === 0 && <Center>Nessuna iscrizione a gare</Center>}
+      <Stack>
+        {iscrizioni.map((iscrizione) => (
+          <Stack gap="xs" key={iscrizione.id}>
+            <Group justify="space-between" align="end">
+              <Stack gap={3}>
+                <Text fw={700}>{iscrizione.gara.titolo}</Text>
+                <Text size="sm">Data: {formatData(iscrizione.gara.data)}</Text>
+                <Group gap="xs">
+                  <Text size="xs" c="dimmed">
+                    {iscrizione.gara.citta}
+                  </Text>
+                  <InfoNazione
+                    nazione={iscrizione.gara.nazione}
+                    flagSize="sm"
+                  />
+                </Group>
+              </Stack>
+              <Stack gap={3}>
+                <Text>Voto: {iscrizione.voto}/100</Text>
+                <Group gap="xs">
+                  <Text size="lg" span>
+                    {iscrizione.posizione + "°"}
+                  </Text>
+                  <Text c="dimmed" span>
+                    {"classificato"}
+                  </Text>
+                </Group>
+              </Stack>
+            </Group>
+          </Stack>
+        ))}
+      </Stack>
+    </Fieldset>
+  );
+};
 
 export default InfoSoggetto;

@@ -29,7 +29,7 @@ function Classifica({
 
   return (
     <Grid grow>
-      <Grid.Col span={8}>
+      <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 2, md: 1 }}>
         <Card shadow="xs">
           <Text fw={500} fz="lg">
             Classifica
@@ -48,7 +48,7 @@ function Classifica({
         </Card>
       </Grid.Col>
       {supabase.user?.ruolo !== Role.ADMIN && iscrittiPersonali.length > 0 && (
-        <Grid.Col span={4}>
+        <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 1, md: 2 }}>
           <Card shadow="xs">
             <Text fw={500} fz="lg">
               Classifica Personale

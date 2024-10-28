@@ -20,32 +20,33 @@ model Profilo {
   promemoria         Promemoria[]
   soggetti           Soggetto[]
   transazioni        Transazione[]
-  inserzioni        Inserzione[]
+  inserzioni         Inserzione[]
+  ordiniInserzione   OrdineInserzione[]
 
   @@map("profili")
 }
 
 model Soggetto {
-  id          String       @id(map: "Soggetto_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sesso       Boolean?
-  dataNascita DateTime     @map("data_nascita") @db.Date
-  gabbia      Int?
-  numero      String
-  rna         String
-  preferito   Boolean      @default(false)
-  profiloId   String       @map("profilo_id") @db.Uuid
-  avatar      String?
-  covataId    Int?         @map("covata_id")
-  isMorto     Boolean      @default(false) @map("is_morto")
-  anno        String
-  note        String       @default("") @db.VarChar
-  covateMadre Covata[]     @relation("covate_id_madreToSoggetto")
-  covatePadre Covata[]     @relation("covate_id_padreToSoggetto")
-  iscrizioni  Iscrizione[]
-  covata      Covata?      @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  profilo     Profilo      @relation(fields: [profiloId], references: [id])
-  inserzioniVendita     Inserzione[] @relation("soggettoVendita")
-  inserzioniAcquisto     Inserzione[] @relation("soggettoAcquisto")
+  id                 String       @id(map: "Soggetto_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sesso              Boolean?
+  dataNascita        DateTime     @map("data_nascita") @db.Date
+  gabbia             Int?
+  numero             String
+  rna                String
+  preferito          Boolean      @default(false)
+  profiloId          String       @map("profilo_id") @db.Uuid
+  avatar             String?
+  covataId           Int?         @map("covata_id")
+  isMorto            Boolean      @default(false) @map("is_morto")
+  anno               String
+  note               String       @default("") @db.VarChar
+  covateMadre        Covata[]     @relation("covate_id_madreToSoggetto")
+  covatePadre        Covata[]     @relation("covate_id_padreToSoggetto")
+  iscrizioni         Iscrizione[]
+  covata             Covata?      @relation("soggetti_covata_idTocovate", fields: [covataId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo            Profilo      @relation(fields: [profiloId], references: [id])
+  inserzioniVendita  Inserzione[] @relation("soggettoVendita")
+  inserzioniAcquisto Inserzione[] @relation("soggettoAcquisto")
 
   @@map("soggetti")
 }
@@ -191,18 +192,29 @@ model RichiestaRegistrazione {
 }
 
 model Inserzione {
-  id             String   @id @db.VarChar
-  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  soggettoId     String   @map("soggetto_id") @db.Uuid
-  soggettoCopiaId     String?   @map("soggetto_copia_id") @db.Uuid
-  profiloId      String   @map("profilo_id") @db.Uuid
-  prezzo          Float 
-  descrizione    String
-  soggetto       Soggetto @relation(name: "soggettoVendita", fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  soggettoCopia      Soggetto? @relation(name: "soggettoAcquisto", fields: [soggettoCopiaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  profilo        Profilo  @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  soggettoId       String             @map("soggetto_id") @db.Uuid
+  soggettoCopiaId  String?            @map("soggetto_copia_id") @db.Uuid
+  profiloId        String             @map("profilo_id") @db.Uuid
+  prezzo           Float
+  descrizione      String
+  soggetto         Soggetto           @relation(name: "soggettoVendita", fields: [soggettoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  soggettoCopia    Soggetto?          @relation(name: "soggettoAcquisto", fields: [soggettoCopiaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profilo          Profilo            @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ordiniInserzioni OrdineInserzione[]
 
   @@map("inserzioni")
+}
+
+model OrdineInserzione {
+  id           String     @id
+  profiloId    String     @map("profilo_id") @db.Uuid
+  inserzioneId Int        @map("inserzione_id")
+  profilo      Profilo    @relation(fields: [profiloId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inserzione   Inserzione @relation(fields: [inserzioneId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("ordine_inserzione")
 }
 
 enum Role {

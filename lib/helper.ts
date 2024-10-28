@@ -2,6 +2,7 @@ import errorNotificationClasses from "@/styles/errorNotification.module.scss";
 import successNotificationClasses from "@/styles/successNotification.module.scss";
 import { MantineColor } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { ReactPayPalScriptOptions } from "@paypal/react-paypal-js";
 import { $Enums } from "@prisma/client";
 import {
   IconBarrel,
@@ -111,4 +112,10 @@ export const coloriPriorita: { [key in $Enums.Priorita]: MantineColor } = {
   BASSA: "green",
   MEDIA: "yellow",
   ALTA: "red",
+};
+
+export const initialOptions: ReactPayPalScriptOptions = {
+  clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
+  currency: "EUR",
+  intent: "capture",
 };

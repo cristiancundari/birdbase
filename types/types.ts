@@ -42,6 +42,12 @@ export type SoggettoWithIscrizioniWithGaraWithNazione =
     };
   }>;
 
+export type IscrizioniWithGaraWithNazione = Prisma.IscrizioneGetPayload<{
+  include: {
+    gara: { include: { nazione: true } };
+  };
+}>;
+
 export type BudgetRequest = {
   budget: Prisma.ProfiloGetPayload<{ select: { budget: true } }>;
   spese: Prisma.GetTransazioneAggregateType<{ _sum: { prezzo: true } }>;
@@ -94,9 +100,24 @@ export type RichiestaRegistrazioneWithCount = {
   count: number;
 };
 
-export type InserzioneWithSoggettoAndProfilo = Prisma.InserzioneGetPayload<{
-  include: {
-    soggetto: true;
-    profilo: true;
-  };
-}>;
+export type InserzioneWithSoggettoAndAllevatoreAndRisultatiGare =
+  Prisma.InserzioneGetPayload<{
+    include: {
+      soggetto: {
+        include: {
+          iscrizioni: {
+            select: {
+              gara: {
+                select: {
+                  titolo: true;
+                  data: true;
+                };
+              };
+              posizione: true;
+            };
+          };
+        };
+      };
+      profilo: { select: { allevatore: true } };
+    };
+  }>;
