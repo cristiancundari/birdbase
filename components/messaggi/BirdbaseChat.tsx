@@ -1,36 +1,39 @@
 "use client";
+import "stream-chat-react/dist/css/v2/index.css";
+import "./custom_components/overrides.scss";
+import i18n from "@emoji-mart/data/i18n/it.json";
 
-import {
-  PropsWithChildren,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { SetStateAction, useCallback, useState } from "react";
 
-import { apiFetch } from "@/lib/apiFetch";
-import { showNotification } from "@/lib/helper";
 import { useSupabase } from "@/providers/SupabaseProvider";
-import { ProfiloWithAllevatore } from "@/types/types";
-import { Box, Card, Center, Group, Loader, Tooltip } from "@mantine/core";
+import { useStreamChatStore } from "@/store/StreamChatStore";
+import {
+  Center,
+  Modal,
+  MultiSelect,
+  PillsInput,
+  TextInput,
+  Tooltip,
+} from "@mantine/core";
+import {
+  IconArrowLeft,
+  IconMoodSmile,
+  IconPaperclip,
+} from "@tabler/icons-react";
 import debounce from "lodash.debounce";
 import {
   Channel,
-  DefaultGenerics,
-  StreamChat,
-  UserFilters,
-  ChannelSort,
-  ChannelOptions,
   ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  DefaultGenerics,
+  UserFilters,
 } from "stream-chat";
 import {
   Channel as ChannelComp,
-  ChannelHeader,
   ChannelList,
-  ChannelListMessengerProps,
   ChannelSearchFunctionParams,
   Chat,
-  ChatDownProps,
   DefaultStreamChatGenerics,
   InfiniteScroll,
   LoadingIndicator,
@@ -39,22 +42,12 @@ import {
   Thread,
   Window,
 } from "stream-chat-react";
-import "stream-chat-react/dist/css/v2/index.css";
-import "./custom_components/overrides.scss";
 import { EmojiPicker } from "stream-chat-react/emojis";
-import i18n from "@emoji-mart/data/i18n/it.json";
-import CustomPreview from "./custom_components/CustomPreview";
 import { CustomChannelHeader } from "./custom_components/CustomChannelHeader";
-import { CustomSendButton } from "./custom_components/CustomSendButton";
-import {
-  IconArrowLeft,
-  IconCirclePlus,
-  IconMoodSmile,
-  IconPaperclip,
-} from "@tabler/icons-react";
-import { User } from "stream-chat";
+import CustomPreview from "./custom_components/CustomPreview";
 import { CustomSearchBar } from "./custom_components/CustomSearchBar";
-import { useStreamChatStore } from "@/store/StreamChatStore";
+import { CustomSendButton } from "./custom_components/CustomSendButton";
+import ModalCreateChannel from "./custom_components/ModalCreateChannel";
 
 const FileUploadIcon = () => (
   <>
@@ -75,6 +68,7 @@ const EmojiIcon = () => (
 export default function BirdbaseChat() {
   const client = useStreamChatStore((state) => state.chatClient);
   const [channel, setChannel] = useState<Channel<DefaultGenerics>>();
+  const [isCreating, setIsCreating] = useState(false);
   const supabase = useSupabase();
 
   const customFetchResults = useCallback(
@@ -149,11 +143,14 @@ export default function BirdbaseChat() {
         additionalChannelSearchProps={{
           searchFunction: debouncedCustomSearchFunction,
           ExitSearchIcon: IconArrowLeft,
-          SearchBar: CustomSearchBar,
+          SearchBar: (props) =>
+            CustomSearchBar({
+              ...props,
+              onCreateChannel: () => setIsCreating(true),
+            }),
         }}
         Preview={CustomPreview}
       />
-
       <ChannelComp
         channel={channel}
         EmojiPicker={() =>
@@ -172,6 +169,11 @@ export default function BirdbaseChat() {
         </Window>
         <Thread />
       </ChannelComp>
+      <ModalCreateChannel
+        client={client}
+        opened={isCreating}
+        onClose={() => setIsCreating(false)}
+      />
     </Chat>
   );
 }

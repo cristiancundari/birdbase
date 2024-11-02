@@ -92,7 +92,7 @@ const UnMemoizedChannelHeader = <
         image={displayImage}
         name={displayTitle}
         shape="rounded"
-        size={channel?.type === "commerce" ? 60 : 40}
+        size={40}
       />
       <div className="str-chat__header-livestream-left str-chat__channel-header-end">
         <p className="str-chat__header-livestream-left--title str-chat__channel-header-title">
