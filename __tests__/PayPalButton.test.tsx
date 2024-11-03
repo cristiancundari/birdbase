@@ -1,5 +1,5 @@
 import { screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import PayPalButton from "@/components/PayPalButton";
 import { render } from "@/setup-test";
 

@@ -30,7 +30,7 @@ import {
 import { getIconSesso } from "../IconsSesso";
 import { useMemo } from "react";
 import { useSupabase } from "@/providers/SupabaseProvider";
-import PayPalButton from "../PayPalButton";
+import PayPalButton from "@/components/PayPalButton";
 import { apiFetch } from "@/lib/apiFetch";
 import { OrdineInserzione } from "@prisma/client";
 
@@ -46,7 +46,6 @@ function InserzioneItem({
   onDelete: (id: number) => void;
 }) {
   const captureOrder = async (ordineId: string) => {
-    console.log(ordineId);
     const result = await apiFetch.post<OrdineInserzione>(
       "/api/paypal/inserzioni/captureorder",
       {
@@ -81,13 +80,10 @@ function InserzioneItem({
     );
 
     if (result.error) {
-      console.log("ERRORE");
       showNotification({ message: result.message, success: false });
     } else {
-      console.log(result.data.id);
       return result.data.id;
     }
-    console.log("EMPTY");
     return "";
   };
 
@@ -111,7 +107,7 @@ function InserzioneItem({
 
   const supabase = useSupabase();
   const countGare = inserzione.soggetto.iscrizioni.length;
-  const isMine = supabase.user?.id == inserzione.soggetto.profiloId;
+  const isMine = supabase.user?.id == inserzione.profiloId;
 
   return (
     <Grid justify="start" grow>
@@ -191,6 +187,7 @@ function InserzioneItem({
                 pos="absolute"
                 top="10px"
                 right="10px"
+                data-testid="vertical-dots-test"
               >
                 <IconDotsVertical size="14" />
               </ActionIcon>

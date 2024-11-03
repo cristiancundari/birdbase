@@ -141,7 +141,7 @@ function InfoSoggetto({
         <Fieldset legend="Informazioni Parentele" mb="md">
           {isLoading ? (
             <Center p="lg">
-              <Loader size="sm" />
+              <Loader size="sm" data-testid="loader-test" />
             </Center>
           ) : (
             listaParenti.size === 0 && <Center>Nessun parente</Center>

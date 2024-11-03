@@ -99,6 +99,7 @@ function ModalReport({ isOpen, annulla, submit }: ModalReportProps) {
 
   return (
     <Modal
+      data-testid="modal-report-test"
       opened={isOpen}
       onClose={annulla}
       title={"Genera Report"}
@@ -146,6 +147,7 @@ function ModalReport({ isOpen, annulla, submit }: ModalReportProps) {
             variant="outline"
             color="gray"
             onClick={annulla}
+            data-testid="button-annulla-test"
             leftSection={<IconX size={14} />}
           >
             Annulla
@@ -155,6 +157,7 @@ function ModalReport({ isOpen, annulla, submit }: ModalReportProps) {
             leftSection={<IconDeviceFloppy size={14} />}
             type="submit"
             loading={isLoading}
+            data-testid="button-invia-test"
           >
             Invio
           </Button>
