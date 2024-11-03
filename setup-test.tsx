@@ -2,8 +2,6 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
-import "./app/globals.css";
-
 import { notifications } from "@mantine/notifications";
 import "@testing-library/jest-dom";
 import {
