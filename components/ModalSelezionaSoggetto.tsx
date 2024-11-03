@@ -76,6 +76,7 @@ function ModalSelezionaSoggetto({
           {...form.getInputProps("soggettoId")}
           rightSection={isLoading ? <Loader size={18} /> : <Combobox.Chevron />}
           searchable
+          data-testid="soggetto-select"
         />
 
         <Group mt={"lg"} gap="md" justify="flex-end">

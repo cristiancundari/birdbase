@@ -1,15 +1,14 @@
-import { HttpResponse, http } from "msw";
-import { describe, expect, it, vi } from "vitest";
-import { covate } from "./Covate";
-import { fireEvent, screen, waitFor, within } from "@testing-library/dom";
+import CovataComp from "@/components/covate/covataComp";
 import CovatePage from "@/components/covate/covatePage";
 import { render } from "@/setup-test";
-import server from "../ServerMock";
-import CovataComp from "@/components/covate/covataComp";
-import assert from "assert";
 import { CovataWithGenitori, SoggettoWithParentela } from "@/types/types";
+import { fireEvent, screen, waitFor, within } from "@testing-library/dom";
+import assert from "assert";
+import { HttpResponse, http } from "msw";
+import { describe, expect, it, vi } from "vitest";
+import server from "../ServerMock";
 import { soggetti } from "../Soggetti/Soggetti";
-import { debug } from "vitest-preview";
+import { covate } from "./Covate";
 
 describe("Covate CRUD", () => {
   it("dovrebbe ottenere tutte le covate", async () => {
@@ -88,6 +87,7 @@ describe("Covate CRUD", () => {
         parentela: {
           nome: "Figlio",
           percentuale: 90,
+          plurale: "Figli",
           colore: "red",
         },
       },

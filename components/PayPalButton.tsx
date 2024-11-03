@@ -4,11 +4,7 @@ import {
   OnApproveData,
   PayPalButtonsComponentOptions,
 } from "@paypal/paypal-js";
-import {
-  PayPalButtons,
-  PayPalScriptProvider,
-  ReactPayPalScriptOptions,
-} from "@paypal/react-paypal-js";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 
 interface PayPalButtonProps {
   createOrder: () => Promise<string>;

@@ -1,3 +1,4 @@
+import { formatValuta } from "@/lib/helper";
 import {
   GaraWithIscrizioniWithSoggettoAndProfiloWithAllevatore,
   GaraWithNazioneAndCountIscrizioni,
@@ -12,13 +13,13 @@ function Incassi({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
       </Text>
       <Stack justify="end" align="end" h="100%">
         <Text c="dimmed" fw={500} fz="sm" px="md">
-          Prezzo: {gara.prezzo.toFixed(2)} €
+          Prezzo: {formatValuta(gara.prezzo)}
         </Text>
         <Text c="dimmed" fw={500} fz="sm" px="md">
           Soggetti Iscritti: {gara._count.iscrizioni}
         </Text>
         <Text fw={500} fz="lg" p="md">
-          Incassi: {(gara._count.iscrizioni * gara.prezzo).toFixed(2)} €
+          Incassi: {formatValuta(gara._count.iscrizioni * gara.prezzo)}
         </Text>
       </Stack>
     </Card>

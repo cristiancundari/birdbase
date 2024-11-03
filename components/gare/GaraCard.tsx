@@ -98,12 +98,14 @@ function GaraCard({
                   pos="absolute"
                   top="10px"
                   right="10px"
+                  data-testid="menu-button"
                 >
                   <IconDotsVertical size="14" />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item
+                  data-testid="menu-item-details"
                   leftSection={<IconEye size="14" />}
                   component="a"
                   href={`/admin/gare/${gara.id}`}
@@ -113,6 +115,7 @@ function GaraCard({
                 {!gara.isDeleted && (
                   <>
                     <Menu.Item
+                      data-testid="menu-item-edit"
                       leftSection={<IconPencil size="14" />}
                       onClick={() => {
                         onEdit(gara);
@@ -121,6 +124,7 @@ function GaraCard({
                       Modifica
                     </Menu.Item>
                     <Menu.Item
+                      data-testid="menu-item-delete"
                       leftSection={<IconTrash size="14" />}
                       color="red"
                       onClick={() => {

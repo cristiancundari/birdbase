@@ -7,7 +7,9 @@ function InfoUova({ deposte, schiuse }: { deposte: number; schiuse: number }) {
       <Tooltip label="Uova deposte">
         <Group gap={2}>
           <IconEgg size="14" />
-          <Text size="xs">{deposte}</Text>
+          <Text size="xs" data-testid="info-uova-deposte">
+            {deposte}
+          </Text>
         </Group>
       </Tooltip>
       <Text size="xs" c="dimmed">
@@ -16,7 +18,9 @@ function InfoUova({ deposte, schiuse }: { deposte: number; schiuse: number }) {
       <Tooltip label="Uova schiuse">
         <Group gap={2}>
           <IconEggCracked size="14" />
-          <Text size="xs">{schiuse}</Text>
+          <Text size="xs" data-testid="info-uova-schiuse">
+            {schiuse}
+          </Text>
         </Group>
       </Tooltip>
     </Group>

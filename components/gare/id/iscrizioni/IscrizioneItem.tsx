@@ -1,6 +1,8 @@
+import { formatAnelletto } from "@/lib/helper";
+import { useSupabase } from "@/providers/SupabaseProvider";
+import { IscrizioneWithSoggettoAndProfiloWithAllevatore } from "@/types/types";
 import {
   Anchor,
-  Flex,
   Grid,
   Group,
   NumberInput,
@@ -8,20 +10,8 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import {
-  getIconSesso,
-  IconSessoAgender,
-  IconSessoFemale,
-  IconSessoMale,
-} from "../../../IconsSesso";
-import {
-  IscrizioneWithSoggettoAndProfiloWithAllevatore,
-  Sesso,
-} from "@/types/types";
-import { formatAnelletto } from "@/lib/helper";
-import { useSupabase } from "@/providers/SupabaseProvider";
-import { $Enums, Prisma, Role } from "@prisma/client";
-import { useState } from "react";
+import { $Enums, Role } from "@prisma/client";
+import { getIconSesso } from "../../../IconsSesso";
 
 function IscrizioneItem({
   iscrizione,
@@ -75,6 +65,7 @@ function IscrizioneItem({
                 onChange={(val) => {
                   onVotoChange && onVotoChange(iscrizione.id, Number(val));
                 }}
+                data-testid="input-voto"
               />
             ) : (
               <Text>{iscrizione.voto || 0}</Text>
@@ -89,7 +80,6 @@ function IscrizioneItem({
                 <Text size={rem(25)}>
                   {posizioni[iscrizione.posizione - 1] || ""}
                 </Text>
-                {/* <Text fw={500}>{iscrizione.posizione}</Text> */}
               </Group>
             )}
           </Group>

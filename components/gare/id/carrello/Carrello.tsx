@@ -88,7 +88,6 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
       soggetti: soggettiNelCarrello.map((s) => s.id),
       garaId: gara.id,
     });
-    console.log(result);
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -124,6 +123,7 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
               }}
               variant="light"
               leftSection={<IconPlus size={14} />}
+              data-testid="button-iscrivi"
             >
               Iscrivi
             </Button>

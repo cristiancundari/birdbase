@@ -33,7 +33,7 @@ function UserLogoutNav({ logout }: UserLogoutNavProps) {
     <>
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <UnstyledButton w="100%">
+          <UnstyledButton w="100%" data-testid="logout-menu">
             <Paper withBorder p="sm">
               <Group>
                 <Avatar src={null} alt={fullName} color={theme.primaryColor}>

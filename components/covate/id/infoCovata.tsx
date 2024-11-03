@@ -237,6 +237,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
                   disabled={covata.uovaDeposte <= covata.figli.length}
                   variant="light"
                   leftSection={<IconPlus size={14} />}
+                  data-testid="button-aggiungi-figlio"
                 >
                   Aggiungi
                 </Button>

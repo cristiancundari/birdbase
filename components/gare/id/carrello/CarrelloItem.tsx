@@ -3,7 +3,11 @@ import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 import { ActionIcon, Anchor, Group, Text } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import React from "react";
-import { IconSessoFemale, IconSessoMale } from "../../../IconsSesso";
+import {
+  getIconSesso,
+  IconSessoFemale,
+  IconSessoMale,
+} from "../../../IconsSesso";
 
 interface CarrelloCompProps {
   soggetto: any;
@@ -14,7 +18,7 @@ function CarrelloItem({ soggetto, gara, onDelete }: CarrelloCompProps) {
   return (
     <Group justify="space-between">
       <Group gap="sm">
-        {soggetto.sesso ? <IconSessoMale /> : <IconSessoFemale />}
+        {getIconSesso(soggetto.sesso)}
         <Anchor href="/" c="dark">
           {soggetto.rna}-{soggetto.numero}-{soggetto.anno}
         </Anchor>
@@ -26,6 +30,7 @@ function CarrelloItem({ soggetto, gara, onDelete }: CarrelloCompProps) {
           variant="transparent"
           aria-label="Settings"
           onClick={() => onDelete(soggetto.id)}
+          data-testid="rimuovi-soggetto"
         >
           <IconX color="gray" size={16} />
         </ActionIcon>

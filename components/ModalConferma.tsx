@@ -49,6 +49,7 @@ function ModalConferma({
             setIsLoading(false);
             onClose();
           }}
+          data-testid="modal-conferma-button"
         >
           {confirmButton.label}
         </Button>
