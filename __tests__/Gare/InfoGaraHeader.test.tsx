@@ -15,7 +15,7 @@ describe("InfoGaraHeader", () => {
   const mockGara = {
     id: "dkfrfhjdvb39",
     titolo: "Canarini gialli",
-    data: new Date("2024-05-01T00:00:00Z"),
+    data: new Date("2024-11-15T00:00:00Z"),
     tipologia: "Corsa",
     citta: "Roma",
     immagine: "https://example.com/immagine.jpg",
@@ -41,7 +41,7 @@ describe("InfoGaraHeader", () => {
   test("visualizza la data e il tipo corretti", () => {
     render(<InfoGaraHeader gara={mockGara} />);
     expect(screen.getByText(/data gara:/i)).toBeInTheDocument();
-    expect(screen.getByText("1/5/2024")).toBeInTheDocument(); // Assicurati che il formato sia corretto
+    expect(screen.getByText("15/11/2024")).toBeInTheDocument(); // Assicurati che il formato sia corretto
     expect(screen.getByText(/tipologia:/i)).toBeInTheDocument();
     expect(screen.getByText("Corsa")).toBeInTheDocument();
   });

@@ -46,7 +46,6 @@ function InserzioneItem({
   onDelete: (id: number) => void;
 }) {
   const captureOrder = async (ordineId: string) => {
-    console.log(ordineId);
     const result = await apiFetch.post<OrdineInserzione>(
       "/api/paypal/inserzioni/captureorder",
       {
@@ -111,7 +110,7 @@ function InserzioneItem({
 
   const supabase = useSupabase();
   const countGare = inserzione.soggetto.iscrizioni.length;
-  const isMine = supabase.user?.id == inserzione.soggetto.profiloId;
+  const isMine = supabase.user?.id == inserzione.profiloId;
 
   return (
     <Grid justify="start" grow>
@@ -191,6 +190,7 @@ function InserzioneItem({
                 pos="absolute"
                 top="10px"
                 right="10px"
+                data-testid="inserzione-item-menu"
               >
                 <IconDotsVertical size="14" />
               </ActionIcon>

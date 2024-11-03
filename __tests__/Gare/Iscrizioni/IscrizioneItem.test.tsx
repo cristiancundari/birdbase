@@ -7,6 +7,7 @@ import { render } from "@/setup-test";
 import { soggetti } from "@/__tests__/Soggetti/Soggetti";
 import { IscrizioneWithSoggettoAndProfiloWithAllevatore } from "@/types/types";
 import { debug } from "vitest-preview";
+import { mockIscrizione } from "./Iscrizione";
 
 // Mock del provider di Supabase
 vi.mock("@/providers/SupabaseProvider", () => ({
@@ -14,35 +15,6 @@ vi.mock("@/providers/SupabaseProvider", () => ({
 }));
 
 describe("IscrizioneItem", () => {
-  const mockIscrizione: IscrizioneWithSoggettoAndProfiloWithAllevatore = {
-    id: "iscrizione-1",
-    garaId: "gara-1",
-    importo: 100,
-    createdAt: new Date(),
-    soggettoId: soggetti[0].id,
-    soggetto: {
-      ...soggetti[0],
-      rna: "RNA123",
-      numero: "987",
-      anno: "2023",
-    },
-    profiloId: "profilo-1",
-    profilo: {
-      id: "profilo-1",
-      budget: 100,
-      googleRefreshToken: "token",
-      rna: "RNA123",
-      ruolo: "USER",
-      allevatore: {
-        rna: "RNA123",
-        nome: "Mario",
-        cognome: "Rossi",
-      },
-    },
-    voto: 10,
-    posizione: 1,
-  };
-
   beforeEach(() => {
     // Mocking useSupabase to return a non-admin user
     (useSupabase as Mock).mockReturnValue({

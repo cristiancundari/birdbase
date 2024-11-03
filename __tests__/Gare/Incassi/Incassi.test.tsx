@@ -1,12 +1,12 @@
 import Incassi from "@/components/gare/id/incassi/Incassi";
 import { render } from "@/setup-test";
 import { screen } from "@testing-library/react";
-import { gara } from "../Gare";
+import { mockGara } from "../Gara";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 
 describe("Incassi", () => {
   const mockGara: GaraWithNazioneAndCountIscrizioni = {
-    ...gara,
+    ...mockGara,
     prezzo: 10.0,
     _count: {
       iscrizioni: 5,

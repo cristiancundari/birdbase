@@ -1,6 +1,6 @@
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types"; // Assicurati di importare il tipo corretto
 
-export const gara: GaraWithNazioneAndCountIscrizioni = {
+export const mockGara: GaraWithNazioneAndCountIscrizioni = {
   id: "1",
   titolo: "Test Gara",
   data: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5), // 5 giorni da ora

@@ -3,7 +3,7 @@ import CarrelloItem from "@/components/gare/id/carrello/CarrelloItem";
 import { render } from "@/setup-test";
 import { fireEvent, screen } from "@testing-library/react";
 import { vi } from "vitest";
-import { gara } from "../Gare";
+import { mockGara } from "../Gara";
 
 // Mock della funzione formatValuta
 describe("CarrelloItem", () => {
@@ -13,7 +13,7 @@ describe("CarrelloItem", () => {
     render(
       <CarrelloItem
         soggetto={soggetti[0]}
-        gara={gara}
+        gara={mockGara}
         onDelete={mockOnDelete}
       />
     );

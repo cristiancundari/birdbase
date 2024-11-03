@@ -3,7 +3,7 @@ import { apiFetch } from "@/lib/apiFetch";
 import { render } from "@/setup-test";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { Mock, vi } from "vitest";
-import { gara } from "../Gare";
+import { mockGara } from "../Gara";
 
 // Mock di Supabase
 vi.mock("@/providers/SupabaseProvider", () => ({
@@ -52,7 +52,7 @@ vi.mock("../../../ModalSelezionaSoggetto", () => {
 
 describe("Carrello", () => {
   it("dovrebbe renderizzare correttamente il carrello vuoto", () => {
-    render(<Carrello gara={gara} />);
+    render(<Carrello gara={mockGara} />);
 
     expect(screen.getByText(/Aggiungi nel carrello/i)).toBeInTheDocument();
     expect(screen.getByTestId("button-iscrivi")).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("Carrello", () => {
       error: false,
     });
 
-    render(<Carrello gara={gara} />);
+    render(<Carrello gara={mockGara} />);
 
     // Apri il modal per iscrivere soggetto
     fireEvent.click(screen.getByTestId("button-iscrivi"));
@@ -94,7 +94,7 @@ describe("Carrello", () => {
       error: false,
     });
 
-    render(<Carrello gara={gara} />);
+    render(<Carrello gara={mockGara} />);
 
     // Apri il modal e aggiungi soggetto
     fireEvent.click(screen.getByTestId("button-iscrivi"));
@@ -131,7 +131,7 @@ describe("Carrello", () => {
       error: false,
     });
 
-    render(<Carrello gara={gara} />);
+    render(<Carrello gara={mockGara} />);
 
     // Apri il modal e aggiungi soggetto
     fireEvent.click(screen.getByTestId("button-iscrivi"));

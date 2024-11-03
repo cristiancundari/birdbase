@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { gara } from "./Gare";
+import { mockGara } from "./Gara";
 import { Role } from "@prisma/client";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import GaraCard from "@/components/gare/GaraCard";
@@ -17,24 +17,24 @@ vi.mock("@/providers/SupabaseProvider", () => ({
 describe("GaraCard", () => {
   it("dovrebbe visualizzare il titolo della gara", () => {
     const { getByText } = render(
-      <GaraCard gara={gara} onDelete={vi.fn()} onEdit={vi.fn()} />
+      <GaraCard gara={mockGara} onDelete={vi.fn()} onEdit={vi.fn()} />
     );
-    expect(getByText(gara.titolo)).toBeInTheDocument();
+    expect(getByText(mockGara.titolo)).toBeInTheDocument();
   });
 
   it("dovrebbe visualizzare la tipologia della gara", () => {
     const { getByText } = render(
-      <GaraCard gara={gara} onDelete={vi.fn()} onEdit={vi.fn()} />
+      <GaraCard gara={mockGara} onDelete={vi.fn()} onEdit={vi.fn()} />
     );
     expect(getByText(/Tipologia:/)).toBeInTheDocument();
-    expect(getByText(gara.tipologia)).toBeInTheDocument();
+    expect(getByText(mockGara.tipologia)).toBeInTheDocument();
   });
 
   it("dovrebbe mostrare i badge corretti", () => {
     const { getByText } = render(
       <GaraCard
         gara={{
-          ...gara,
+          ...mockGara,
           isDeleted: false,
           createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // Gara nuova
           stato: "BOZZA",
@@ -50,7 +50,7 @@ describe("GaraCard", () => {
 
   it("dovrebbe mostrare il menu per l'admin", () => {
     const { getByTestId } = render(
-      <GaraCard gara={gara} onDelete={vi.fn()} onEdit={vi.fn()} />
+      <GaraCard gara={mockGara} onDelete={vi.fn()} onEdit={vi.fn()} />
     );
 
     const menuButton = getByTestId("menu-button");
@@ -64,26 +64,26 @@ describe("GaraCard", () => {
   it("dovrebbe chiamare onEdit quando viene selezionata l'opzione Modifica", () => {
     const onEdit = vi.fn();
     const { getByTestId } = render(
-      <GaraCard gara={gara} onDelete={vi.fn()} onEdit={onEdit} />
+      <GaraCard gara={mockGara} onDelete={vi.fn()} onEdit={onEdit} />
     );
 
     const menuButton = getByTestId("menu-button");
     fireEvent.click(menuButton);
     fireEvent.click(getByTestId("menu-item-edit"));
 
-    expect(onEdit).toHaveBeenCalledWith(gara);
+    expect(onEdit).toHaveBeenCalledWith(mockGara);
   });
 
   it("dovrebbe chiamare onDelete quando viene selezionata l'opzione Elimina", () => {
     const onDelete = vi.fn();
     const { getByTestId } = render(
-      <GaraCard gara={gara} onDelete={onDelete} onEdit={vi.fn()} />
+      <GaraCard gara={mockGara} onDelete={onDelete} onEdit={vi.fn()} />
     );
 
     const menuButton = getByTestId("menu-button");
     fireEvent.click(menuButton);
     fireEvent.click(getByTestId("menu-item-delete"));
 
-    expect(onDelete).toHaveBeenCalledWith(gara.id);
+    expect(onDelete).toHaveBeenCalledWith(mockGara.id);
   });
 });
