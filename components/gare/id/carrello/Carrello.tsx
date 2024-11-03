@@ -113,7 +113,7 @@ function Carrello({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   };
 
   return (
-    <Stack>
+    <Stack data-testid="carrello-test">
       <Card p={0} shadow="xs">
         <Stack gap={0}>
           <Group justify="flex-end" p="md">

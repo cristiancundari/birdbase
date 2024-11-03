@@ -7,7 +7,7 @@ import { Card, Flex, Stack, Text } from "@mantine/core";
 
 function Incassi({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
   return (
-    <Card p={0} shadow="xs" h="50%">
+    <Card p={0} shadow="xs" h="50%" data-testid="incassi-test">
       <Text fw={500} fz="lg" p="md">
         Dettagli Gara
       </Text>
