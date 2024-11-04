@@ -54,11 +54,19 @@ function PromemoriaComp({
 
       <Group justify="space-between">
         {value?.completato ? (
-          <ActionIcon variant="transparent" aria-label="Settings">
+          <ActionIcon
+            variant="transparent"
+            aria-label="Settings"
+            data-testid="completato-test"
+          >
             <IconCircleCheckFilled />
           </ActionIcon>
         ) : (
-          <ActionIcon variant="transparent" aria-label="Settings">
+          <ActionIcon
+            variant="transparent"
+            aria-label="Settings"
+            data-testid="non-completato-test"
+          >
             <IconCircleCheck />
           </ActionIcon>
         )}

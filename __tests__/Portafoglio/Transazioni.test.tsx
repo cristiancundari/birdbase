@@ -1,26 +1,12 @@
-import {
-  cleanup,
-  findByText,
-  fireEvent,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
-import assert from "assert";
-import { HttpResponse, http } from "msw";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import server from "../ServerMock";
-import Budget from "@/components/portafoglio/budget";
-import { categorie, transazioni } from "./Portafoglio";
 import { PortafoglioContext } from "@/components/portafoglio/portafoglioPage";
-import { Profilo, Transazione } from "@prisma/client";
 import Transazioni from "@/components/portafoglio/transazioni/transazioni";
-import { debug } from "vitest-preview";
-import exp from "constants";
-import { Box } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { render } from "@/setup-test";
-import { act } from "react-dom/test-utils";
+import { Transazione } from "@prisma/client";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { HttpResponse, http } from "msw";
+import { describe, expect, it, vi } from "vitest";
+import server from "../ServerMock";
+import { categorie, transazioni } from "./Portafoglio";
 
 describe("<Transazioni />", () => {
   const TransazioniComp = (
@@ -59,7 +45,9 @@ describe("<Transazioni />", () => {
     const modalAggiungi = screen.getByTestId("ModalTransazione");
     expect(modalAggiungi.hasChildNodes()).toBeFalsy();
     fireEvent.click(buttonAggiungi);
-    expect(modalAggiungi.hasChildNodes()).toBeTruthy();
+    await waitFor(() => {
+      expect(modalAggiungi.hasChildNodes()).toBeTruthy();
+    });
     const modalTitle = within(modalAggiungi).getByText("Aggiungi Transazione");
     expect(modalTitle).toBeInTheDocument();
   });
@@ -97,9 +85,14 @@ describe("<Transazioni />", () => {
     );
 
     render(TransazioniComp);
+
     const buttonAggiungi = screen.getByTestId("ButtonAggiungi");
-    const modalAggiungi = screen.getByTestId("ModalTransazione");
     fireEvent.click(buttonAggiungi);
+
+    const modalAggiungi = screen.getByTestId("ModalTransazione");
+    await waitFor(() => {
+      expect(modalAggiungi.hasChildNodes()).toBeTruthy();
+    });
     const buttonSalva = within(modalAggiungi).getByText("Salva");
     const selectCategoria = within(modalAggiungi).getByLabelText("Categoria");
     const inputDescrizione =
@@ -155,10 +148,14 @@ describe("<Transazioni />", () => {
     render(TransazioniComp);
     const menuButton = await screen.findByTestId("MenuButton");
     fireEvent.click(menuButton);
-    const modificaButton = screen.getByTestId("ModificaButton");
-    fireEvent.click(modificaButton);
-    const modalTransazione = screen.getByTestId("ModalTransazione");
+    await waitFor(() => {
+      const modificaButton = screen.getByTestId("ModificaButton");
+      fireEvent.click(modificaButton);
+    });
+
+    const modalTransazione = await screen.findByTestId("ModalTransazione");
     expect(modalTransazione.hasChildNodes()).toBeTruthy();
+
     const selectCategoria =
       within(modalTransazione).getByLabelText("Categoria");
     const inputDescrizione =
@@ -209,12 +206,16 @@ describe("<Transazioni />", () => {
     render(TransazioniComp);
     const menuButton = await screen.findByTestId("MenuButton");
     fireEvent.click(menuButton);
-    const eliminaButton = screen.getByTestId("EliminaButton");
-    fireEvent.click(eliminaButton);
-    const modalCancellazione = screen.getByTestId("ModalCancellazione");
-    expect(modalCancellazione.hasChildNodes()).toBeTruthy();
-    const deleteButton = within(modalCancellazione).getByText("Elimina");
-    fireEvent.click(deleteButton);
+    await waitFor(() => {
+      const eliminaButton = screen.getByTestId("EliminaButton");
+      fireEvent.click(eliminaButton);
+    });
+    await waitFor(() => {
+      const modalCancellazione = screen.getByTestId("ModalCancellazione");
+      expect(modalCancellazione.hasChildNodes()).toBeTruthy();
+      const deleteButton = within(modalCancellazione).getByText("Elimina");
+      fireEvent.click(deleteButton);
+    });
     const notificaEliminazione = await screen.findByText("correttamente", {
       exact: false,
     });

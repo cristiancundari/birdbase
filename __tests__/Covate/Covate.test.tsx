@@ -127,11 +127,11 @@ describe("Covate CRUD", () => {
     fireEvent.click(buttonAggiungi);
 
     const modalCovata = screen.getByTestId("ModalCovata");
-    const titolo = screen.getByText("Aggiungi Covata");
+    const titolo = await screen.findByText("Aggiungi Covata");
     expect(modalCovata.hasChildNodes()).toBeTruthy();
     expect(titolo).toBeInTheDocument();
 
-    const loaders = within(modalCovata).getAllByTestId("Loader");
+    const loaders = within(modalCovata).queryAllByTestId("Loader");
     await waitFor(() => {
       loaders.forEach((loader) => {
         expect(loader).not.toBeInTheDocument();
@@ -201,11 +201,11 @@ describe("Covate CRUD", () => {
     const buttonMenu = await screen.findByTestId("ButtonMenu");
     fireEvent.click(buttonMenu);
 
-    const buttonModifica = screen.getByTestId("ButtonModifica");
+    const buttonModifica = await screen.findByTestId("ButtonModifica");
     fireEvent.click(buttonModifica);
 
     const modalCovata = screen.getByTestId("ModalCovata");
-    const titolo = screen.getByText("Modifica Covata");
+    const titolo = await screen.findByText("Modifica Covata");
     expect(modalCovata.hasChildNodes()).toBeTruthy();
     expect(titolo).toBeInTheDocument();
     const gabbia = within(modalCovata).getByLabelText("Gabbia");
@@ -252,10 +252,12 @@ describe("Covate CRUD", () => {
     const buttonMenu = await screen.findByTestId("ButtonMenu");
     fireEvent.click(buttonMenu);
 
-    const buttonElimina = screen.getByTestId("ButtonElimina");
+    const buttonElimina = await screen.findByTestId("ButtonElimina");
     fireEvent.click(buttonElimina);
     const modalCancellazione = screen.getByTestId("ModalCancellazione");
-    expect(modalCancellazione.hasChildNodes()).toBeTruthy();
+    await waitFor(() => {
+      expect(modalCancellazione.hasChildNodes()).toBeTruthy();
+    });
 
     const apiGet = vi.fn();
     server.use(http.get("/api/covate", apiGet));

@@ -3,9 +3,10 @@ import { render } from "@/setup-test";
 import { screen } from "@testing-library/react";
 import { mockGara } from "../Gara";
 import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe("Incassi", () => {
-  const mockGara: GaraWithNazioneAndCountIscrizioni = {
+  const fakeGara: GaraWithNazioneAndCountIscrizioni = {
     ...mockGara,
     prezzo: 10.0,
     _count: {
@@ -14,7 +15,7 @@ describe("Incassi", () => {
   };
 
   beforeEach(() => {
-    render(<Incassi gara={mockGara} />);
+    render(<Incassi gara={fakeGara} />);
   });
 
   test('dovrebbe mostrare il titolo "Dettagli Gara"', () => {

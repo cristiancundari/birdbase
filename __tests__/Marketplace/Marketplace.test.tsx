@@ -6,7 +6,7 @@ import { render } from "@/setup-test";
 import { InserzioneWithSoggettoAndAllevatoreAndRisultatiGare } from "@/types/types";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
-import { Mock, vi } from "vitest";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { soggetti } from "../Soggetti/Soggetti";
 
 vi.mock("next/navigation", () => ({
@@ -99,7 +99,7 @@ describe("Componente Marketplace", () => {
     expect(screen.getByText(/nessuna inserzione/i)).toBeInTheDocument();
   });
 
-  it("dovrebbe aprire il modal per aggiungere una nuova inserzione", () => {
+  it("dovrebbe aprire il modal per aggiungere una nuova inserzione", async () => {
     (apiFetch.get as Mock).mockReturnValue({
       error: false,
       data: soggetti,
@@ -108,7 +108,9 @@ describe("Componente Marketplace", () => {
 
     fireEvent.click(screen.getByTestId("ButtonAggiungi"));
 
-    expect(screen.getByLabelText(/soggetto/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText(/soggetto/i)).toBeInTheDocument();
+    });
   });
 
   it("dovrebbe aggiungere una nuova inserzione e mostrare una notifica", async () => {

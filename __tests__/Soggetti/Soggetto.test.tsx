@@ -2,15 +2,13 @@ import { Soggetto } from "@prisma/client";
 import { soggetti } from "./Soggetti";
 
 import HomePage from "@/app/app/home/page";
+import { render } from "@/setup-test";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import assert from "assert";
 import { HttpResponse, http } from "msw";
 import { describe, expect, it } from "vitest";
 import SoggettoComp from "../../components/SoggettoComp";
 import server from "../ServerMock";
-import { render } from "@/setup-test";
-import ModalSoggetto from "@/components/home/ModalSoggetto";
-import { debug } from "vitest-preview";
 
 //sesso = true significa "Maschio" ---- sesso = false significa "Femmina" ---- sesso = null significa "In Attesa"
 describe("<SoggettoComp />", () => {
@@ -100,11 +98,13 @@ describe("<SoggettoComp />", () => {
     });
     expect(textNoteBefore).not.toBeInTheDocument();
     fireEvent.mouseOver(iconNote);
-    const textNoteAfter = screen.getByText(soggetto.note, {
-      trim: false,
-      collapseWhitespace: false,
+    await waitFor(() => {
+      const textNoteAfter = screen.getByText(soggetto.note, {
+        trim: false,
+        collapseWhitespace: false,
+      });
+      expect(textNoteAfter).toBeInTheDocument();
     });
-    expect(textNoteAfter).toBeInTheDocument();
   });
 
   it("dovrebbe nascondere l'icona della nota se stringa vuota", () => {
@@ -190,7 +190,7 @@ describe("Soggetto CRUD", () => {
     expect(nessunSoggetto).toBeInTheDocument();
   });
 
-  it("dovrebbe aprire il modal quando viene premuto il pulsante aggiungi", () => {
+  it("dovrebbe aprire il modal quando viene premuto il pulsante aggiungi", async () => {
     render(<HomePage />);
     const buttonAggiungi = screen.getByTestId("ButtonAggiungi");
     const modalSoggettoBefore = screen.getByTestId("ModalSoggetto");
@@ -198,7 +198,9 @@ describe("Soggetto CRUD", () => {
 
     fireEvent.click(buttonAggiungi);
     const modalSoggettoAfter = screen.getByTestId("ModalSoggetto");
-    expect(modalSoggettoAfter.hasChildNodes()).toBeTruthy();
+    await waitFor(() => {
+      expect(modalSoggettoAfter.hasChildNodes()).toBeTruthy();
+    });
     expect(modalSoggettoAfter).toHaveTextContent("Aggiungi Soggetto");
   });
 
@@ -216,7 +218,10 @@ describe("Soggetto CRUD", () => {
     fireEvent.click(buttonAggiungi);
 
     const modalSoggetto = screen.getByTestId("ModalSoggetto");
-    expect(modalSoggetto).toBeInTheDocument();
+    await waitFor(() => {
+      expect(modalSoggetto.hasChildNodes()).toBeTruthy();
+    });
+
     const rna = screen.getByLabelText("RNA");
     const numero = screen.getByLabelText("Numero");
     const anno = screen.getByLabelText("Anno");
@@ -250,10 +255,15 @@ describe("Soggetto CRUD", () => {
     render(<HomePage />);
     const menuButton = await screen.findByTestId("MenuButton");
     fireEvent.click(menuButton);
-    const eliminaButton = screen.getByText("Elimina");
-    fireEvent.click(eliminaButton);
+
+    await waitFor(() => {
+      const eliminaButton = screen.getByText("Elimina");
+      fireEvent.click(eliminaButton);
+    });
     const modalCancellazione = screen.getByTestId("ModalCancellazione");
-    expect(modalCancellazione.hasChildNodes()).toBeTruthy();
+    await waitFor(() => {
+      expect(modalCancellazione.hasChildNodes()).toBeTruthy();
+    });
     const buttonConferma = within(modalCancellazione).getByText("Elimina");
     fireEvent.click(buttonConferma);
     const notification = await screen.findByText("successo", {
@@ -288,16 +298,20 @@ describe("Soggetto CRUD", () => {
 
     const menuButton = await screen.findByTestId("MenuButton");
     fireEvent.click(menuButton);
-    const modificaButton = screen.getByText("Modifica");
-    fireEvent.click(modificaButton);
+    await waitFor(() => {
+      const modificaButton = screen.getByText("Modifica");
+      fireEvent.click(modificaButton);
+    });
 
-    const modalSoggetto = screen.getByTestId("ModalSoggetto");
-    expect(modalSoggetto).toHaveTextContent("Modifica Soggetto");
+    await waitFor(() => {
+      const modalSoggetto = screen.getByTestId("ModalSoggetto");
+      expect(modalSoggetto).toHaveTextContent("Modifica Soggetto");
+      const rna = within(modalSoggetto).getByLabelText("RNA");
+      fireEvent.change(rna, { target: { value: rnaModificato } });
+      const buttonSalva = within(modalSoggetto).getByTestId("ButtonSalva");
+      fireEvent.click(buttonSalva);
+    });
 
-    const rna = within(modalSoggetto).getByLabelText("RNA");
-    fireEvent.change(rna, { target: { value: rnaModificato } });
-    const buttonSalva = within(modalSoggetto).getByTestId("ButtonSalva");
-    fireEvent.click(buttonSalva);
     const messaggioSoggettoModificato = await screen.findByText("successo", {
       exact: false,
     });

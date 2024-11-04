@@ -1,6 +1,6 @@
 // Navbar.test.tsx
 import { fireEvent, screen } from "@testing-library/react";
-import { Mock, vi } from "vitest";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useRouter, usePathname } from "next/navigation"; // Importa da next/navigation
 import Navbar from "@/components/Navbar";
@@ -74,7 +74,7 @@ describe("Navbar", () => {
     fireEvent.click(screen.getByTestId("logout-menu"));
 
     // Clicca sull'elemento di logout
-    fireEvent.click(screen.getByText("Logout"));
+    fireEvent.click(await screen.findByText("Logout"));
 
     // Verifica che la funzione di logout sia stata chiamata
     expect(mockLogout).toHaveBeenCalled();

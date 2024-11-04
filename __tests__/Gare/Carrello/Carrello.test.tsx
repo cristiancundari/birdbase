@@ -2,8 +2,9 @@ import Carrello from "@/components/gare/id/carrello/Carrello";
 import { apiFetch } from "@/lib/apiFetch";
 import { render } from "@/setup-test";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { Mock, vi } from "vitest";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { mockGara } from "../Gara";
+import { b } from "vitest/dist/suite-IbNSsUWN.js";
 
 // Mock di Supabase
 vi.mock("@/providers/SupabaseProvider", () => ({
@@ -51,6 +52,10 @@ vi.mock("../../../ModalSelezionaSoggetto", () => {
 });
 
 describe("Carrello", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("dovrebbe renderizzare correttamente il carrello vuoto", () => {
     render(<Carrello gara={mockGara} />);
 
@@ -72,6 +77,7 @@ describe("Carrello", () => {
 
     await waitFor(() => {
       expect(apiFetch.get as Mock).toHaveBeenCalled();
+      expect(screen.getByText("Seleziona soggetto")).toBeInTheDocument();
     });
 
     // Seleziona il soggetto
@@ -90,7 +96,7 @@ describe("Carrello", () => {
 
   it("dovrebbe rimuovere un soggetto dal carrello", async () => {
     (apiFetch.get as Mock).mockResolvedValueOnce({
-      data: [{ id: "soggetto1", rna: "RNA1", numero: "987", anno: "2021" }],
+      data: [{ id: "soggetto5", rna: "RNA1", numero: "987", anno: "2021" }],
       error: false,
     });
 
@@ -100,7 +106,9 @@ describe("Carrello", () => {
     fireEvent.click(screen.getByTestId("button-iscrivi"));
     await waitFor(() => {
       expect(apiFetch.get as Mock).toHaveBeenCalled();
+      expect(screen.getByText("Seleziona soggetto")).toBeInTheDocument();
     });
+
     fireEvent.click(screen.getByText("RNA1-2021-987"));
     fireEvent.click(screen.getByText("Seleziona"));
 
@@ -133,12 +141,18 @@ describe("Carrello", () => {
 
     render(<Carrello gara={mockGara} />);
 
-    // Apri il modal e aggiungi soggetto
+    // Apri il modal per iscrivere soggetto
     fireEvent.click(screen.getByTestId("button-iscrivi"));
+
     await waitFor(() => {
       expect(apiFetch.get as Mock).toHaveBeenCalled();
+      expect(screen.getByText("Seleziona soggetto")).toBeInTheDocument();
     });
+
+    // Seleziona il soggetto
     fireEvent.click(screen.getByText("RNA1-2021-987"));
+
+    // Submit del soggetto
     fireEvent.click(screen.getByText("Seleziona"));
 
     // Simula la creazione dell'ordine PayPal

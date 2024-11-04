@@ -2,7 +2,7 @@ import InfoCovata from "@/components/covate/id/infoCovata";
 import { render } from "@/setup-test";
 import { screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
-import { Mock, vi } from "vitest";
+import { beforeEach, describe, expect, Mock, Mocked, test, vi } from "vitest";
 import { covate } from "./Covate";
 import { soggetti } from "../Soggetti/Soggetti";
 import * as functions from "@/components/home/functions";
@@ -55,22 +55,30 @@ describe("InfoCovata", () => {
     ).toBeInTheDocument();
   });
 
-  test("apre il modulo per aggiungere un nuovo soggetto", () => {
+  test("apre il modulo per aggiungere un nuovo soggetto", async () => {
     render(<InfoCovata covata={mockCovata} />);
 
     fireEvent.click(screen.getByTestId("button-aggiungi-figlio"));
 
-    expect(screen.getByText("Crea nuovo")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Crea nuovo")).toBeInTheDocument();
+    });
   });
 
   test("invia il modulo per aggiungere un soggetto", async () => {
-    const { aggiungiSoggetto } = functions as jest.Mocked<typeof functions>;
+    const { aggiungiSoggetto } = functions as Mocked<typeof functions>;
     aggiungiSoggetto.mockResolvedValue({ error: false, data: {} });
 
     render(<InfoCovata covata={mockCovata} />);
 
     fireEvent.click(screen.getByTestId("button-aggiungi-figlio"));
-    fireEvent.click(screen.getByText("Crea nuovo"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("Crea nuovo"));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/rna/i)).toBeInTheDocument();
+    });
 
     // Simula l'inserimento dei dati nel modal
     fireEvent.change(screen.getByLabelText(/rna/i), {
@@ -99,11 +107,14 @@ describe("InfoCovata", () => {
 
     // Simula il clic sul menu per aprire le opzioni
     fireEvent.click(screen.getByTestId("MenuButton"));
-    // Simula il clic sull'opzione "Rimuovi" per aprire il modal di conferma
-    fireEvent.click(screen.getByText("Rimuovi"));
-
-    // Conferma la rimozione cliccando il pulsante di conferma del modal
-    fireEvent.click(screen.getByTestId("modal-conferma-button"));
+    await waitFor(() => {
+      // Simula il clic sull'opzione "Rimuovi" per aprire il modal di conferma
+      fireEvent.click(screen.getByText("Rimuovi"));
+    });
+    await waitFor(() => {
+      // Conferma la rimozione cliccando il pulsante di conferma del modal
+      fireEvent.click(screen.getByTestId("modal-conferma-button"));
+    });
 
     await waitFor(() => {
       expect(apiFetch.patchFormData).toHaveBeenCalledWith(

@@ -5,6 +5,13 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "./_mantine.scss";`, // Importa il tuo file SCSS
+      },
+    },
+  },
   test: {
     environment: "jsdom", // or 'jsdom', 'node'
     globals: true,

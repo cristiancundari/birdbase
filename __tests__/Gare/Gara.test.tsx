@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent } from "@testing-library/react";
+import { fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { mockGara } from "./Gara";
 import { Role } from "@prisma/client";
@@ -48,7 +48,7 @@ describe("GaraCard", () => {
     expect(getByText("Bozza")).toBeInTheDocument();
   });
 
-  it("dovrebbe mostrare il menu per l'admin", () => {
+  it("dovrebbe mostrare il menu per l'admin", async () => {
     const { getByTestId } = render(
       <GaraCard gara={mockGara} onDelete={vi.fn()} onEdit={vi.fn()} />
     );
@@ -56,12 +56,14 @@ describe("GaraCard", () => {
     const menuButton = getByTestId("menu-button");
     fireEvent.click(menuButton);
 
-    expect(getByTestId("menu-item-details")).toBeInTheDocument();
-    expect(getByTestId("menu-item-edit")).toBeInTheDocument();
-    expect(getByTestId("menu-item-delete")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByTestId("menu-item-details")).toBeInTheDocument();
+      expect(getByTestId("menu-item-edit")).toBeInTheDocument();
+      expect(getByTestId("menu-item-delete")).toBeInTheDocument();
+    });
   });
 
-  it("dovrebbe chiamare onEdit quando viene selezionata l'opzione Modifica", () => {
+  it("dovrebbe chiamare onEdit quando viene selezionata l'opzione Modifica", async () => {
     const onEdit = vi.fn();
     const { getByTestId } = render(
       <GaraCard gara={mockGara} onDelete={vi.fn()} onEdit={onEdit} />
@@ -69,12 +71,14 @@ describe("GaraCard", () => {
 
     const menuButton = getByTestId("menu-button");
     fireEvent.click(menuButton);
-    fireEvent.click(getByTestId("menu-item-edit"));
+    await waitFor(() => {
+      fireEvent.click(getByTestId("menu-item-edit"));
+    });
 
     expect(onEdit).toHaveBeenCalledWith(mockGara);
   });
 
-  it("dovrebbe chiamare onDelete quando viene selezionata l'opzione Elimina", () => {
+  it("dovrebbe chiamare onDelete quando viene selezionata l'opzione Elimina", async () => {
     const onDelete = vi.fn();
     const { getByTestId } = render(
       <GaraCard gara={mockGara} onDelete={onDelete} onEdit={vi.fn()} />
@@ -82,7 +86,9 @@ describe("GaraCard", () => {
 
     const menuButton = getByTestId("menu-button");
     fireEvent.click(menuButton);
-    fireEvent.click(getByTestId("menu-item-delete"));
+    await waitFor(() => {
+      fireEvent.click(getByTestId("menu-item-delete"));
+    });
 
     expect(onDelete).toHaveBeenCalledWith(mockGara.id);
   });

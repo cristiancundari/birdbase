@@ -118,6 +118,7 @@ function ModalPromemoria({
             label="Priorità"
             data={Object.values($Enums.Priorita)}
             allowDeselect={false}
+            data-testid="priorita-test"
             {...form.getInputProps("priorita")}
           ></Select>
         </SimpleGrid>
