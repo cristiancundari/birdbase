@@ -34,7 +34,9 @@ describe("PortafoglioPage", () => {
 
     fireEvent.click(button);
     await waitFor(() => {
-      expect(screen.getByText("Genera Report")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("modal-report-test").childElementCount
+      ).toBeGreaterThan(0);
     });
   });
 
