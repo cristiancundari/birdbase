@@ -27,7 +27,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <SupabaseWrapper>
-          <Box bg="gray.0">{children}</Box>
+          <Box bg="gray.0" mih="100dvh" h={0}>
+            {children}
+          </Box>
         </SupabaseWrapper>
       </body>
     </html>
