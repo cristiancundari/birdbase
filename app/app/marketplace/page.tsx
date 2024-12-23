@@ -1,4 +1,4 @@
-import { getInserzioni } from "@/app/api/inserzioni/route";
+import { getInserzioni } from "@/app/api/inserzioni/actions";
 import Marketplace from "@/components/marketplace/Marketplace";
 
 async function MarketplacePage() {

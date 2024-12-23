@@ -1,37 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUser, getServerUserProfile } from "@/lib/supabase/helper";
-import { BudgetRequest } from "@/types/types";
-import { Prisma } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { string, z } from "zod";
+import { z } from "zod";
+import { getInserzioni } from "./actions";
 
-export async function getInserzioni() {
-  return await prisma.inserzione.findMany({
-    where: {
-      soggettoCopiaId: null, // Filtra solo le inserzioni che non sono state ancora acquistate
-    },
-    include: {
-      soggetto: {
-        include: {
-          iscrizioni: {
-            select: {
-              gara: {
-                select: {
-                  titolo: true,
-                  data: true,
-                },
-              },
-              posizione: true,
-            },
-          },
-        },
-      },
-      profilo: { select: { allevatore: true } },
-    },
-  });
-}
 export async function GET(request: NextRequest) {
   try {
     const user = await getServerUser(cookies());
