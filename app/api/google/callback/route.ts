@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { getServerUserProfile } from "@/lib/supabase/helper";
 import assert from "assert";
-import { createoAuth2Client } from "@/lib/helper";
+import { createoAuth2Client } from "@/lib/googleapis";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -20,7 +19,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(requestUrl.origin + "/app/home");
   }
 
-
   const { tokens } = await oAuth2Client.getToken(code);
   oAuth2Client.setCredentials(tokens);
 
@@ -33,5 +31,5 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  return NextResponse.redirect(requestUrl.origin + "/app/home");
+  return NextResponse.redirect(requestUrl.origin + "/app/impostazioni");
 }

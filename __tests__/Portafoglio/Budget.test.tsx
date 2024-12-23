@@ -80,6 +80,7 @@ describe("<Budget />", () => {
       rna: "48XA",
       budget: 199,
       ruolo: "USER",
+      googleRefreshToken: null,
     };
 
     server.use(

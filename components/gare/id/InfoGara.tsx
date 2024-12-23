@@ -4,6 +4,7 @@ import Iscrizioni from "@/components/gare/id/iscrizioni/Iscrizioni";
 import { apiFetch } from "@/lib/apiFetch";
 import { showNotification } from "@/lib/helper";
 import { useSupabase } from "@/providers/SupabaseProvider";
+import { DiscussionEmbed } from "disqus-react";
 import {
   GaraWithIscrizioniWithSoggettoAndProfiloWithAllevatore,
   GaraWithNazioneAndCountIscrizioni,
@@ -11,11 +12,14 @@ import {
 } from "@/types/types";
 import {
   Alert,
+  Box,
   Button,
   Card,
   Container,
+  Divider,
   Flex,
   Grid,
+  Space,
   Stack,
   Text,
 } from "@mantine/core";
@@ -132,6 +136,22 @@ function InfoGara({ gara }: { gara: GaraWithNazioneAndCountIscrizioni }) {
             </Grid.Col>
           )}
         </Grid>
+
+        <Space h="xl" />
+        <Divider />
+        <Space h="xl" />
+
+        <Box>
+          <DiscussionEmbed
+            shortname="birdbase"
+            config={{
+              url: `${window.location.href}`,
+              identifier: gara.id,
+              title: gara.titolo,
+              language: "it",
+            }}
+          />
+        </Box>
       </Stack>
     </Container>
   );

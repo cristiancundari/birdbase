@@ -8,7 +8,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "./_mantine.scss";`, // Importa il tuo file SCSS
+        additionalData: `@use "./_mantine.scss";`, // Importa il tuo file SCSS
       },
     },
   },

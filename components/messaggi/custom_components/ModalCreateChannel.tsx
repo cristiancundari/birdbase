@@ -131,7 +131,7 @@ function ModalCreateChannel({
                   onFocus={() => combobox.openDropdown()}
                   onBlur={() => combobox.closeDropdown()}
                   value={searchStr}
-                  placeholder="Search values"
+                  placeholder="Cerca allevatori"
                   onChange={(event) => {
                     combobox.updateSelectedOptionIndex();
                     setSearchStr(event.currentTarget.value);
@@ -154,7 +154,7 @@ function ModalCreateChannel({
             {options.length > 0 ? (
               options
             ) : (
-              <Combobox.Empty>Nothing found...</Combobox.Empty>
+              <Combobox.Empty>Nessun risultato</Combobox.Empty>
             )}
           </Combobox.Options>
         </Combobox.Dropdown>

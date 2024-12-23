@@ -54,8 +54,8 @@ function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       icon: <IconUsers />,
-      label: "Utenti",
-      url: "/admin/utenti",
+      label: "Allevatori",
+      url: "/admin/allevatori",
     },
   ];
 

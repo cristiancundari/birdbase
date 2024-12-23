@@ -64,9 +64,9 @@ export async function POST(request: NextRequest) {
       data: {
         id: paypalResponse.result.id,
         descrizione: datiParsed.descrizione,
-        garaId: datiParsed.garaId,
         profiloId: profile.id,
         prezzoUnitario: gara.prezzo,
+        garaId: datiParsed.garaId,
         soggetti: datiParsed.soggetti,
       },
     });

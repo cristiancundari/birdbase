@@ -3,15 +3,14 @@ import { Box, MantineProvider } from "@mantine/core";
 import { DatesProvider } from "@mantine/dates";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import theme from "../lib/mantine-theme";
-import { PropsWithChildren } from "react";
-import NextTopLoader from "nextjs-toploader";
+import { setDefaultOptions } from "date-fns";
+import { it } from "date-fns/locale";
 import dayjs from "dayjs";
 import "dayjs/locale/it";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
-import { it } from "date-fns/locale";
-import { setDefaultOptions } from "date-fns";
+import NextTopLoader from "nextjs-toploader";
+import { PropsWithChildren } from "react";
+import theme from "../lib/mantine-theme";
 
 function LayoutProviders({ children }: PropsWithChildren) {
   dayjs.extend(customParseFormat);

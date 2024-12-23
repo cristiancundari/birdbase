@@ -39,69 +39,67 @@ export async function POST(
 
     if (datiParsed.status === "approved") {
       // Approve
-      const res = await prisma.richiestaRegistrazione.update({
-        where: {
-          id: numId,
-          rifiutatoIl: null,
-        },
-        data: {
-          approvatoIl: new Date(),
-          spiegazione: datiParsed.spiegazione,
-        },
-      });
-      if (!res) {
-        return NextResponse.json(
-          { error: true, message: "ID non valido" },
-          { status: 400 }
-        );
-      }
       const pwd = Math.random().toString(36).slice(-8);
       const supabase = createServiceClient(cookies());
-      const authUser = await supabase.auth.admin.createUser({
-        email: res.email,
-        password: pwd,
-        email_confirm: true,
+      const res = await prisma.$transaction(async (tx) => {
+        const updateRichiestaReg = await tx.richiestaRegistrazione.update({
+          where: {
+            id: numId,
+            rifiutatoIl: null,
+          },
+          data: {
+            approvatoIl: new Date(),
+            spiegazione: datiParsed.spiegazione,
+          },
+        });
+        if (!updateRichiestaReg) {
+          throw new Error("ID non valido");
+        }
+        const authUser = await supabase.auth.admin.createUser({
+          email: updateRichiestaReg.email,
+          password: pwd,
+          email_confirm: true,
+        });
+        if (authUser.error) {
+          throw new Error(authUser.error.message);
+        }
+        return { updateRichiestaReg, authUser };
       });
-      if (authUser.error) {
-        return NextResponse.json(
-          { error: true, message: authUser.error.message },
-          { status: 500 }
-        );
-      }
+
       const allevatore = await prisma.allevatore.upsert({
         create: {
-          rna: res.rna.toUpperCase(),
-          nome: capitalizeWords(res.nome),
-          cognome: capitalizeWords(res.cognome),
+          rna: res.updateRichiestaReg.rna.toUpperCase(),
+          nome: capitalizeWords(res.updateRichiestaReg.nome),
+          cognome: capitalizeWords(res.updateRichiestaReg.cognome),
         },
         update: {
-          nome: capitalizeWords(res.nome),
-          cognome: capitalizeWords(res.cognome),
+          nome: capitalizeWords(res.updateRichiestaReg.nome),
+          cognome: capitalizeWords(res.updateRichiestaReg.cognome),
         },
         where: {
-          rna: res.rna.toUpperCase(),
+          rna: res.updateRichiestaReg.rna.toUpperCase(),
         },
       });
       const profilo = await prisma.profilo.create({
         data: {
-          id: authUser.data.user.id,
-          rna: res.rna.toUpperCase(),
+          id: res.authUser.data.user.id,
+          rna: res.updateRichiestaReg.rna.toUpperCase(),
         },
       });
 
       const emailRes = await resend.emails.send({
         from: "noreply@cristiansmarthome.loan",
-        to: authUser.data.user.email || "",
+        to: res.authUser.data.user.email || "",
         subject: "Birdbase - Welcome! 🎉",
         html:
           "<p>Benvenuto su Birdbase.</p><p>La tua richiesta di registrazione è stata approvata.</p><p>Le tue credenziali di accesso sono:</p><p>Email: " +
-          res.email +
+          res.updateRichiestaReg.email +
           "</p><p>Password: " +
           pwd +
           "</p>" +
-          datiParsed.spiegazione
+          (datiParsed.spiegazione
             ? `<p>Messaggio dell'amministratore: ${datiParsed.spiegazione}</p>`
-            : "",
+            : ""),
       });
 
       return NextResponse.json({ error: false, result: res }, { status: 200 });

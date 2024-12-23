@@ -2,15 +2,25 @@ import { formatAnelletto } from "@/lib/helper";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { IscrizioneWithSoggettoAndProfiloWithAllevatore } from "@/types/types";
 import {
+  ActionIcon,
   Anchor,
   Grid,
   Group,
   NumberInput,
+  Popover,
   rem,
   Stack,
   Text,
+  Tooltip,
 } from "@mantine/core";
 import { $Enums, Role } from "@prisma/client";
+import { IconShare } from "@tabler/icons-react";
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  TwitterShareButton,
+  XIcon,
+} from "react-share";
 import { getIconSesso } from "../../../IconsSesso";
 
 function IscrizioneItem({
@@ -68,7 +78,34 @@ function IscrizioneItem({
                 data-testid="input-voto"
               />
             ) : (
-              <Text>{iscrizione.voto || 0}</Text>
+              <>
+                {isPersonale && iscrizione.posizione && (
+                  <Popover position="bottom" withArrow shadow="md">
+                    <Popover.Target>
+                      <Tooltip label="Condividi">
+                        <ActionIcon variant="transparent" color="gray">
+                          <IconShare size={14} />
+                        </ActionIcon>
+                      </Tooltip>
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                      <Group gap="xs">
+                        <FacebookShareButton
+                          url={`${window.location.origin}/results/${iscrizione.garaId}?s=${soggetto.id}`}
+                        >
+                          <FacebookIcon size={25} round />
+                        </FacebookShareButton>
+                        <TwitterShareButton
+                          url={`${window.location.origin}/results/${iscrizione.garaId}?s=${soggetto.id}`}
+                        >
+                          <XIcon size={25} round />
+                        </TwitterShareButton>
+                      </Group>
+                    </Popover.Dropdown>
+                  </Popover>
+                )}
+                <Text>{iscrizione.voto || 0}</Text>
+              </>
             )}
 
             {iscrizione.posizione == null ? (

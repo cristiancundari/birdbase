@@ -8,6 +8,33 @@ export const createoAuth2Client = () =>
     process.env.GOOGLE_REDIRECT_URI
   );
 
+export const refreshAccessToken = async (refreshToken: string) => {
+  try {
+    const oAuth2Client = createoAuth2Client();
+    oAuth2Client.setCredentials({
+      refresh_token: refreshToken,
+    });
+    const res = await oAuth2Client.refreshAccessToken();
+    return res.credentials.access_token;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const checkGoogleToken = async (googleToken: string | null) => {
+  if (!googleToken) return false;
+
+  try {
+    const oAuth2Client = createoAuth2Client();
+    const accessToken = await refreshAccessToken(googleToken);
+    if (!accessToken) return false;
+    await oAuth2Client.getTokenInfo(accessToken);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const createGoogleEvent = async ({
   googleToken,
   title,

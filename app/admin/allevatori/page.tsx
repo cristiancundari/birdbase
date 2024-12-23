@@ -12,6 +12,7 @@ import {
   Group,
   Menu,
   Table,
+  Title,
 } from "@mantine/core";
 import { Pagination } from "@supabase/supabase-js";
 import { IconDotsVertical, IconEdit, IconPlus } from "@tabler/icons-react";
@@ -25,7 +26,7 @@ interface SupabaseUsers {
 
 const PAGE_SIZE = 25;
 
-function UtentiAdminPage() {
+function AllevatoriAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<ProfiloWithAllevatore[]>([]);
   const [page, setPage] = useState(1);
@@ -36,7 +37,7 @@ function UtentiAdminPage() {
   const fetchUsers = async (page: number) => {
     setIsLoading(true);
     const res = await apiFetch.get<SupabaseUsers>(
-      `/admin/api/users?page_size=${PAGE_SIZE}&page=${page}`
+      `/admin/api/allevatori?page_size=${PAGE_SIZE}&page=${page}`
     );
     if (res.error) {
       showNotification({
@@ -58,6 +59,9 @@ function UtentiAdminPage() {
   return (
     <>
       <Box mb="md">
+        <Title order={2}>Allevatori</Title>
+      </Box>
+      {/* <Box mb="md">
         <Group justify={"flex-end"}>
           <Button
             data-testid="ButtonAggiungi"
@@ -68,7 +72,7 @@ function UtentiAdminPage() {
             Aggiungi
           </Button>
         </Group>
-      </Box>
+      </Box> */}
       <Box>
         <DataTable
           records={users}
@@ -77,7 +81,7 @@ function UtentiAdminPage() {
             { accessor: "allevatore.cognome", title: "Cognome" },
             { accessor: "allevatore.rna", title: "RNA" },
             { accessor: "ruolo", title: "Ruolo" },
-            {
+            /* {
               accessor: "actions",
               title: "",
               width: "0%",
@@ -100,7 +104,7 @@ function UtentiAdminPage() {
                   </Menu.Dropdown>
                 </Menu>
               ),
-            },
+            }, */
           ]}
           withTableBorder
           borderRadius="lg"
@@ -114,21 +118,10 @@ function UtentiAdminPage() {
           page={page}
           onPageChange={(p: any) => setPage(p)}
           fetching={isLoading}
-          // 👇 uncomment the next line to use a custom pagination size
-          // paginationSize="md"
-          // 👇 uncomment the next line to use a custom loading text
-          // loadingText="Loading..."
-          // 👇 uncomment the next line to display a custom text when no records were found
-          // noRecordsText="No records found"
-          // 👇 uncomment the next line to use a custom pagination text
-          // paginationText={({ from, to, totalRecords }) => `Records ${from} - ${to} of ${totalRecords}`}
-          // 👇 uncomment the next lines to use custom pagination colors
-          // paginationActiveBackgroundColor="green"
-          // paginationActiveTextColor="#e6e348"
         />
       </Box>
     </>
   );
 }
 
-export default UtentiAdminPage;
+export default AllevatoriAdminPage;

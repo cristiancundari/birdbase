@@ -38,7 +38,7 @@ function Budget() {
     } else {
       const budget = result.data.budget.budget;
       const spesa = result.data.spese._sum.prezzo || 0;
-      const bilancio = budget + spesa; //La variabile spesa è sempre negativa (somma algebrica con segno)
+      const bilancio = budget + spesa; //Le spese sono registrate in negativo (somma algebrica con segno)
       setBudget(budget);
       setBilancio(bilancio);
     }

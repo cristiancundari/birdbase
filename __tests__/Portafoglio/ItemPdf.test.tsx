@@ -3,6 +3,7 @@ import { render } from "@/setup-test";
 import { TransazioneWithCategoria } from "@/types/types";
 import { Table } from "@mantine/core";
 import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Componente ItemPdf", () => {
   const mockItem: TransazioneWithCategoria = {
