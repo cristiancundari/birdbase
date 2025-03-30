@@ -4,40 +4,21 @@ import ModalConferma from "@/components/ModalConferma";
 import ModalSelezionaSoggetto from "@/components/ModalSelezionaSoggetto";
 import SoggettoComp, { SoggettoMenu } from "@/components/SoggettoComp";
 import ModalSoggetto, { FormValues } from "@/components/home/ModalSoggetto";
-import {
-  aggiungiSoggetto,
-  modificaSoggetto,
-  togglePreferitoSoggetto,
-} from "@/components/home/functions";
+import { aggiungiSoggetto, modificaSoggetto, togglePreferitoSoggetto } from "@/components/home/functions";
 import { apiFetch } from "@/lib/apiFetch";
 import { formatAnelletto, showNotification } from "@/lib/helper";
 import { useModalInit } from "@/lib/hooks";
-import { CovataWithGenitoriAndFigli } from "@/types/types";
-import {
-  Box,
-  Button,
-  ComboboxItem,
-  Group,
-  Menu,
-  SimpleGrid,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { CovataWithGenitoriAndFigliWithVendite, SoggettoWithVendite } from "@/types/types";
+import { Box, Button, ComboboxItem, Group, Menu, SimpleGrid, Stack, Text } from "@mantine/core";
 import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
-import {
-  IconCircleMinus,
-  IconCirclePlus,
-  IconEdit,
-  IconHandClick,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconCircleMinus, IconCirclePlus, IconEdit, IconHandClick, IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import InfoCovataHeader from "./infoCovataHeader";
 
 interface InfoCovataProps {
-  covata: CovataWithGenitoriAndFigli;
+  covata: CovataWithGenitoriAndFigliWithVendite;
 }
 
 const breadcrumbsItems = [
@@ -47,10 +28,8 @@ const breadcrumbsItems = [
 
 function InfoCovata({ covata }: InfoCovataProps) {
   const [isModalSoggettoOpen, setIsModalSoggettoOpen] = useState(false);
-  const [isModalAggiungiFiglioOpen, setIsModalAggiungiFiglioOpen] =
-    useState(false);
-  const [isModalAggiungiFiglioLoading, setIsModalAggiungiFiglioLoading] =
-    useState(false);
+  const [isModalAggiungiFiglioOpen, setIsModalAggiungiFiglioOpen] = useState(false);
+  const [isModalAggiungiFiglioLoading, setIsModalAggiungiFiglioLoading] = useState(false);
   const [figliSelezionabili, setFigliSelezionabili] = useState<Soggetto[]>([]);
   const [modalRemoveId, setModalDeleteId] = useState("");
   const [modalData, setModalData] = useState<Soggetto | null>(null);
@@ -60,13 +39,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     getSoggettiFigli();
   }, isModalAggiungiFiglioOpen);
 
-  const aggiungi = async ({
-    form,
-    avatarFile,
-  }: {
-    form: FormValues;
-    avatarFile: FileWithPath;
-  }) => {
+  const aggiungi = async ({ form, avatarFile }: { form: FormValues; avatarFile: FileWithPath }) => {
     const result = await aggiungiSoggetto({
       avatarFile,
       form,
@@ -83,13 +56,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     }
   };
 
-  const modifica = async ({
-    form,
-    avatarFile,
-  }: {
-    form: FormValues;
-    avatarFile: FileWithPath;
-  }) => {
+  const modifica = async ({ form, avatarFile }: { form: FormValues; avatarFile: FileWithPath }) => {
     const result = await modificaSoggetto({
       avatarFile: avatarFile,
       form: form,
@@ -111,10 +78,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     const data = { covataId: null };
     formData.append("form", JSON.stringify(data));
 
-    const result = await apiFetch.patchFormData(
-      `/api/soggetti/${modalRemoveId}`,
-      formData
-    );
+    const result = await apiFetch.patchFormData(`/api/soggetti/${modalRemoveId}`, formData);
 
     if (result.error) {
       showNotification({ message: result.message });
@@ -129,19 +93,17 @@ function InfoCovata({ covata }: InfoCovataProps) {
 
   const getSoggettiFigli = async () => {
     setIsModalAggiungiFiglioLoading(true);
-    const result = await apiFetch.get<Soggetto[]>("/api/soggetti?covataId=");
+    const result = await apiFetch.get<SoggettoWithVendite[]>("/api/soggetti?covataId=");
     if (result.error) {
       showNotification({ message: result.message });
     } else {
-      setFigliSelezionabili(result.data);
+      // Escludiamo i genitori della covata dalla lista
+      setFigliSelezionabili(result.data.filter((s) => s.id !== covata.idMadre && s.id !== covata.idPadre));
     }
     setIsModalAggiungiFiglioLoading(false);
   };
 
-  const modalSoggettoSubmit = async (values: {
-    form: FormValues;
-    avatarFile: FileWithPath;
-  }) => {
+  const modalSoggettoSubmit = async (values: { form: FormValues; avatarFile: FileWithPath }) => {
     if (modalData) {
       await modifica(values);
     } else {
@@ -156,10 +118,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
     const formData = new FormData();
     formData.append("form", JSON.stringify(data));
 
-    const result = await apiFetch.patchFormData(
-      `/api/soggetti/${soggetto.id}`,
-      formData
-    );
+    const result = await apiFetch.patchFormData(`/api/soggetti/${soggetto.id}`, formData);
 
     if (result.error) {
       showNotification({ message: result.message });
@@ -243,16 +202,10 @@ function InfoCovata({ covata }: InfoCovataProps) {
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<IconCirclePlus size={14} />}
-                  onClick={addNewHandler}
-                >
+                <Menu.Item leftSection={<IconCirclePlus size={14} />} onClick={addNewHandler}>
                   Crea nuovo
                 </Menu.Item>
-                <Menu.Item
-                  leftSection={<IconHandClick size={14} />}
-                  onClick={addExistingHandler}
-                >
+                <Menu.Item leftSection={<IconHandClick size={14} />} onClick={addExistingHandler}>
                   Seleziona esistente
                 </Menu.Item>
               </Menu.Dropdown>
@@ -262,24 +215,14 @@ function InfoCovata({ covata }: InfoCovataProps) {
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
           {covata.figli.length > 0 ? (
             covata.figli.map((soggetto) => (
-              <SoggettoComp
-                key={soggetto.id}
-                sogg={soggetto}
-                onPreferito={favouriteHandler}
-                menu={menuSoggetto}
-              />
+              <SoggettoComp key={soggetto.id} sogg={soggetto} onPreferito={favouriteHandler} menu={menuSoggetto} valutazione={100} />
             ))
           ) : (
             <div>Ancora nessun figlio aggiunto a questa covata</div>
           )}
         </SimpleGrid>
       </Box>
-      <ModalSoggetto
-        isOpen={isModalSoggettoOpen}
-        annulla={annullaAggiungi}
-        submit={modalSoggettoSubmit}
-        modalData={modalData}
-      />
+      <ModalSoggetto isOpen={isModalSoggettoOpen} annulla={annullaAggiungi} submit={modalSoggettoSubmit} modalData={modalData} />
       <ModalSelezionaSoggetto
         soggetti={figliSelezionabili}
         isLoading={isModalAggiungiFiglioLoading}
@@ -300,9 +243,7 @@ function InfoCovata({ covata }: InfoCovataProps) {
         onClose={annullaRimuovi}
       >
         <Stack gap="xs" align="center">
-          <Text size="sm">
-            {"Vuoi rimuovere questo soggetto dalla covata?"}
-          </Text>
+          <Text size="sm">{"Vuoi rimuovere questo soggetto dalla covata?"}</Text>
         </Stack>
       </ModalConferma>
     </>

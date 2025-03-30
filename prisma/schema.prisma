@@ -8,20 +8,24 @@ datasource db {
 }
 
 model Profilo {
-  id                 String             @id(map: "Profile_pkey") @db.Uuid
-  budget             Float              @default(0)
-  ruolo              Role               @default(USER)
-  rna                String             @db.VarChar
-  googleRefreshToken String?
-  covate             Covata[]
-  iscrizioni         Iscrizione[]
-  ordiniIscrizioni   OrdineIscrizioni[]
-  allevatore         Allevatore         @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
-  promemoria         Promemoria[]
-  soggetti           Soggetto[]
-  transazioni        Transazione[]
-  inserzioni         Inserzione[]
-  ordiniInserzione   OrdineInserzione[]
+  id                     String             @id(map: "Profile_pkey") @db.Uuid
+  budget                 Float              @default(0)
+  ruolo                  Role               @default(USER)
+  rna                    String             @db.VarChar
+  googleRefreshToken     String?            @map("google_refresh_token")
+  formulaData            String?            @map("formula_data")
+  formulaParentela       String?            @map("formula_parentela")
+  percentualeFormulaData Int                @default(50) @map("percentuale_formula_data")
+  limiteLivelliParentela Int                @default(5) @map("limite_livelli_parentela")
+  covate                 Covata[]
+  iscrizioni             Iscrizione[]
+  ordiniIscrizioni       OrdineIscrizioni[]
+  allevatore             Allevatore         @relation(fields: [rna], references: [rna], onDelete: NoAction, onUpdate: NoAction)
+  promemoria             Promemoria[]
+  soggetti               Soggetto[]
+  transazioni            Transazione[]
+  inserzioni             Inserzione[]
+  ordiniInserzione       OrdineInserzione[]
 
   @@map("profili")
 }

@@ -7,6 +7,7 @@ import { render } from "@/setup-test";
 import Register from "@/components/register/Register";
 import { useRouter, usePathname } from "next/navigation";
 import { debug } from "vitest-preview";
+import RegisterPage from "@/app/auth/register/page";
 
 vi.mock("@/lib/apiFetch"); // Mock della libreria apiFetch
 
@@ -15,6 +16,13 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
 }));
 
+describe("Pagina Register", () => {
+  it("dovrebbe renderizzare la pagina", () => {
+    render(<RegisterPage />);
+    expect(screen.getAllByText("Registrati")).toHaveLength(2);
+  });
+});
+
 describe("Componente Register", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -22,10 +30,7 @@ describe("Componente Register", () => {
 
   it("dovrebbe mostrare i campi del modulo", () => {
     render(<Register />);
-    debug();
-    expect(
-      screen.getByLabelText("Nome", { selector: "input" })
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Nome", { selector: "input" })).toBeInTheDocument();
     expect(screen.getByLabelText(/cognome/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/rna/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();

@@ -2,10 +2,7 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { apiFetch } from "@/lib/apiFetch";
-import {
-  SoggettoWithIscrizioniWithGaraWithNazione,
-  SoggettoWithParentela,
-} from "@/types/types";
+import { SoggettoWithIscrizioniWithGaraWithNazione, SoggettoWithParentela } from "@/types/types";
 import { beforeEach, describe, expect, Mock, test, vi } from "vitest";
 import { render } from "@/setup-test";
 import InfoSoggetto from "@/components/home/id/InfoSoggetto";
@@ -63,7 +60,7 @@ describe("InfoSoggetto", () => {
         rna: "RNA124",
       },
       parentela: {
-        plurale: "Fratelli",
+        grado: 2,
         colore: "blu",
         nome: "Fratello",
         percentuale: 100,
@@ -80,7 +77,7 @@ describe("InfoSoggetto", () => {
         dataNascita: new Date("2018-01-01"),
       },
       parentela: {
-        plurale: "Figli",
+        grado: 1,
         colore: "giallo",
         nome: "Figlio",
         percentuale: 100,
@@ -121,9 +118,7 @@ describe("InfoSoggetto", () => {
     render(<InfoSoggetto soggetto={mockSoggetto} />);
 
     // Aspetta che la lista dei parenti venga caricata
-    await waitFor(() =>
-      expect(screen.getByText("Fratelli")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("Fratello")).toBeInTheDocument());
     expect(screen.getByText(/RNA124/i)).toBeInTheDocument();
     expect(screen.getByText(/RNA125/i)).toBeInTheDocument();
   });
@@ -133,9 +128,7 @@ describe("InfoSoggetto", () => {
     render(<InfoSoggetto soggetto={mockSoggetto} />);
 
     // Aspetta che venga visualizzato il messaggio "Nessun parente"
-    await waitFor(() =>
-      expect(screen.getByText("Nessun parente")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("Nessun parente")).toBeInTheDocument());
   });
 
   test("visualizza un caricamento durante il fetch delle parentele", () => {

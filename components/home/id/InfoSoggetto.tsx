@@ -4,29 +4,9 @@ import { getIconSesso } from "@/components/IconsSesso";
 import InfoGabbia from "@/components/InfoGabbia";
 import InfoNazione from "@/components/InfoNazione";
 import { apiFetch } from "@/lib/apiFetch";
-import {
-  formatAnelletto,
-  formatData,
-  getBucketImgPath,
-  showNotification,
-} from "@/lib/helper";
-import {
-  IscrizioniWithGaraWithNazione,
-  SoggettoWithIscrizioniWithGaraWithNazione,
-  SoggettoWithParentela,
-} from "@/types/types";
-import {
-  Avatar,
-  Button,
-  Card,
-  Center,
-  Fieldset,
-  Group,
-  Loader,
-  Pill,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { formatAnelletto, formatData, getBucketImgPath, showNotification } from "@/lib/helper";
+import { IscrizioniWithGaraWithNazione, SoggettoWithIscrizioniWithGaraWithNazione, SoggettoWithParentela } from "@/types/types";
+import { Avatar, Button, Card, Center, Fieldset, Group, Loader, Pill, Stack, Text } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
 import { IconPrinter } from "@tabler/icons-react";
 import Link from "next/link";
@@ -38,14 +18,8 @@ const breadcrumbsItems = [
   { title: "Info soggetto", href: "#" },
 ];
 
-function InfoSoggetto({
-  soggetto,
-}: {
-  soggetto: SoggettoWithIscrizioniWithGaraWithNazione;
-}) {
-  const [listaParenti, setListaParenti] = useState<Map<string, Soggetto[]>>(
-    new Map()
-  );
+function InfoSoggetto({ soggetto }: { soggetto: SoggettoWithIscrizioniWithGaraWithNazione }) {
+  const [listaParenti, setListaParenti] = useState<Map<string, Soggetto[]>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const componentRef = useRef(null);
   const handlePrint = useReactToPrint({
@@ -55,9 +29,7 @@ function InfoSoggetto({
   async function getParentele() {
     setIsLoading(true);
 
-    const response = await apiFetch.get<SoggettoWithParentela[]>(
-      `/api/covate/parentele?soggetto=${soggetto.id}`
-    );
+    const response = await apiFetch.get<SoggettoWithParentela[]>(`/api/covate/parentele?soggetto=${soggetto.id}`);
     if (response.error) {
       setIsLoading(false);
       return showNotification({ message: response.message });
@@ -71,11 +43,11 @@ function InfoSoggetto({
   function calcolaListaParenti(parentele: SoggettoWithParentela[]) {
     const parenti = new Map<string, Soggetto[]>();
     parentele.forEach((p) => {
-      const soggetti = parenti.get(p.parentela!.plurale);
+      const soggetti = parenti.get(p.parentela!.nome);
       if (soggetti) {
         soggetti.push(p.soggetto);
       } else {
-        parenti.set(p.parentela!.plurale, [p.soggetto]);
+        parenti.set(p.parentela!.nome, [p.soggetto]);
       }
     });
 
@@ -99,11 +71,7 @@ function InfoSoggetto({
     <>
       <Group my={"md"} justify="space-between">
         <Breadcrumb items={breadcrumbsItems} />
-        <Button
-          onClick={handlePrint}
-          variant="light"
-          leftSection={<IconPrinter size={14} />}
-        >
+        <Button onClick={handlePrint} variant="light" leftSection={<IconPrinter size={14} />}>
           Stampa
         </Button>
       </Group>
@@ -126,9 +94,7 @@ function InfoSoggetto({
         </Group>
         <Fieldset legend="Informazioni Soggetto" mb="md">
           <Group justify="space-between">
-            <Text fw={500}>
-              {formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}
-            </Text>
+            <Text fw={500}>{formatAnelletto(soggetto.rna, soggetto.numero, soggetto.anno)}</Text>
             <Group gap="0">
               Sesso:
               {getIconSesso(soggetto.sesso)}
@@ -172,11 +138,7 @@ function InfoSoggetto({
   );
 }
 
-export const Dossier = ({
-  iscrizioni,
-}: {
-  iscrizioni: IscrizioniWithGaraWithNazione[];
-}) => {
+export const Dossier = ({ iscrizioni }: { iscrizioni: IscrizioniWithGaraWithNazione[] }) => {
   return (
     <Fieldset legend="Dossier Gare" mb="md">
       {iscrizioni.length === 0 && <Center>Nessuna iscrizione a gare</Center>}
@@ -191,10 +153,7 @@ export const Dossier = ({
                   <Text size="xs" c="dimmed">
                     {iscrizione.gara.citta}
                   </Text>
-                  <InfoNazione
-                    nazione={iscrizione.gara.nazione}
-                    flagSize="sm"
-                  />
+                  <InfoNazione nazione={iscrizione.gara.nazione} flagSize="sm" />
                 </Group>
               </Stack>
               <Stack gap={3}>

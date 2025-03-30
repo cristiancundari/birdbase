@@ -35,7 +35,10 @@ beforeEach(() => {
 
 const mockCovata = {
   ...covate[0],
-  figli: [soggetti[0], soggetti[1]],
+  figli: [
+    { ...soggetti[0], inserzioniVendita: [] },
+    { ...soggetti[1], inserzioniVendita: [] },
+  ],
 };
 
 describe("InfoCovata", () => {
@@ -101,7 +104,7 @@ describe("InfoCovata", () => {
   test("rimuove un soggetto quando confermato", async () => {
     const covataTest = {
       ...mockCovata,
-      figli: [soggetti[0]],
+      figli: [{ ...soggetti[0], inserzioniVendita: [] }],
     };
     render(<InfoCovata covata={covataTest} />);
 

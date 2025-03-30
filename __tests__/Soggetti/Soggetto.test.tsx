@@ -12,14 +12,10 @@ import server from "../ServerMock";
 
 //sesso = true significa "Maschio" ---- sesso = false significa "Femmina" ---- sesso = null significa "In Attesa"
 describe("<SoggettoComp />", () => {
-  const soggettoComp = (soggetto: Soggetto) => (
-    <SoggettoComp sogg={soggetto} menu={[]} onPreferito={async () => null} />
-  );
+  const soggettoComp = (soggetto: Soggetto) => <SoggettoComp sogg={soggetto} menu={[]} onPreferito={async () => null} valutazione={0} />;
 
   it("dovrebbe visualizzare l'icona del sesso maschio", () => {
-    const soggMaschio: Soggetto | undefined = soggetti.find(
-      (s) => s.sesso == true
-    ); //Maschio
+    const soggMaschio: Soggetto | undefined = soggetti.find((s) => s.sesso == true); //Maschio
     assert(soggMaschio);
     render(soggettoComp(soggMaschio));
     const icon = screen.queryByTestId("IconSessoMale");
@@ -27,9 +23,7 @@ describe("<SoggettoComp />", () => {
   });
 
   it("dovrebbe visualizzare l'icona del sesso femmina", () => {
-    const soggFemmina: Soggetto | undefined = soggetti.find(
-      (s) => s.sesso == false
-    ); //Femmina
+    const soggFemmina: Soggetto | undefined = soggetti.find((s) => s.sesso == false); //Femmina
     assert(soggFemmina);
     render(soggettoComp(soggFemmina));
     const icon = screen.queryByTestId("IconSessoFemale");
@@ -37,9 +31,7 @@ describe("<SoggettoComp />", () => {
   });
 
   it("dovrebbe visualizzare l'icona del sesso in attesa", () => {
-    const soggInAttesa: Soggetto | undefined = soggetti.find(
-      (s) => s.sesso == null
-    ); //In attesa
+    const soggInAttesa: Soggetto | undefined = soggetti.find((s) => s.sesso == null); //In attesa
     assert(soggInAttesa);
     render(soggettoComp(soggInAttesa));
     const icon = screen.queryByTestId("IconSessoAgender");
@@ -47,9 +39,7 @@ describe("<SoggettoComp />", () => {
   });
 
   it("dovrebbe mostrare l'icona morto se il soggetto è morto e nascondere l'icona della gabbia (se valorizzata)", () => {
-    const soggettoMorto = soggetti.find(
-      (s) => s.isMorto == true && s.gabbia != null
-    );
+    const soggettoMorto = soggetti.find((s) => s.isMorto == true && s.gabbia != null);
     assert(soggettoMorto);
     render(soggettoComp(soggettoMorto));
     const iconMorto = screen.queryByTestId("IconMorto");
@@ -59,9 +49,7 @@ describe("<SoggettoComp />", () => {
   });
 
   it("dovrebbe mostrare l'icona della gabbia (se valorizzata) se è vivo", () => {
-    const soggettoVivo = soggetti.find(
-      (s) => s.isMorto == false && s.gabbia != null
-    );
+    const soggettoVivo = soggetti.find((s) => s.isMorto == false && s.gabbia != null);
     assert(soggettoVivo);
     render(soggettoComp(soggettoVivo));
     const iconGabbia = screen.queryByTestId("IconGabbia");
@@ -69,9 +57,7 @@ describe("<SoggettoComp />", () => {
   });
 
   it("dovrebbe nascondere l'icona della gabbia (se non valorizzata) se è vivo", () => {
-    const soggettoVivo = soggetti.find(
-      (s) => s.isMorto == false && s.gabbia == null
-    );
+    const soggettoVivo = soggetti.find((s) => s.isMorto == false && s.gabbia == null);
     assert(soggettoVivo);
     render(soggettoComp(soggettoVivo));
     const iconGabbia = screen.queryByTestId("IconGabbia");
@@ -134,9 +120,7 @@ describe("<SoggettoComp />", () => {
   it("dovrebbe mostrare l'identificativo dell'anelletto come RNA-Anno-Numero", () => {
     const soggetto = soggetti[0];
     render(soggettoComp(soggetto));
-    const anelletto = screen.getByText(
-      soggetto.rna + "-" + soggetto.anno + "-" + soggetto.numero
-    );
+    const anelletto = screen.getByText(soggetto.rna + "-" + soggetto.anno + "-" + soggetto.numero);
     expect(anelletto).toBeInTheDocument();
   });
 
@@ -164,10 +148,7 @@ describe("Soggetto CRUD", () => {
   it("dovrebbe renderizzare la home page mostrando tutti i soggetti", async () => {
     server.use(
       http.get("/api/soggetti", () => {
-        return HttpResponse.json(
-          { result: soggetti, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: soggetti, error: false }, { status: 200 });
       })
     );
     render(<HomePage />);
@@ -182,9 +163,7 @@ describe("Soggetto CRUD", () => {
       })
     );
     render(<HomePage />);
-    const soggettiComp = await waitFor(() =>
-      screen.queryAllByTestId("SoggettoComp")
-    );
+    const soggettiComp = await waitFor(() => screen.queryAllByTestId("SoggettoComp"));
     expect(soggettiComp.length).toBe(0);
     const nessunSoggetto = await screen.findByTestId("NessunSoggetto");
     expect(nessunSoggetto).toBeInTheDocument();
@@ -207,10 +186,7 @@ describe("Soggetto CRUD", () => {
   it("dovrebbe effettuare un inserimeto se cliccato il pulsante salva", async () => {
     server.use(
       http.post("/api/soggetti", () => {
-        return HttpResponse.json(
-          { result: soggetti[0], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: soggetti[0], error: false }, { status: 200 });
       })
     );
     render(<HomePage />);
@@ -239,16 +215,10 @@ describe("Soggetto CRUD", () => {
   it("dovrebbe effettuare la cancellazione del soggetto se cliccato il pulsante elimina del modal", async () => {
     server.use(
       http.get("/api/soggetti", () => {
-        return HttpResponse.json(
-          { result: [soggetti[0]], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: [soggetti[0]], error: false }, { status: 200 });
       }),
       http.delete(`/api/soggetti/${soggetti[0].id}`, () => {
-        return HttpResponse.json(
-          { result: soggetti[0], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: soggetti[0], error: false }, { status: 200 });
       })
     );
 
@@ -278,10 +248,7 @@ describe("Soggetto CRUD", () => {
 
     server.use(
       http.get("/api/soggetti", () => {
-        return HttpResponse.json(
-          { result: [soggettoDaModificare], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: [soggettoDaModificare], error: false }, { status: 200 });
       }),
       http.patch(`/api/soggetti/${soggettoDaModificare.id}`, () => {
         return HttpResponse.json(
@@ -324,10 +291,7 @@ describe("Soggetto CRUD", () => {
 
     server.use(
       http.get("/api/soggetti", () => {
-        return HttpResponse.json(
-          { result: [soggettoDaModificare], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: [soggettoDaModificare], error: false }, { status: 200 });
       }),
       http.put(`/api/soggetti/${soggettoDaModificare.id}`, () => {
         return HttpResponse.json(

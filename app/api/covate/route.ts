@@ -15,7 +15,15 @@ export async function GET(request: NextRequest) {
       include: {
         madre: true,
         padre: true,
-        _count: { select: { figli: true } },
+        _count: {
+          select: {
+            figli: {
+              where: {
+                profiloId: user.id,
+              },
+            },
+          },
+        },
       },
       orderBy: [{ data: "desc" }, { createdAt: "desc" }],
     });

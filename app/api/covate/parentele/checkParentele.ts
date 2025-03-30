@@ -1,32 +1,45 @@
-import { SoggettoWithGenitori, SoggettoWithParentela } from "@/types/types";
-import { Soggetto } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { ProfiloWithAllevatore, SoggettoWithGenitori, SoggettoWithParentela } from "@/types/types";
+import { Profilo, Soggetto } from "@prisma/client";
 
-export function elaboraSoggetto(
+const LIMITE_LIVELLI = 4;
+
+// Questa funzione ritorna true se il soggetto ha un'età maggiore di 9 mesi e quindi in grado di riprodursi
+function puoRiprodursi(dataNascita: Date) {
+  const dataCorrente = new Date();
+
+  let diffMesi = (dataCorrente.getFullYear() - dataNascita.getFullYear()) * 12 + dataCorrente.getMonth() - dataNascita.getMonth();
+
+  return diffMesi > 9;
+}
+
+export function elaboraParenteleSoggetto(
   listaSoggetti: SoggettoWithGenitori[],
   soggetto: SoggettoWithGenitori,
+  profilo: ProfiloWithAllevatore,
   onlyPartners?: boolean
 ): SoggettoWithParentela[] {
-  const obj: Record<string, SoggettoWithGenitori> = {};
+  // Crea un dizionario in cui la chiave rappresenta l'ID del soggetto e il valore è il soggetto stesso per una più facile ricerca
+  const dictSoggetti: Record<string, SoggettoWithGenitori> = {};
   for (let s of listaSoggetti) {
-    obj[s.id] = s;
+    dictSoggetti[s.id] = s;
   }
-  const parentiSoggetto = calcolaLivelliParentela(soggetto, obj);
+
+  const parentiSoggetto = calcolaLivelliParentela(soggetto, dictSoggetti, profilo.limiteLivelliParentela);
+  // onlyPartners è true se si vogliono escludere dal calcolo i soggetti di sesso opposto e quelli troppo giovani per riprodursi
   const partners = onlyPartners
-    ? listaSoggetti.filter((s) => s.sesso == !soggetto.sesso)
-    : listaSoggetti;
+    ? listaSoggetti.filter((s) => s.sesso == !soggetto.sesso && s.profiloId === profilo.id && puoRiprodursi(s.dataNascita))
+    : listaSoggetti.filter((p) => p.profiloId === profilo.id);
+
   const result = partners.map((partner) => {
-    const parentiPartner = calcolaLivelliParentela(partner, obj);
+    const parentiPartner = calcolaLivelliParentela(partner, dictSoggetti, profilo.limiteLivelliParentela);
+    // Confronta i livelli di parentela del soggetto con quelli del partner dell'iterazione corrente per ottenere il grado di parentela
     const gradoParentela = checkParentele(parentiSoggetto, parentiPartner);
-    if (gradoParentela) {
-      const gradoParentelaStr = `${gradoParentela[0]},${gradoParentela[1]}`;
+    if (gradoParentela && gradoParentela[0] + gradoParentela[1] <= profilo.limiteLivelliParentela) {
+      const parentela = getDatiParentela(gradoParentela[0], gradoParentela[1]);
       return {
         soggetto: { ...partner, covata: undefined } as Soggetto,
-        parentela: {
-          nome: datiParentela[gradoParentelaStr].nome,
-          plurale: datiParentela[gradoParentelaStr].plurale,
-          percentuale: datiParentela[gradoParentelaStr].percentuale,
-          colore: coloreParentela(datiParentela[gradoParentelaStr].percentuale),
-        },
+        parentela: parentela,
       };
     } else {
       return {
@@ -36,27 +49,34 @@ export function elaboraSoggetto(
     }
   });
 
+  const mieiSoggetti = result.filter((p) => p.soggetto.profiloId === profilo.id);
+
   return onlyPartners
-    ? result
-    : result
+    ? mieiSoggetti
+    : mieiSoggetti
         .filter((p) => p.parentela !== null && p.soggetto.id !== soggetto.id)
         .sort((a, b) => b.parentela!.percentuale - a.parentela!.percentuale);
 }
 
+//Restituisce un array (di LIMITE_LIVELLI + 1 elementi) dove ogni elemento rappresenta un livello di parentela
 export function calcolaLivelliParentela(
-  partner: SoggettoWithGenitori,
-  soggetti: Record<string, SoggettoWithGenitori>
+  soggetto: SoggettoWithGenitori,
+  dictSoggetti: Record<string, SoggettoWithGenitori>,
+  limiteLivelli = LIMITE_LIVELLI
 ): [string, string][][] {
   const res: [string, string][][] = [];
-  res.push([[partner.id, ""]]);
+  // Inserisce il livello zero nell'array in cui è presente solo il soggetto stesso
+  res.push([[soggetto.id, ""]]);
 
-  for (let lvl = 0; lvl < 4; lvl++) {
+  for (let lvl = 0; lvl < limiteLivelli; lvl++) {
     const last = res[lvl];
     const step: [string, string][] = [];
-    for (let tuple of last) {
-      for (let sglTup of tuple) {
-        if (sglTup) {
-          const covata = soggetti[sglTup].covata;
+    // la tupla contiene gli id di padre e madre del soggetto dell'iterazione corrente  es. ["SOGG_idPadre", "SOGG_idMadre"]
+    for (let tupla of last) {
+      for (let idSoggTup of tupla) {
+        if (idSoggTup) {
+          // escludiamo il caso del livello 0 in cui il secondo id è ""  es. ["SOGG_id", ""]
+          const covata = dictSoggetti[idSoggTup].covata;
           if (covata) {
             step.push([covata.idMadre, covata.idPadre]);
           }
@@ -68,21 +88,15 @@ export function calcolaLivelliParentela(
   return res;
 }
 
-export function checkParentele(
-  a: [string, string][][],
-  b: [string, string][][]
-) {
-  const liv = Math.min(4, Math.max(a.length, b.length));
-  for (let j = 0; j <= liv; j++) {
-    for (let i = 0; i < j; i++) {
-      const res = confrontaLivelli(a[i], b[j]);
-      if (res) {
+export function checkParentele(a: [string, string][][], b: [string, string][][]) {
+  const liv = Math.max(a.length, b.length);
+  for (let j = 0; j < liv; j++) {
+    // I due cicli for interni confrontano tutte le combinazioni senza ripetizione dei due alberi di livelli
+    for (let i = 0; i <= j; i++) {
+      if (confrontaLivelli(a[i], b[j])) {
         return [i, j];
       }
-    }
-    for (let i = 0; i <= j; i++) {
-      const res = confrontaLivelli(a[j], b[i]);
-      if (res) {
+      if (i !== j && confrontaLivelli(a[j], b[i])) {
         return [j, i];
       }
     }
@@ -90,6 +104,7 @@ export function checkParentele(
   return false;
 }
 
+// ritorna true se almeno un soggetto è presente in entrambi i livelli confrontati
 function confrontaLivelli(a: [string, string][], b: [string, string][]) {
   for (let i = 0; i < a.length; i++) {
     for (let j = 0; j < b.length; j++) {
@@ -101,6 +116,7 @@ function confrontaLivelli(a: [string, string][], b: [string, string][]) {
   return false;
 }
 
+// ritorna true se almeno un soggetto è presente in entrambe le tuple
 function confrontaTuple(a: [string, string], b: [string, string]) {
   for (let i = 0; i < a.length; i++) {
     for (let j = 0; j < b.length; j++) {
@@ -112,50 +128,59 @@ function confrontaTuple(a: [string, string], b: [string, string]) {
   return false;
 }
 
-export const datiParentela: {
-  [key: string]: { nome: string; percentuale: number; plurale: string };
+function getDatiParentela(grado_A: number, grado_B: number) {
+  const grado = grado_A + grado_B;
+  const gradoStr = `${grado_A},${grado_B}`;
+
+  let nomenclatura = datiParentela[gradoStr];
+
+  if (nomenclatura == undefined) {
+    nomenclatura = `Parentela di ${grado}° grado`;
+  }
+
+  let gradoCalcolato = grado;
+  if (Math.min(grado_A, grado_B) !== 0) {
+    gradoCalcolato--;
+  }
+
+  const percentuale = Math.floor(Math.min(1, 0.8 ** (gradoCalcolato - 1)) * 100);
+
+  return {
+    nome: nomenclatura,
+    percentuale: percentuale,
+    grado: grado,
+    colore: coloreParentela(percentuale),
+  };
+}
+
+const datiParentela: {
+  [key: string]: string;
 } = {
-  "0,0": { nome: "", percentuale: 100, plurale: "" },
-  "0,1": { nome: "Figlio", percentuale: 90, plurale: "Figli" },
-  "0,2": { nome: "Nipote (nonno)", percentuale: 70, plurale: "Nipoti (nonno)" },
-  "0,3": { nome: "Bisnipote", percentuale: 40, plurale: "Bisnipoti" },
-  "0,4": { nome: "Trisnipote", percentuale: 20, plurale: "Trisnipoti" },
-  "1,0": { nome: "Genitore", percentuale: 90, plurale: "Genitori" },
-  "1,1": { nome: "Fratello", percentuale: 80, plurale: "Fratelli" },
-  "1,2": { nome: "Nipote", percentuale: 60, plurale: "Nipoti" },
-  "1,3": { nome: "Pronipote", percentuale: 35, plurale: "Pronipoti" },
-  "1,4": { nome: "Pro-pronipote", percentuale: 18, plurale: "Pro-pronipoti" },
-  "2,0": { nome: "Nonno", percentuale: 70, plurale: "Nonni" },
-  "2,1": { nome: "Zio", percentuale: 60, plurale: "Zii" },
-  "2,2": { nome: "Cugino", percentuale: 50, plurale: "Cugini" },
-  "2,3": { nome: "Procugino", percentuale: 30, plurale: "Procugini" },
-  "2,4": { nome: "Pro-procugino", percentuale: 13, plurale: "Pro-procugini" },
-  "3,0": { nome: "Bisnonno", percentuale: 40, plurale: "Bisnonni" },
-  "3,1": { nome: "Prozio (nonno)", percentuale: 35, plurale: "Prozii (nonno)" },
-  "3,2": {
-    nome: "Procugino (nonno)",
-    percentuale: 30,
-    plurale: "Procugini (nonno)",
-  },
-  "3,3": { nome: "Cugino 2°", percentuale: 25, plurale: "Cugini 2°" },
-  "3,4": { nome: "Procugino 2°", percentuale: 8, plurale: "Procugini 2°" },
-  "4,0": { nome: "Trisnonno", percentuale: 20, plurale: "Trisnonni" },
-  "4,1": {
-    nome: "Prozio (bisnonno)",
-    percentuale: 18,
-    plurale: "Prozii (bisnonno)",
-  },
-  "4,2": {
-    nome: "Pro-procugino (bisnonno)",
-    percentuale: 13,
-    plurale: "Pro-procugini (bisnonno)",
-  },
-  "4,3": {
-    nome: "Procugino 2° (bisnonno)",
-    percentuale: 8,
-    plurale: "Procugini 2° (bisnonno)",
-  },
-  "4,4": { nome: "Cugino 3°", percentuale: 5, plurale: "Cugini 3°" },
+  "0,0": "",
+  "0,1": "Figlio",
+  "0,2": "Nipote (nonno)",
+  "0,3": "Bisnipote",
+  "0,4": "Trisnipote",
+  "1,0": "Genitore",
+  "1,1": "Fratello",
+  "1,2": "Nipote",
+  "1,3": "Pronipote",
+  "1,4": "Pro-pronipote",
+  "2,0": "Nonno",
+  "2,1": "Zio",
+  "2,2": "Cugino",
+  "2,3": "Procugino",
+  "2,4": "Pro-procugino",
+  "3,0": "Bisnonno",
+  "3,1": "Prozio (nonno)",
+  "3,2": "Procugino (nonno)",
+  "3,3": "Cugino 2°",
+  "3,4": "Procugino 2°",
+  "4,0": "Trisnonno",
+  "4,1": "Prozio (bisnonno)",
+  "4,2": "Pro-procugino (bisnonno)",
+  "4,3": "Procugino 2° (bisnonno)",
+  "4,4": "Cugino 3°",
 };
 
 export function coloreParentela(percentuale: number) {

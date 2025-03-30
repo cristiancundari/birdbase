@@ -4,28 +4,19 @@ import { MantineColor } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { ReactPayPalScriptOptions } from "@paypal/react-paypal-js";
 import { $Enums } from "@prisma/client";
-import {
-  IconBarrel,
-  IconBat,
-  IconLayoutGrid,
-  IconToolsKitchen2,
-  IconTrophy,
-  IconVaccine,
-  TablerIconsProps,
-} from "@tabler/icons-react";
+import { IconBarrel, IconBat, IconLayoutGrid, IconToolsKitchen2, IconTrophy, IconVaccine, TablerIconsProps } from "@tabler/icons-react";
 import { format } from "date-fns";
 import React from "react";
+
+export const MIN_LVL_PARENTELA: number = 2;
+export const MAX_LVL_PARENTELA: number = 50;
 
 interface ShowNotificationType {
   message: string;
   success?: boolean;
   title?: string;
 }
-export function showNotification({
-  title,
-  message,
-  success,
-}: ShowNotificationType) {
+export function showNotification({ title, message, success }: ShowNotificationType) {
   if (success) {
     notifications.show({
       message: message,
@@ -98,14 +89,8 @@ export const formatAnelletto = (rna: string, numero: string, anno: string) => {
 
 export const getRangeYears = (transazioni: { anno: number }[]) => {
   const currentAnno = new Date().getFullYear();
-  const minAnno = Math.min(
-    ...transazioni.map((transazione) => transazione.anno),
-    currentAnno
-  );
-  return Array.from(
-    { length: currentAnno - minAnno + 1 },
-    (_, index) => currentAnno - index
-  );
+  const minAnno = Math.min(...transazioni.map((transazione) => transazione.anno), currentAnno);
+  return Array.from({ length: currentAnno - minAnno + 1 }, (_, index) => currentAnno - index);
 };
 
 export const coloriPriorita: { [key in $Enums.Priorita]: MantineColor } = {

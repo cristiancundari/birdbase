@@ -18,47 +18,32 @@ describe("<Budget />", () => {
   it("dovrebbe visualizzare il budget dell'utente", async () => {
     server.use(
       http.get("/api/budget", () => {
-        return HttpResponse.json(
-          { result: budget, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: budget, error: false }, { status: 200 });
       })
     );
 
     render(BudgetComp);
-    const budgetText = await screen.findByText(
-      budget.budget.budget.toFixed(2).replace(".", ","),
-      { exact: false }
-    );
+    const budgetText = await screen.findByText(budget.budget.budget.toFixed(2).replace(".", ","), { exact: false });
     expect(budgetText).toBeInTheDocument();
   });
 
   it("dovrebbe visualizzare il bilancio (budget - spese del mese in corso)", async () => {
     server.use(
       http.get("/api/budget", () => {
-        return HttpResponse.json(
-          { result: budget, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: budget, error: false }, { status: 200 });
       })
     );
 
     render(BudgetComp);
     const bilancio = budget.budget.budget + (budget.spese._sum.prezzo || 0);
-    const bilancioText = await screen.findByText(
-      bilancio.toFixed(2).replace(".", ","),
-      { exact: false }
-    );
+    const bilancioText = await screen.findByText(bilancio.toFixed(2).replace(".", ","), { exact: false });
     expect(bilancioText).toBeInTheDocument();
   });
 
   it("dovrebbe visualizzare un input per modificare il budget quando si attiva la modalità di modifica", async () => {
     server.use(
       http.get("/api/budget", () => {
-        return HttpResponse.json(
-          { result: budget, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: budget, error: false }, { status: 200 });
       })
     );
     render(BudgetComp);
@@ -81,20 +66,18 @@ describe("<Budget />", () => {
       budget: 199,
       ruolo: "USER",
       googleRefreshToken: null,
+      formulaData: "1",
+      formulaParentela: "1",
+      percentualeFormulaData: 50,
+      limiteLivelliParentela: 4,
     };
 
     server.use(
       http.get("/api/budget", () => {
-        return HttpResponse.json(
-          { result: budget, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: budget, error: false }, { status: 200 });
       }),
       http.patch("/api/budget", () => {
-        return HttpResponse.json(
-          { result: profilo, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: profilo, error: false }, { status: 200 });
       })
     );
     render(BudgetComp);

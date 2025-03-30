@@ -1,10 +1,6 @@
 "use client";
 import SoggettoComp, { SoggettoMenu } from "@/components/SoggettoComp";
-import {
-  aggiungiSoggetto,
-  modificaSoggetto,
-  togglePreferitoSoggetto,
-} from "@/components/home/functions";
+import { aggiungiSoggetto, modificaSoggetto, togglePreferitoSoggetto } from "@/components/home/functions";
 import ModalSoggetto, { FormValues } from "@/components/home/ModalSoggetto";
 import NessunSoggetto from "@/components/home/NessunSoggetto";
 import ModalCancellazione from "@/components/ModalCancellazione";
@@ -15,14 +11,20 @@ import { FileWithPath } from "@mantine/dropzone";
 import { Soggetto } from "@prisma/client";
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
+import { SoggettoWithVendite } from "@/types/types";
 
 interface FormData {
   form: FormValues;
   avatarFile: FileWithPath;
 }
 
+interface IValutazione {
+  [key: string]: number;
+}
+
 function HomePage() {
-  const [soggetti, setSoggetti] = useState<Soggetto[]>([]);
+  const [soggetti, setSoggetti] = useState<SoggettoWithVendite[]>([]);
+  const [valutazioni, setValutazioni] = useState<IValutazione>({});
   const [isSoggettiLoading, setIsSoggettiLoading] = useState(true);
 
   const [isModalSoggettoOpen, setIsModalSoggettoOpen] = useState(false);
@@ -58,9 +60,7 @@ function HomePage() {
   };
 
   const elimina = async () => {
-    const res = await apiFetch.delete<Soggetto>(
-      `/api/soggetti/${modalDeleteId}`
-    );
+    const res = await apiFetch.delete<Soggetto>(`/api/soggetti/${modalDeleteId}`);
     if (res.error) {
       showNotification({
         message: res.message,
@@ -116,7 +116,7 @@ function HomePage() {
   };
 
   const getSoggetti = async () => {
-    const result = await apiFetch.get<Soggetto[]>("/api/soggetti");
+    const result = await apiFetch.get<SoggettoWithVendite[]>("/api/soggetti");
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -124,13 +124,23 @@ function HomePage() {
     }
   };
 
+  const getValutazioni = async () => {
+    const result = await apiFetch.get<IValutazione>("/api/valutazioni");
+    if (result.error) {
+      showNotification({ message: result.message });
+    } else {
+      setValutazioni(result.data);
+    }
+  };
+
   useEffect(() => {
-    const _getSoggetti = async () => {
+    const _getSoggettiEValutazioni = async () => {
       setIsSoggettiLoading(true);
-      await getSoggetti();
+      await Promise.all([getSoggetti(), getValutazioni()]);
       setIsSoggettiLoading(false);
     };
-    _getSoggetti();
+
+    _getSoggettiEValutazioni();
   }, []);
 
   const menuSoggetto: SoggettoMenu[] = [
@@ -147,20 +157,13 @@ function HomePage() {
     <>
       <Box mb="md">
         <Group justify={"flex-end"}>
-          <Button
-            data-testid="ButtonAggiungi"
-            onClick={addHandler}
-            variant="light"
-            leftSection={<IconPlus size={14} />}
-          >
+          <Button data-testid="ButtonAggiungi" onClick={addHandler} variant="light" leftSection={<IconPlus size={14} />}>
             Aggiungi
           </Button>
         </Group>
       </Box>
       <Box>
-        {isSoggettiLoading == false && soggetti.length == 0 && (
-          <NessunSoggetto />
-        )}
+        {isSoggettiLoading == false && soggetti.length == 0 && <NessunSoggetto />}
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3, xl: 4 }}>
           {isSoggettiLoading &&
             Array(6)
@@ -172,18 +175,13 @@ function HomePage() {
               sogg={soggetto}
               menu={menuSoggetto}
               onPreferito={favouriteHandler}
+              valutazione={valutazioni[soggetto.id] || 0}
             />
           ))}
         </SimpleGrid>
       </Box>
 
-      <ModalSoggetto
-        data-testid="ModalSoggetto"
-        isOpen={isModalSoggettoOpen}
-        modalData={modalData}
-        submit={submit}
-        annulla={annullaAggiungi}
-      />
+      <ModalSoggetto data-testid="ModalSoggetto" isOpen={isModalSoggettoOpen} modalData={modalData} submit={submit} annulla={annullaAggiungi} />
 
       <ModalCancellazione
         data-testid="ModalCancellazione"

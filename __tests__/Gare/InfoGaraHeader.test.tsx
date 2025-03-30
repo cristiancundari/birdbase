@@ -33,7 +33,6 @@ describe("InfoGaraHeader", () => {
 
   test("renderizza titolo e icona", () => {
     render(<InfoGaraHeader gara={mockGara} />);
-    debug();
     expect(screen.getByText("Canarini gialli")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: /italia/i })).toBeInTheDocument();
   });
@@ -41,7 +40,7 @@ describe("InfoGaraHeader", () => {
   test("visualizza la data e il tipo corretti", () => {
     render(<InfoGaraHeader gara={mockGara} />);
     expect(screen.getByText(/data gara:/i)).toBeInTheDocument();
-    expect(screen.getByText("15/11/2024")).toBeInTheDocument(); // Assicurati che il formato sia corretto
+    expect(screen.getByText("15/11/2024")).toBeInTheDocument();
     expect(screen.getByText(/tipologia:/i)).toBeInTheDocument();
     expect(screen.getByText("Corsa")).toBeInTheDocument();
   });
@@ -56,9 +55,6 @@ describe("InfoGaraHeader", () => {
     render(<InfoGaraHeader gara={mockGara} />);
     expect(screen.getByText(/città:/i)).toBeInTheDocument();
     expect(screen.getByText("Roma")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: /italia/i })).toHaveAttribute(
-      "src",
-      "https://flagcdn.com/h20/it.jpg"
-    );
+    expect(screen.getByRole("img", { name: /italia/i })).toHaveAttribute("src", "https://flagcdn.com/h20/it.jpg");
   });
 });

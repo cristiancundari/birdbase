@@ -6,7 +6,7 @@ import { IconCheck } from "@tabler/icons-react";
 import { useModalInit } from "@/lib/hooks";
 import { apiFetch } from "@/lib/apiFetch";
 import { Inserzione, Soggetto } from "@prisma/client";
-import { SoggettoWithParentela } from "@/types/types";
+import { SoggettoWithParentela, SoggettoWithVendite } from "@/types/types";
 import { useForm } from "@mantine/form";
 
 export interface FormValues {
@@ -19,23 +19,10 @@ interface ModalInserzioneProps {
   onClose: () => void;
   isOpen: boolean;
   modalData: Inserzione | null;
-  onConfirm: ({
-    soggetto,
-    descrizione,
-    prezzo,
-  }: {
-    soggetto: string;
-    descrizione: string;
-    prezzo: number;
-  }) => Promise<void>;
+  onConfirm: ({ soggetto, descrizione, prezzo }: { soggetto: string; descrizione: string; prezzo: number }) => Promise<void>;
 }
 
-function ModalInserzione({
-  onClose,
-  isOpen,
-  onConfirm,
-  modalData,
-}: ModalInserzioneProps) {
+function ModalInserzione({ onClose, isOpen, onConfirm, modalData }: ModalInserzioneProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [soggetti, setSoggetti] = useState<SoggettoWithParentela[]>([]);
   const form = useForm<FormValues>({
@@ -44,7 +31,7 @@ function ModalInserzione({
   useModalInit(() => {
     const getSoggetti = async () => {
       setIsLoading(true);
-      const listaSoggetti = await apiFetch.get<Soggetto[]>("/api/soggetti");
+      const listaSoggetti = await apiFetch.get<SoggettoWithVendite[]>("/api/soggetti");
       setIsLoading(false);
       if (listaSoggetti.error) {
         return;
@@ -89,7 +76,7 @@ function ModalInserzione({
       titolo={modalData ? "Modifica inserzione" : "Inserisci inserzione"}
     >
       <ComboboxSoggetto
-        genitori={soggetti}
+        soggetti={soggetti}
         loading={isLoading}
         label="Soggetto"
         onComboboxChange={(id) => {
@@ -98,12 +85,7 @@ function ModalInserzione({
         selected={form.values.soggetto}
       />
       <TextInput label="Descrizione" {...form.getInputProps("descrizione")} />
-      <NumberInput
-        label="Prezzo"
-        allowDecimal
-        decimalScale={2}
-        {...form.getInputProps("prezzo")}
-      />
+      <NumberInput label="Prezzo" allowDecimal decimalScale={2} {...form.getInputProps("prezzo")} />
     </ModalConferma>
   );
 }

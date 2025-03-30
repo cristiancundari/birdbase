@@ -1,12 +1,12 @@
 import { screen } from "@testing-library/react";
-import { CovataWithGenitoriAndFigli } from "@/types/types";
+import { CovataWithGenitoriAndFigliWithVendite } from "@/types/types";
 import { vi } from "vitest";
 import InfoCovataHeader from "@/components/covate/id/infoCovataHeader";
 import { render } from "@/setup-test";
 import { covate } from "./Covate";
 
 describe("InfoCovataHeader", () => {
-  const mockCovata: CovataWithGenitoriAndFigli = {
+  const mockCovata: CovataWithGenitoriAndFigliWithVendite = {
     ...covate[0],
     completata: true,
     data: new Date("2022-01-01"),

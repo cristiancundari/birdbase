@@ -57,10 +57,7 @@ function GarePage() {
     if (imgFile) {
       formData.append("imgFile", imgFile);
     }
-    const result = await apiFetch.patchFormData(
-      `/api/gare/${modalData?.id}`,
-      formData
-    );
+    const result = await apiFetch.patchFormData(`/api/gare/${modalData?.id}`, formData);
 
     if (result.error) {
       showNotification({ message: result.message });
@@ -74,9 +71,7 @@ function GarePage() {
   };
 
   const elimina = async () => {
-    const result = await apiFetch.delete<GaraType>(
-      `/api/gare/${modalDeleteId}`
-    );
+    const result = await apiFetch.delete<GaraType>(`/api/gare/${modalDeleteId}`);
     if (result.error) {
       showNotification({
         message: result.message,
@@ -122,9 +117,7 @@ function GarePage() {
   };
 
   const getGare = async () => {
-    const result = await apiFetch.get<GaraWithNazioneAndCountIscrizioni[]>(
-      "/api/gare"
-    );
+    const result = await apiFetch.get<GaraWithNazioneAndCountIscrizioni[]>("/api/gare");
     if (result.error) {
       showNotification({ message: result.message });
     } else {
@@ -142,15 +135,11 @@ function GarePage() {
   }, []);
 
   return (
-    <>
+    <Box>
       {supabase.user?.ruolo === Role.ADMIN && (
         <Box mb="md">
           <Group justify={"flex-end"}>
-            <Button
-              onClick={addHandler}
-              variant="light"
-              leftSection={<IconPlus size={14} />}
-            >
+            <Button onClick={addHandler} variant="light" leftSection={<IconPlus size={14} />}>
               Aggiungi
             </Button>
           </Group>
@@ -164,30 +153,15 @@ function GarePage() {
               .fill(0)
               .map((_, i) => <Skeleton key={i} h={300} />)}
           {gare.map((gara: GaraWithNazioneAndCountIscrizioni) => (
-            <GaraCard
-              key={gara.id}
-              gara={gara}
-              onDelete={deleteHandler}
-              onEdit={editHandler}
-            />
+            <GaraCard key={gara.id} gara={gara} onDelete={deleteHandler} onEdit={editHandler} />
           ))}
         </SimpleGrid>
       </Box>
 
-      <ModalGara
-        isOpen={isModalGaraOpen}
-        modalData={modalData}
-        submit={submit}
-        annulla={annullaAggiungi}
-      />
+      <ModalGara isOpen={isModalGaraOpen} modalData={modalData} submit={submit} annulla={annullaAggiungi} />
 
-      <ModalCancellazione
-        isOpen={modalDeleteId != ""}
-        titolo="Elimina Gara"
-        onDelete={elimina}
-        onClose={annullaElimina}
-      />
-    </>
+      <ModalCancellazione isOpen={modalDeleteId != ""} titolo="Elimina Gara" onDelete={elimina} onClose={annullaElimina} />
+    </Box>
   );
 }
 

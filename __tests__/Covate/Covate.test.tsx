@@ -14,10 +14,7 @@ describe("Covate CRUD", () => {
   it("dovrebbe ottenere tutte le covate", async () => {
     server.use(
       http.get("/api/covate", () => {
-        return HttpResponse.json(
-          { result: covate, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: covate, error: false }, { status: 200 });
       })
     );
     render(<CovatePage />);
@@ -87,7 +84,7 @@ describe("Covate CRUD", () => {
         parentela: {
           nome: "Figlio",
           percentuale: 90,
-          plurale: "Figli",
+          grado: 1,
           colore: "red",
         },
       },
@@ -97,29 +94,20 @@ describe("Covate CRUD", () => {
 
     server.use(
       http.post("api/covate", () => {
-        return HttpResponse.json(
-          { result: newCovata, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: newCovata, error: false }, { status: 200 });
       }),
       http.get("api/soggetti", () => {
+        return HttpResponse.json({ result: soggetti, error: false }, { status: 200 });
+      }),
+      http.get(`/api/covate/parentele?soggetto=${soggettoPadre.id}&only_partners=true`, () => {
         return HttpResponse.json(
-          { result: soggetti, error: false },
+          {
+            result: parentele,
+            error: false,
+          },
           { status: 200 }
         );
-      }),
-      http.get(
-        `/api/covate/parentele?soggetto=${soggettoPadre.id}&only_partners=true`,
-        () => {
-          return HttpResponse.json(
-            {
-              result: parentele,
-              error: false,
-            },
-            { status: 200 }
-          );
-        }
-      )
+      })
     );
     render(<CovatePage />);
 
@@ -148,9 +136,7 @@ describe("Covate CRUD", () => {
     fireEvent.change(gabbia, { target: { value: newCovata.gabbia } });
     fireEvent.change(uovaDeposte, { target: { value: newCovata.uovaDeposte } });
 
-    const comboboxPadreOption = within(modalCovata).getByText(
-      `${soggettoPadre.rna}-${soggettoPadre.anno}-${soggettoPadre.numero}`
-    );
+    const comboboxPadreOption = within(modalCovata).getByText(`${soggettoPadre.rna}-${soggettoPadre.anno}-${soggettoPadre.numero}`);
     fireEvent.click(comboboxPadreOption);
 
     const loaderFemmine = within(modalCovata).getByTestId("Loader");
@@ -160,15 +146,11 @@ describe("Covate CRUD", () => {
     });
 
     const parenteFemmina = parentele[0].soggetto;
-    const comboboxMadreOption = await within(modalCovata).findByText(
-      `${parenteFemmina.rna}-${parenteFemmina.anno}-${parenteFemmina.numero}`
-    );
+    const comboboxMadreOption = await within(modalCovata).findByText(`${parenteFemmina.rna}-${parenteFemmina.anno}-${parenteFemmina.numero}`);
     fireEvent.click(comboboxMadreOption);
 
     assert(parentele[0].parentela);
-    const nomeParentela = within(modalCovata).getByText(
-      parentele[0].parentela.nome
-    );
+    const nomeParentela = within(modalCovata).getByText(parentele[0].parentela.nome);
     expect(nomeParentela).toBeInTheDocument();
 
     const buttonSalva = screen.getByTestId("ButtonSalva");
@@ -185,16 +167,10 @@ describe("Covate CRUD", () => {
     const newGabbia = 100;
     server.use(
       http.get("/api/covate", () => {
-        return HttpResponse.json(
-          { result: [covata], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: [covata], error: false }, { status: 200 });
       }),
       http.patch(`/api/covate/${covata.id}`, () => {
-        return HttpResponse.json(
-          { result: { ...covata, gabbia: newGabbia }, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: { ...covata, gabbia: newGabbia }, error: false }, { status: 200 });
       })
     );
     render(<CovatePage />);
@@ -213,10 +189,7 @@ describe("Covate CRUD", () => {
 
     server.use(
       http.get("/api/covate", () => {
-        return HttpResponse.json(
-          { result: [{ ...covata, gabbia: newGabbia }], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: [{ ...covata, gabbia: newGabbia }], error: false }, { status: 200 });
       })
     );
     const buttonSalva = screen.getByTestId("ButtonSalva");
@@ -235,16 +208,10 @@ describe("Covate CRUD", () => {
     const covata = covate[0];
     server.use(
       http.get("/api/covate", () => {
-        return HttpResponse.json(
-          { result: [covata], error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: [covata], error: false }, { status: 200 });
       }),
       http.delete(`/api/covate/${covata.id}`, () => {
-        return HttpResponse.json(
-          { result: covata, error: false },
-          { status: 200 }
-        );
+        return HttpResponse.json({ result: covata, error: false }, { status: 200 });
       })
     );
 
@@ -276,13 +243,7 @@ describe("<CovataComp/>", () => {
   it("dovrebbe visualizzare la gabbia se è presente", () => {
     const covataConGabbia = covate.find((c) => c.gabbia);
     assert(covataConGabbia);
-    render(
-      <CovataComp
-        covata={covataConGabbia}
-        modalElimina={vi.fn()}
-        modalModifica={vi.fn()}
-      />
-    );
+    render(<CovataComp covata={covataConGabbia} modalElimina={vi.fn()} modalModifica={vi.fn()} />);
     const iconGabbia = screen.getByTestId("IconGabbia");
     expect(iconGabbia).toBeInTheDocument();
   });
@@ -290,13 +251,7 @@ describe("<CovataComp/>", () => {
   it("dovrebbe nascondere la gabbia se non è presente", () => {
     const covataConGabbia = covate.find((c) => c.gabbia == null);
     assert(covataConGabbia);
-    render(
-      <CovataComp
-        covata={covataConGabbia}
-        modalElimina={vi.fn()}
-        modalModifica={vi.fn()}
-      />
-    );
+    render(<CovataComp covata={covataConGabbia} modalElimina={vi.fn()} modalModifica={vi.fn()} />);
     const iconGabbia = screen.queryByTestId("IconGabbia");
     expect(iconGabbia).not.toBeInTheDocument();
   });
@@ -304,13 +259,7 @@ describe("<CovataComp/>", () => {
   it("dovrebbe visualizzare l'icona covata completata se settata", () => {
     const covataCompletata = covate.find((c) => c.completata);
     assert(covataCompletata);
-    render(
-      <CovataComp
-        covata={covataCompletata}
-        modalElimina={vi.fn()}
-        modalModifica={vi.fn()}
-      />
-    );
+    render(<CovataComp covata={covataCompletata} modalElimina={vi.fn()} modalModifica={vi.fn()} />);
     const iconCompletata = screen.getByTestId("IconCompletata");
     expect(iconCompletata).toBeInTheDocument();
   });
@@ -318,13 +267,7 @@ describe("<CovataComp/>", () => {
   it("dovrebbe nascondere l'icona covata completata se settata", () => {
     const covataCompletata = covate.find((c) => c.completata == false);
     assert(covataCompletata);
-    render(
-      <CovataComp
-        covata={covataCompletata}
-        modalElimina={vi.fn()}
-        modalModifica={vi.fn()}
-      />
-    );
+    render(<CovataComp covata={covataCompletata} modalElimina={vi.fn()} modalModifica={vi.fn()} />);
     const iconCompletata = screen.queryByTestId("IconCompletata");
     expect(iconCompletata).not.toBeInTheDocument();
   });

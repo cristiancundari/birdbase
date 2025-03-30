@@ -77,6 +77,7 @@ function ModalSelezionaSoggetto({
           rightSection={isLoading ? <Loader size={18} /> : <Combobox.Chevron />}
           searchable
           data-testid="soggetto-select"
+          clearable
         />
 
         <Group mt={"lg"} gap="md" justify="flex-end">

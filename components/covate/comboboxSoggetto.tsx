@@ -1,19 +1,16 @@
-import {
-  Combobox,
-  Input,
-  InputBase,
-  Loader,
-  ScrollArea,
-  useCombobox,
-} from "@mantine/core";
+import { Combobox, Input, InputBase, Loader, ScrollArea, useCombobox } from "@mantine/core";
 import React, { useState } from "react";
 import ComboboxSoggettoItem from "./comboboxSoggettoItem";
 import { Soggetto } from "@prisma/client";
 import { formatAnelletto } from "@/lib/helper";
-import { SoggettoWithParentela } from "@/types/types";
+import { SoggettoWithVenditeWithParentela } from "@/types/types";
+
+interface ISoggetti extends SoggettoWithVenditeWithParentela {
+  valutazione?: number;
+}
 
 interface ComboboxSoggettoProps {
-  genitori: SoggettoWithParentela[];
+  soggetti: ISoggetti[];
   onComboboxChange: (val: string) => void;
   selected?: string;
   label: string;
@@ -21,26 +18,19 @@ interface ComboboxSoggettoProps {
   description?: string;
 }
 
-function ComboboxSoggetto({
-  genitori,
-  onComboboxChange,
-  selected,
-  label,
-  loading,
-  description,
-}: ComboboxSoggettoProps) {
+function ComboboxSoggetto({ soggetti, onComboboxChange, selected, label, loading, description }: ComboboxSoggettoProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
-  const options = genitori.map((g) => (
-    <Combobox.Option value={g.soggetto.id} key={g.soggetto.id}>
-      <ComboboxSoggettoItem soggetto={g.soggetto} parentela={g.parentela} />
-    </Combobox.Option>
-  ));
+  const options = soggetti
+    .filter((s) => (s.soggetto.inserzioniVendita?.length || 0) == 0)
+    .map((s) => (
+      <Combobox.Option value={s.soggetto.id} key={s.soggetto.id}>
+        <ComboboxSoggettoItem soggetto={s.soggetto} parentela={s.parentela} valutazione={s.valutazione} />
+      </Combobox.Option>
+    ));
 
-  const genitore: SoggettoWithParentela | undefined = genitori.find(
-    (g) => g.soggetto.id == selected
-  );
+  const soggettoSelezionato: SoggettoWithVenditeWithParentela | undefined = soggetti.find((s) => s.soggetto.id == selected);
   return (
     <Combobox
       shadow="sm"
@@ -58,23 +48,13 @@ function ComboboxSoggetto({
           component="button"
           type="button"
           pointer
-          rightSection={
-            loading ? (
-              <Loader size={18} data-testid="Loader" />
-            ) : (
-              <Combobox.Chevron />
-            )
-          }
+          rightSection={loading ? <Loader size={18} data-testid="Loader" /> : <Combobox.Chevron />}
           onClick={() => combobox.toggleDropdown()}
           rightSectionPointerEvents="none"
           multiline
         >
-          {genitore ? (
-            formatAnelletto(
-              genitore.soggetto.rna,
-              genitore.soggetto.numero,
-              genitore.soggetto.anno
-            )
+          {soggettoSelezionato ? (
+            formatAnelletto(soggettoSelezionato.soggetto.rna, soggettoSelezionato.soggetto.numero, soggettoSelezionato.soggetto.anno)
           ) : (
             <Input.Placeholder>Scegli un Soggetto</Input.Placeholder>
           )}

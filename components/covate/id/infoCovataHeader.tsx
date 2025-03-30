@@ -1,6 +1,9 @@
 import { IconSessoFemale, IconSessoMale } from "@/components/IconsSesso";
 import { formatAnelletto, formatData } from "@/lib/helper";
-import { CovataWithGenitori, CovataWithGenitoriAndFigli } from "@/types/types";
+import {
+  CovataWithGenitori,
+  CovataWithGenitoriAndFigliWithVendite,
+} from "@/types/types";
 import {
   Box,
   Button,
@@ -23,7 +26,7 @@ import Completata from "../completata";
 import InfoGabbia from "@/components/InfoGabbia";
 
 interface InfoCovataHeaderProps {
-  covata: CovataWithGenitoriAndFigli;
+  covata: CovataWithGenitoriAndFigliWithVendite;
 }
 
 function InfoCovataHeader({ covata }: InfoCovataHeaderProps) {

@@ -1,58 +1,31 @@
 "use client";
 import "mantine-datatable/styles.css";
 
+import RegistrazioneAdminModal from "@/components/admin/registrazioni/registrazioneModal";
 import { apiFetch } from "@/lib/apiFetch";
-import { formatData, formatDataOra, showNotification } from "@/lib/helper";
-import {
-  ProfiloWithAllevatore,
-  RichiestaRegistrazioneWithCount,
-} from "@/types/types";
-import {
-  ActionIcon,
-  Badge,
-  Box,
-  Button,
-  Card,
-  Group,
-  Menu,
-  Table,
-  Title,
-  Tooltip,
-} from "@mantine/core";
-import { Pagination } from "@supabase/supabase-js";
-import {
-  IconCheck,
-  IconDotsVertical,
-  IconEdit,
-  IconEye,
-  IconPlus,
-} from "@tabler/icons-react";
+import { formatDataOra, showNotification } from "@/lib/helper";
+import { RichiestaRegistrazioneWithCount } from "@/types/types";
+import { ActionIcon, Badge, Box, Title, Tooltip } from "@mantine/core";
+import { RichiestaRegistrazione } from "@prisma/client";
+import { IconEye } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { RichiestaRegistrazione } from "@prisma/client";
-import RegistrazioneAdminModal from "@/components/admin/registrazioni/registrazioneModal";
 
 const PAGE_SIZE = 25;
 
 function RegistrazioniAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalData, setModalData] = useState<RichiestaRegistrazione | null>(
-    null
-  );
+  const [modalData, setModalData] = useState<RichiestaRegistrazione | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [richiesteRegistrazioneWithCount, setRichiesteRegistrazioneWithCount] =
-    useState<RichiestaRegistrazioneWithCount>();
+  const [richiesteRegistrazioneWithCount, setRichiesteRegistrazioneWithCount] = useState<RichiestaRegistrazioneWithCount>();
   const [page, setPage] = useState(1);
 
   const fetchUsers = async (page: number) => {
     setIsLoading(true);
-    const res = await apiFetch.get<RichiestaRegistrazioneWithCount>(
-      `/admin/api/registrazioni?page_size=${PAGE_SIZE}&page=${page}`
-    );
+    const res = await apiFetch.get<RichiestaRegistrazioneWithCount>(`/admin/api/registrazioni?page_size=${PAGE_SIZE}&page=${page}`);
     if (res.error) {
       showNotification({
-        message:
-          "Si è verificato un errore durante il caricamento degli utenti",
+        message: "Si è verificato un errore durante il caricamento degli utenti",
       });
       setIsLoading(false);
       return;
@@ -100,10 +73,7 @@ function RegistrazioniAdminPage() {
       </Box>
       <Box>
         <DataTable
-          records={
-            richiesteRegistrazioneWithCount?.richiesteRegistrazione ||
-            ([] as RichiestaRegistrazione[])
-          }
+          records={richiesteRegistrazioneWithCount?.richiesteRegistrazione || ([] as RichiestaRegistrazione[])}
           columns={[
             { accessor: "nome", title: "Nome" },
             { accessor: "cognome", title: "Cognome" },
@@ -120,9 +90,7 @@ function RegistrazioniAdminPage() {
               render: (record) => {
                 const approvato = record.approvatoIl;
                 const rifiutato = record.rifiutatoIl;
-                return getBadge(
-                  approvato ? "approved" : rifiutato ? "rejected" : "pending"
-                );
+                return getBadge(approvato ? "approved" : rifiutato ? "rejected" : "pending");
               },
             },
             {
@@ -131,10 +99,7 @@ function RegistrazioniAdminPage() {
               width: "0%",
               render: (row: RichiestaRegistrazione) => (
                 <Tooltip label="Esamina">
-                  <ActionIcon
-                    variant="light"
-                    onClick={() => onEsaminaClick(row)}
-                  >
+                  <ActionIcon variant="light" onClick={() => onEsaminaClick(row)} data-testid="btnEsamina">
                     <IconEye size="16" />
                   </ActionIcon>
                 </Tooltip>

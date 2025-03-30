@@ -2,7 +2,7 @@
 import { formatAnelletto, formatData } from "@/lib/helper";
 import {
   CovataWithGenitoriAndCountFigli,
-  CovataWithGenitoriAndFigli,
+  CovataWithGenitoriAndFigliWithVendite,
 } from "@/types/types";
 import {
   ActionIcon,

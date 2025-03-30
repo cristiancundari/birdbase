@@ -1,32 +1,15 @@
 import { dateParser } from "@/lib/DateParser";
 import { showNotification } from "@/lib/helper";
-import {
-  ApiResponse,
-  CovataWithGenitori,
-  SoggettoWithGenitori,
-  SoggettoWithParentela,
-} from "@/types/types";
-import {
-  Button,
-  Group,
-  Modal,
-  NumberInput,
-  SimpleGrid,
-  Switch,
-} from "@mantine/core";
+import { ApiResponse, CovataWithGenitori, SoggettoWithGenitori, SoggettoWithVenditeWithParentela, SoggettoWithVendite } from "@/types/types";
+import { Button, Group, Modal, NumberInput, SimpleGrid, Switch } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { Soggetto } from "@prisma/client";
-import {
-  IconCalendar,
-  IconCheck,
-  IconDeviceFloppy,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCalendar, IconCheck, IconDeviceFloppy, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import ComboboxGenitori from "./comboboxSoggetto";
+import ComboboxSoggetto from "./comboboxSoggetto";
 import { apiFetch } from "@/lib/apiFetch";
 import { useModalInit } from "@/lib/hooks";
+import { Soggetto } from "@prisma/client";
 
 export interface CovataFormValues {
   padre: string;
@@ -44,19 +27,19 @@ interface ModalCovataProps {
   submit: (values: CovataFormValues) => Promise<void>;
 }
 
-const soggettoToGenitoriItem = (s: Soggetto) => ({
+const soggettoToGenitoriItem = (s: SoggettoWithVendite) => ({
   soggetto: s,
   parentela: null,
 });
 
 function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [initMaschi, setInitMaschi] = useState<SoggettoWithParentela[]>([]);
-  const [initFemmine, setInitFemmine] = useState<SoggettoWithParentela[]>([]);
+  const [initMaschi, setInitMaschi] = useState<SoggettoWithVenditeWithParentela[]>([]);
+  const [initFemmine, setInitFemmine] = useState<SoggettoWithVenditeWithParentela[]>([]);
   const [loadingMaschi, setLoadingMaschi] = useState(false);
   const [loadingFemmine, setLoadingFemmine] = useState(false);
-  const [maschi, setMaschi] = useState<SoggettoWithParentela[]>([]);
-  const [femmine, setFemmine] = useState<SoggettoWithParentela[]>([]);
+  const [maschi, setMaschi] = useState<SoggettoWithVenditeWithParentela[]>([]);
+  const [femmine, setFemmine] = useState<SoggettoWithVenditeWithParentela[]>([]);
   const form = useForm<CovataFormValues>({
     initialValues: {
       padre: "",
@@ -69,8 +52,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
     validate: {
       padre: (padre) => (padre == null ? "Inserire il padre" : null),
       madre: (madre) => (madre == null ? "Inserire la madre" : null),
-      dataCovata: (dataCovata) =>
-        dataCovata == null ? "Inserire la data" : null,
+      dataCovata: (dataCovata) => (dataCovata == null ? "Inserire la data" : null),
     },
   });
 
@@ -86,11 +68,20 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
           gabbia: modalData.gabbia?.toString() || "",
         });
         if (modalData.padre.isMorto) {
-          setMaschi((old) => [soggettoToGenitoriItem(modalData.padre), ...old]);
+          setMaschi((old) => [
+            soggettoToGenitoriItem({
+              ...modalData.padre,
+              inserzioniVendita: [],
+            }),
+            ...old,
+          ]);
         }
         if (modalData.madre.isMorto) {
           setFemmine((old) => [
-            soggettoToGenitoriItem(modalData.madre),
+            soggettoToGenitoriItem({
+              ...modalData.madre,
+              inserzioniVendita: [],
+            }),
             ...old,
           ]);
         }
@@ -109,7 +100,7 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
     const listaPadreMadre = async () => {
       setLoadingMaschi(true);
       setLoadingFemmine(true);
-      const result = await apiFetch.get<Soggetto[]>("/api/soggetti");
+      const result = await apiFetch.get<SoggettoWithVendite[]>("/api/soggetti");
       if (result.error) {
         showNotification({
           message: result.message,
@@ -117,13 +108,11 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
         return null;
       }
 
-      const resMadre: SoggettoWithParentela[] = result.data
-        .filter(
-          (item: Soggetto) => item.sesso == false && item.isMorto == false
-        )
+      const resMadre: SoggettoWithVenditeWithParentela[] = result.data
+        .filter((item: SoggettoWithVendite) => item.sesso == false && item.isMorto == false)
         .map(soggettoToGenitoriItem);
-      const resPadre: SoggettoWithParentela[] = result.data
-        .filter((item: Soggetto) => item.sesso == true && item.isMorto == false)
+      const resPadre: SoggettoWithVenditeWithParentela[] = result.data
+        .filter((item: SoggettoWithVendite) => item.sesso == true && item.isMorto == false)
         .map(soggettoToGenitoriItem);
 
       setInitMaschi(resPadre);
@@ -137,11 +126,9 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
     listaPadreMadre();
   }
 
-  async function getMadrePadre(id: string): Promise<SoggettoWithParentela[]> {
+  async function getMadrePadre(id: string): Promise<SoggettoWithVenditeWithParentela[]> {
     // Chiamiamo l'API per sapere le parentele dei soggetti del sesso opposto
-    const res = await apiFetch.get<SoggettoWithParentela[]>(
-      `/api/covate/parentele?soggetto=${id}&only_partners=true`
-    );
+    const res = await apiFetch.get<SoggettoWithVenditeWithParentela[]>(`/api/covate/parentele?soggetto=${id}&only_partners=true`);
     if (res.error) {
       showNotification({ message: res.message });
       return [];
@@ -186,28 +173,24 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
       >
         <Switch
           checked={form.values.completata}
-          onChange={(event) =>
-            form.setFieldValue("completata", event.currentTarget.checked)
-          }
+          onChange={(event) => form.setFieldValue("completata", event.currentTarget.checked)}
           color="teal"
           size="sm"
           label="Completata"
-          thumbIcon={
-            form.values.completata && <IconCheck size={14} color="teal" />
-          }
+          thumbIcon={form.values.completata && <IconCheck size={14} color="teal" />}
         />
         <SimpleGrid cols={{ base: 1, sm: 2 }} mt={"md"}>
-          <ComboboxGenitori
+          <ComboboxSoggetto
             label="Padre"
-            genitori={maschi}
+            soggetti={maschi}
             onComboboxChange={comboboxPadreChange}
             selected={form.values.padre}
             loading={loadingMaschi}
             description="Sono visualizzati solo i soggetti Maschi"
           />
-          <ComboboxGenitori
+          <ComboboxSoggetto
             label="Madre"
-            genitori={femmine}
+            soggetti={femmine}
             onComboboxChange={comboboxMadreChange}
             selected={form.values.madre}
             loading={loadingFemmine}
@@ -221,39 +204,16 @@ function ModalCovata({ isOpen, annulla, modalData, submit }: ModalCovataProps) {
             leftSection={<IconCalendar size={16} />}
           ></DateInput>
 
-          <NumberInput
-            allowNegative={false}
-            allowDecimal={false}
-            hideControls
-            label="Gabbia"
-            {...form.getInputProps("gabbia")}
-          />
+          <NumberInput allowNegative={false} allowDecimal={false} hideControls label="Gabbia" {...form.getInputProps("gabbia")} />
 
-          <NumberInput
-            allowNegative={false}
-            allowDecimal={false}
-            hideControls
-            label="Uova Deposte"
-            {...form.getInputProps("uovaDeposte")}
-          />
+          <NumberInput allowNegative={false} allowDecimal={false} hideControls label="Uova Deposte" {...form.getInputProps("uovaDeposte")} />
         </SimpleGrid>
 
         <Group mt={"lg"} gap="md" justify="flex-end">
-          <Button
-            variant="outline"
-            color="gray"
-            onClick={annulla}
-            leftSection={<IconX size={14} />}
-          >
+          <Button variant="outline" color="gray" onClick={annulla} leftSection={<IconX size={14} />}>
             Annulla
           </Button>
-          <Button
-            data-testid="ButtonSalva"
-            color="green"
-            leftSection={<IconDeviceFloppy size={14} />}
-            type="submit"
-            loading={isLoading}
-          >
+          <Button data-testid="ButtonSalva" color="green" leftSection={<IconDeviceFloppy size={14} />} type="submit" loading={isLoading}>
             Salva
           </Button>
         </Group>

@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { vi, Mock } from "vitest";
-import ModalChangePassword from "@/components/ModalChangePassword"; // Assicurati che il percorso sia corretto
+import ModalChangePassword from "@/components/ModalChangePassword";
 import { createClient } from "@/lib/supabase/client";
 import { showNotification } from "@/lib/helper";
 import { render } from "@/setup-test";

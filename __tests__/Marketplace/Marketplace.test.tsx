@@ -129,6 +129,11 @@ describe("Componente Marketplace", () => {
       expect(apiFetch.get).toHaveBeenCalled();
     });
 
+    await waitFor(() => {
+      screen.getByText(
+        formatAnelletto(soggetti[0].rna, soggetti[0].numero, soggetti[0].anno)
+      );
+    });
     // Simula l'inserimento di dati nel modal
     fireEvent.click(
       screen.getByText(

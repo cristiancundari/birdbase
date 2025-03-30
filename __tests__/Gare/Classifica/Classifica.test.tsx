@@ -33,6 +33,10 @@ describe("Classifica", () => {
         nome: "Antonello",
         rna: "48XA",
       },
+      formulaData: "1",
+      formulaParentela: "1",
+      percentualeFormulaData: 50,
+      limiteLivelliParentela: 4,
     },
     soggetto: {
       id: "1",
@@ -66,7 +70,6 @@ describe("Classifica", () => {
 
   test("visualizza la classifica personale per l'utente", () => {
     render(<Classifica iscrizioni={[mockIscrizioni]} />);
-    debug();
     expect(screen.getByText("Classifica Personale")).toBeInTheDocument();
     expect(screen.getAllByText(/48XA/).length).toBeGreaterThan(0);
   });

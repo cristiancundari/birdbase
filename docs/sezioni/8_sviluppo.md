@@ -1,0 +1,367 @@
+Lo sviluppo del software si è basato molto sul coinvolgimento con il cliente e rilasci continui in modo tale da poter essere testato e ottenere feedback sulle funzionalità implementate.
+
+#### Rilascio #1
+
+Per il primo rilascio il lavoro si è concentrato sulla creazione delle fondamenta del progetto installando il framework di sviluppo e le dipendenze principali per creare una Web-App. Successivamente analizzando i casi d'uso e le user stories, abbiamo deciso di implementare per prima la funzione di login all'applicazione, che sebbene possa non essere considerata una funzione principale e utile all'utente in un primo momento, risulta invece utile a definire delle linee guida in termini di sicurezza per l'interazione tra il front-end e il back-end.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/login.png" height="450px"/>
+  </div>
+  <sup style="font-style: italic;">Pagina di login<sup>
+</div>
+
+#### Rilascio #2
+Nel rilascio numero due ci siamo focalizzati nell'implementazione delle funzionalità per la registrazione a sistema dei soggetti.
+Inizialmente è stata realizzata l'interfaccia grafica del componente che rappresenta un singolo soggetto, utilizzando momentaneamente dati fittizi.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/soggettoCompSenzaPreferito.png"/>
+  </div>
+  <sup style="font-style: italic;">UI Soggetto<sup>
+</div>
+
+&nbsp;
+Successivamente è stato realizzato il collegamento con il back-end ottenendo i dati dal database e sono state implementate le funzioni di Aggiunta di un nuovo soggetto e di modifica.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/modalAggiungiSoggetto.png" height="600px"/>
+  </div>
+  <sup style="font-style: italic;">Modal di aggiunta/modifica soggetto<sup>
+</div>
+
+&nbsp;
+Per ultime sono state sviluppate la funzione di eliminazione, e sotto richiesta del cliente, due nuove funzionalità:
+
+- **Preferito** - per poter classificare il soggetto come preferito
+- **Morto** - in caso in cui il soggeto sia deceduto
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/soggettoCompMortoPreferito.png"/>
+  </div>
+  <sup style="font-style: italic;">UI Soggetto con funzioni di Preferito e Morto<sup>
+</div>
+
+#### Rilascio #3
+Una volta implementata la pagina per visualizzare i soggetti, ci siamo dedicati alla pagina relativa alla gestione delle finanze in quanto il cliente ci ha espresso la sua necessità per monitorare le spese relative all'allevamento.
+Abbiamo dunque realizzato: una sezione **Budget** dove l'utente può inserire la cifra che intende dedicare mensilmente al mantenimento dell'allevamento; una sezione **Transazioni** che permette di visualizzare o aggiungere nuove transazioni, e una sezione relatavia ai "Grafici":
+
+1.  Un grafico a torta indica le spese sostenute, suddivise per categoria, durante un anno specifico selezionabile
+2.  Un istogramma indica gli incassi, suddivisi per mese di riferimento, nell'arco di un anno specifico
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/portafoglioPage.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina Portafoglio<sup>
+</div>
+
+#### Rilascio #4
+Dopo il rilascio di questa feature, il cliente ha richiesto la possibilità di poter effettuare report di qualsiasi arco temporale e per qualsiasi tipo di transazione (spese, incassi o entrambi).
+Abbiamo dunque aggiunto un pulsante che apre una finestra in cui l'utente può personalizzare il report che vuole generare scegliendo l'arco temporale di interesse e la tipologia di transazione. Il report potrà all'occorrenza essere stampato.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/report.png"/>
+  </div>
+  <sup style="font-style: italic;">Esempio di report<sup>
+</div>
+
+#### Rilascio #5
+Nel rilascio numero quattro ci siamo focalizzati nell'implementazione delle funzionalità per la registrazione delle covate.
+Inizialmente è stata realizzata l'interfaccia grafica del componente che rappresenta una singola covata.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/covataComp.png"/>
+  </div>
+  <sup style="font-style: italic;">UI Covata<sup>
+</div>
+
+Successivamente è stato realizzato il collegamento con il back-end ottenendo i dati dal database, e sono state implementate le funzioni di aggiunta, modifica ed eliminazione.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/modalCovata.png"/>
+  </div>
+  <sup style="font-style: italic;">Modal di aggiunta/modifica covata<sup>
+</div>
+
+#### Rilascio #6
+
+Il rilascio numero cinque, si è basato sul controllo della parentala tra padre, madre e viceversa.
+Il controllo infatti, avviene ogni volta che viene modificato il valore nella selezione di riferimento. In questo modo l'allevatore è facilitato nella scelta evitando l'accoppiamento di soggetti con legami parentali più stretti.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/modalPadreMadre.png"/>
+  </div>
+  <sup style="font-style: italic;">Info Parentela<sup>
+</div>
+
+#### Rilascio #7
+
+Nella sezione delle informazioni di una covata, è stata implementata la possibilità di aggiungere i figli ad essa. Questo processo può avvenire in due modi differenti:
+
+1.  **Creazione ex-novo del soggetto** - permette all'allevatore di inserire un nuovo soggetto direttamente dalla pagina della covata.
+2.  **Scelta di un soggetto** - permette all'allevatore di scegliere un soggetto già presente nel sistema.
+
+Una volta che il numero dei figli di una covata è uguale al numero di uova deposte, il pulsante che permette di aggiungere nuovi figli sarà disabilitato.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/aggiuntaFigli.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina Info Covata<sup>
+</div>
+
+#### Rilascio #8
+Il seguente rilascio si è concentrato sull'implementazione delle funzioni di Creazione, Modifica ed Eliminazione di promemoria: Gli utenti possono ora creare nuovi promemoria, modificarli o eliminarli direttamente dall'interfaccia. Ogni promemoria può includere un titolo, una descrizione, una data e una priorità ed è inoltre possibile per l'allevatore impostare il promemoria come completato.
+
+<div style="display: flex; justify-content: center; align-items: center; gap: 100px">
+  <div style="text-align: center;">
+    <div>
+      <img src="/docs/img/pagina_promemoria.png"/>
+    </div>
+    <sup style="font-style: italic;">Pagina gestione promemoria<sup>
+  </div>
+  <div style="text-align: center;">
+    <div>
+      <img src="/docs/img/promemoria.png"/>
+    </div>
+    <sup style="font-style: italic;">Modal di aggiunta promemoria<sup>
+  </div>
+</div>
+
+È stato poi resa disponibile la possibilità di sincronizzare con Google Calendar i promemoria.
+Per poter realizzare questa funzionalità, l'allevatore deve prima avere la possibilità di associare il proprio account Google al sistema.
+Fatto questo, se l'utente completa la procedura di associazione a Google Calendar, i promemoria creati all'interno dell'applicazione verranno automaticamente aggiunti al calendario Google dell'utente. Inoltre, le modifiche ai promemoria verranno sincronizzate in tempo reale.
+Ogni qualvolta il sistema opera sui promemoria, verifica se esiste già su Google un calendario dedicato all'applicazione ("BirdBase"). Se il calendario non esiste, il sistema lo crea automaticamente prima di effettuare le operazioni sui promemoria.
+
+#### Rilascio #9
+In questo rilascio abbiamo introdotto la funzionalità di compravendita dei soggetti. Gli allevatori hanno ora la possibilità di creare annunci di vendita per i propri soggetti direttamente dalla piattaforma. Un altro allevatore può visualizzare gli annunci e acquistare i soggetti in vendita tramite un processo di pagamento integrato. L'acquisto avviene comodamente tramite PayPal, garantendo transazioni sicure e senza interruzioni. Una volta effettuato l'acquisto, l'acquirente vedrà il soggetto acquistato nella propria pagina di gestione dei soggetti; mentre a entrambi gli allevatori viene aggiunta una transazione nella propria sezione portafoglio di spesa (per l'acquirente) e incasso (per il venditore).
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/marketplace.png"/>
+  </div>
+  <sup style="font-style: italic;">Esempio di inserzione<sup>
+</div>
+
+#### Rilascio #10
+Nel seguente rilascio abbiamo introdotto una nuova funzionalità per permettere agli allevatori di registrarsi facilmente sulla piattaforma. Gli allevatori possono adesso completare il processo di registrazione inviando tutti i dati richiesti, insieme alla documentazione necessaria: il certificato di registrazione alla FOI e un documento di identità valido.
+
+Una volta inviata la richiesta, l’amministratore avrà la possibilità di visionare i documenti e decidere se accettare o rifiutare la registrazione. In caso di esito positivo, il sistema invierà automaticamente un’email di benvenuto all’allevatore con la password di accesso. Se invece la documentazione risulta incompleta o non conforme, verrà inviata una comunicazione via email che spiega il motivo del rifiuto, indicando la documentazione mancante.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/form di registrazione.png"/>
+  </div>
+  <sup style="font-style: italic;">Form di registrazione<sup>
+</div>
+
+<div style="text-align: center; margin-top: 80px;">
+  <div>
+    <img src="/docs/img/gestione registrazioni.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina di gestione delle registrazioni dell'admin<sup>
+</div>
+
+#### Rilascio #11
+In questo rilascio abbiamo implementato una funzionalità che consente all’amministratore di creare, eliminare e modificare le gare all’interno della piattaforma. Grazie a questa nuova gestione, l’amministratore ha il pieno controllo sulle gare, con la possibilità di definire uno stato per ogni evento. In particolare, l’amministratore può ad esempio marcare una gara come “bozza”.
+Le gare in stato di bozza non saranno visibili agli allevatori, mentre solo quelle confermate saranno visibili e accessibili, evitando così che gli utenti visualizzino eventi non ancora definitivi o pronti per la partecipazione.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/modal_gare.png"/>
+  </div>
+  <sup style="font-style: italic;">Modal per aggiungere una nuova gara<sup>
+</div>
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/gare.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina di gestione gare<sup>
+</div>
+
+#### Rilascio #12
+Una volta che abbiamo reso possibile all'amministratore la gestione delle gare, abbiamo deciso, insieme al cliente, di implementare la possibilità che gli allevatori iscrivano i propri soggetti alle gare. Ora gli allevatori possono accedere alla gara di interesse, selezionare i soggetti che desiderano iscrivere tramite un comodo menu a tendina e completare il pagamento tramite PayPal in autonomia.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/iscrizionegare.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina di iscrizione a una gara<sup>
+</div>
+
+#### Rilascio #13
+Per completare la gestione delle gare, abbiamo implementato la funzionalità che permette all’amministratore di inserire le valutazioni per i soggetti partecipanti così da generare una classifica finale e segnare la gara come completata. Una volta che la gara è stata conclusa, la classifica sarà visibile agli allevatori, mostrando non solo le posizioni generali, ma anche i posizionamenti specifici dei propri soggetti, consentendo un monitoraggio dettagliato dei risultati.
+
+Inoltre, su richiesta dello stakeholder, è stata aggiunta in ultimo una nuova funzionalità: la possibilità di condividere i risultati sui social. Gli allevatori che vedranno i propri soggetti posizionarsi nella gara potranno ora condividere facilmente i risultati sui principali social, dando visibilità ai successi raggiunti e promuovendo ulteriormente il proprio allevamento.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/classificagara.png"/>
+  </div>
+  <sup style="font-style: italic;">Visualizzazione classifica generale e personale<sup>
+</div>
+
+<div style="text-align: center; margin-top: 50px;">
+  <div>
+    <img src="/docs/img/risultatogara.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina visualizzata cliccando il link condiviso sul social<sup>
+</div>
+
+#### Rilascio #14
+In questo rilascio abbiamo introdotto la funzionalità della chat, che permette sia agli amministratori che agli allevatori di comunicare facilmente tra di loro. Entrambi gli utenti possono inviare e ricevere messaggi in tempo reale, con la possibilità di visualizzare un badge di notifica ogni volta che ricevono un nuovo messaggio, migliorando la tempestività e l’efficienza delle comunicazioni.
+
+Inoltre, è stata introdotta la possibilità di creare canali di chat. Sia gli amministratori che gli allevatori possono creare delle chat di gruppo assegnando un nome al canale e aggiungendo i partecipanti desiderati. Questa funzionalità può essere ad esempio utile all'amministratore per creare un canale inerente a una determinata gara per gestire la logistica.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/chat.png"/>
+  </div>
+  <sup style="font-style: italic;">Pagina Chat per messaggiare con altri utenti<sup>
+</div>
+
+<div style="text-align: center; margin-top: 50px;">
+  <div>
+    <img src="/docs/img/modalcanale.png"/>
+  </div>
+  <sup style="font-style: italic;">Modal di creazione nuovo canale<sup>
+</div>
+
+#### Rilascio #15
+Nel rilascio di oggi, abbiamo introdotto due nuove funzionalità pensate per migliorare l’esperienza degli utenti sulla piattaforma. La prima riguarda la possibilità per gli utenti di modificare la propria password in modo semplice e sicuro, rendendo più facile la gestione dell’accesso e garantendo una maggiore protezione dei dati personali.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/cambiopassword.png"/>
+  </div>
+  <sup style="font-style: italic;">Modal per permettere il cambio password<sup>
+</div>
+
+&nbsp;
+
+Inoltre, seguendo una richiesta dello stakeholder, abbiamo aggiunto una nuova sezione di commenti, esclusivamente per le gare. Gli allevatori ora possono lasciare commenti sulle gare a cui hanno partecipato o su quelle di interesse, offrendo così uno spazio per condividere opinioni, feedback o esperienze. Non solo è possibile scrivere commenti, ma gli utenti possono anche semplicemente reagire utilizzando emoji.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/disqus.png"/>
+  </div>
+  <sup style="font-style: italic;">Sezione commenti di una gara<sup>
+</div>
+
+#### Rilascio #16
+
+#### Introduzione
+Questa release permette agli allevatori di ottenere una valutazione automatica dei soggetti sulla base di una media pesata calcolata dai voti ricevuti nelle mostre.
+
+La valutazione tiene conto sia dei voti diretti del soggetto sia di quelli ottenuti dai suoi parenti, con un peso che dipende da:
+- La distanza temporale della gara rispetto alla data attuale
+- Il grado di parentela tra il soggetto e il parente
+
+L’allevatore ha la possibilità di personalizzare il calcolo scegliendo le formule per determinare i pesi e definendo la loro importanza relativa tramite uno slider.
+
+#### Iterazione 1 – Definizione delle User Stories e Pianificazione
+
+Abbiamo iniziato lo sviluppo con la raccolta dei requisiti e la definizione delle User Stories, identificando i seguenti casi d’uso principali:
+
+##### User Stories
+1. **Inserimento delle formule per il calcolo dei pesi**
+   - L’allevatore deve poter inserire due formule per il calcolo dei pesi:
+     - Una per la distanza temporale della gara
+     - Una per il grado di parentela
+
+2. **Definizione dell’importanza relativa dei due parametri**
+   - L’allevatore deve poter decidere tramite uno slider quale percentuale assegnare a ciascun peso nella media pesata.
+
+3. **Calcolo della valutazione finale del soggetto**
+   - Il sistema deve applicare le formule scelte, calcolare i pesi e ottenere il punteggio finale di ogni soggetto.
+
+4. **Interfaccia utente per la gestione della valutazione**
+   - Sezione nelle impostazioni per inserire le formule
+   - Visualizzazione della valutazione finale dei soggetti nell’interfaccia principale
+
+Abbiamo suddiviso il lavoro in task specifici e pianificato le iterazioni.
+
+#### Iterazione 2 – Implementazione del Parser Matematico
+
+##### Task principali
+- **Tokenizzazione delle formule**
+  - Creazione di un tokenizer per separare numeri, variabili, operatori e funzioni
+
+- **Conversione in Reverse Polish Notation (RPN) con l’algoritmo Shunting-yard**
+  - Implementazione del parser per convertire l’espressione da notazione infissa a RPN
+
+- **Creazione dell’evaluator per il calcolo delle espressioni**
+  - Implementazione della valutazione delle espressioni con operatori matematici (+, -, *, /, ^) e funzioni (log, ln, sqrt, sin, cos, tan, cot)
+
+##### Risultati dell’iterazione
+Abbiamo ottenuto un parser funzionante in grado di interpretare e valutare correttamente le formule inserite dall’utente e di segnalare eventuali errori di sintassi nella formula.
+
+#### Iterazione 3 – Implementazione della Logica di Calcolo della Valutazione
+
+##### Task principali
+1. **Recupero dei dati necessari per il calcolo**
+   - Lettura dei voti assegnati ai soggetti nelle mostre passate
+   - Recupero dei dati relativi ai parenti di ogni soggetto e ai loro voti
+
+2. **Calcolo dei pesi per ogni voto**
+   - Applicazione della formula scelta dall’allevatore per il peso temporale
+   - Applicazione della formula scelta per il peso legato al grado di parentela
+
+3. **Combinazione dei due pesi con le proporzioni definite dall’utente**
+   - Implementazione della logica per combinare i due pesi con la percentuale scelta tramite slider
+
+##### Risultati dell’iterazione
+Abbiamo implementato con successo la logica di calcolo della valutazione dei soggetti, garantendo flessibilità nell’assegnazione dei pesi.
+
+#### Iterazione 4 – Sviluppo dell’Interfaccia Utente
+
+##### Task principali
+1. **Aggiunta di una sezione apposita nella pagina impostazioni**
+   - Due campi di testo per l’inserimento delle formule
+   - Slider per scegliere la proporzione tra i due pesi
+   - Grafici aggiornati in tempo reale per la visualizzazione delle formule inserite
+
+2. **Visualizzazione della valutazione dei soggetti**
+   - Modifica del componente relativo alla visualizzazione delle informazioni del soggetto per mostrare la valutazione calcolata
+
+3. **Gestione degli errori nell’inserimento delle formule**
+   - Messaggi di errore per formule non valide o con sintassi errata
+
+##### Risultati dell’iterazione
+L’interfaccia è stata completata con un design intuitivo, garantendo all’allevatore un’esperienza d’uso fluida.
+
+#### Iterazione 5 – Testing Finale e Rilascio
+
+Prima del rilascio, abbiamo eseguito una serie di test:
+
+1. **Test unitari** per verificare il corretto funzionamento del parser e del calcolo della valutazione
+2. **Test di integrazione** per assicurare la compatibilità con il resto del sistema
+3. **Test di usabilità** con utenti reali per raccogliere feedback
+4. **Refactoring finale** per ottimizzare il codice e migliorare le prestazioni
+
+##### Risultati finali
+✅ Il sistema calcola correttamente la valutazione dei soggetti considerando i voti diretti e quelli dei parenti
+✅ L’allevatore può inserire formule personalizzate per il calcolo dei pesi
+✅ L’interfaccia è semplice da usare e offre un alto livello di personalizzazione
+✅ Il software è stato testato con successo ed è pronto per il rilascio
+
+#### Conclusione
+L’adozione della metodologia Extreme Programming (XP) ci ha permesso di sviluppare questa release in modo iterativo, garantendo alta qualità del codice, test continui e miglioramento costante.
+
+Il sistema ora offre agli allevatori una potente funzionalità per valutare i propri soggetti in modo personalizzato, aumentando la precisione nella selezione e nella gestione dell’allevamento.
+
+<div style="text-align: center;">
+  <div>
+    <img src="/docs/img/funzioni valutazione.png"/>
+  </div>
+  <sup style="font-style: italic;">Scelta funzioni da utilizzare per la valutazione dei soggetti<sup>
+</div>

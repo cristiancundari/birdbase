@@ -3,14 +3,11 @@ import "@mantine/dates/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
 import { notifications } from "@mantine/notifications";
-import "@testing-library/jest-dom";
-import {
-  cleanup,
-  render as testingLibraryRender,
-} from "@testing-library/react";
+import "@testing-library/dom";
+import { cleanup, render as testingLibraryRender } from "@testing-library/react";
 import { afterAll, afterEach, vi } from "vitest";
 import LayoutProviders from "./providers/LayoutWrapper";
-import { act } from "react-dom/test-utils";
+import "@testing-library/jest-dom";
 import { debug } from "vitest-preview";
 
 Object.defineProperty(window, "matchMedia", {
@@ -75,8 +72,6 @@ afterEach((context) => {
 
 export function render(ui: React.ReactNode) {
   return testingLibraryRender(<>{ui}</>, {
-    wrapper: ({ children }: { children: React.ReactNode }) => (
-      <LayoutProviders>{children}</LayoutProviders>
-    ),
+    wrapper: ({ children }: { children: React.ReactNode }) => <LayoutProviders>{children}</LayoutProviders>,
   });
 }

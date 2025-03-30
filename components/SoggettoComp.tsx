@@ -1,24 +1,8 @@
 "use client";
 import { formatAnelletto, getBucketImgPath } from "@/lib/helper";
-import {
-  ActionIcon,
-  Anchor,
-  Avatar,
-  Box,
-  Card,
-  Divider,
-  Group,
-  Menu,
-  Stack,
-  Text,
-  Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Anchor, Avatar, Badge, Box, Card, Divider, Group, Menu, Stack, Text, Tooltip } from "@mantine/core";
 import { Soggetto } from "@prisma/client";
-import {
-  IconDotsVertical,
-  IconHeart,
-  IconHeartFilled,
-} from "@tabler/icons-react";
+import { IconCurrencyDollar, IconDotsVertical, IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
 import { useState } from "react";
@@ -26,6 +10,9 @@ import { getIconSesso } from "./IconsSesso";
 import InfoGabbia from "./InfoGabbia";
 import InfoMorto from "./InfoMorto";
 import InfoNote from "./InfoNote";
+import { SoggettoWithVendite } from "@/types/types";
+import InfoVenduto from "./InfoVenduto";
+import ValutazioneSoggetto from "./ValutazioneSoggetto";
 
 export interface SoggettoMenu {
   label: string;
@@ -35,12 +22,13 @@ export interface SoggettoMenu {
 }
 
 interface SoggettoCompProps {
-  sogg: Soggetto;
+  sogg: SoggettoWithVendite;
   onPreferito: (id: string) => Promise<Soggetto | null>;
   menu: SoggettoMenu[];
+  valutazione: number;
 }
 
-function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
+function SoggettoComp({ sogg, onPreferito, menu, valutazione }: SoggettoCompProps) {
   const [isFavourite, setIsFavourite] = useState(sogg.preferito);
   const [isFavouriteLoading, setIsFavouriteLoading] = useState(false);
 
@@ -52,6 +40,8 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
     }
     setIsFavouriteLoading(false);
   };
+
+  const venduto = (sogg.inserzioniVendita?.length || 0) > 0;
 
   return (
     <Card shadow="sm" withBorder data-testid="SoggettoComp">
@@ -65,11 +55,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
         {menu.length > 0 ? (
           <Menu shadow="md">
             <Menu.Target>
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                data-testid="MenuButton"
-              >
+              <ActionIcon variant="subtle" color="gray" data-testid="MenuButton">
                 <IconDotsVertical size="14" />
               </ActionIcon>
             </Menu.Target>
@@ -102,11 +88,7 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
             src={
               sogg.avatar
                 ? getBucketImgPath("img", sogg.avatar)
-                : `https://images.placeholders.dev/?width=50&height=50&textWrap=true&text=${formatAnelletto(
-                    sogg.rna,
-                    sogg.numero,
-                    sogg.anno
-                  )}`
+                : `https://images.placeholders.dev/?width=50&height=50&textWrap=true&text=${formatAnelletto(sogg.rna, sogg.numero, sogg.anno)}`
             }
           />
           <Tooltip label="Preferito">
@@ -123,23 +105,15 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
               style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)" }}
             >
               {isFavourite ? (
-                <IconHeartFilled
-                  size="20"
-                  style={{ color: "#e83d2e" }}
-                  data-testid="IconPreferito"
-                />
+                <IconHeartFilled size="20" style={{ color: "#e83d2e" }} data-testid="IconPreferito" />
               ) : (
-                <IconHeart
-                  size="20"
-                  color="#555"
-                  data-testid="IconNonPreferito"
-                />
+                <IconHeart size="20" color="#555" data-testid="IconNonPreferito" />
               )}
             </ActionIcon>
           </Tooltip>
         </Box>
 
-        <Stack gap="0" justify="space-evenly" style={{ alignSelf: "stretch" }}>
+        <Stack gap="0" justify="space-evenly" style={{ alignSelf: "stretch" }} flex={1}>
           <Stack gap="0">
             <Group gap="xs">
               <Text size="xs" c="dimmed">
@@ -152,11 +126,11 @@ function SoggettoComp({ sogg, onPreferito, menu }: SoggettoCompProps) {
             </Text>
           </Stack>
           <Group gap="xs">
+            {venduto && <InfoVenduto />}
             {sogg.note && <InfoNote note={sogg.note} />}
-            {sogg.gabbia && !sogg.isMorto && (
-              <InfoGabbia gabbia={sogg.gabbia} hideNull />
-            )}
             {sogg.isMorto && <InfoMorto />}
+            {sogg.gabbia && !sogg.isMorto && !venduto && <InfoGabbia gabbia={sogg.gabbia} hideNull />}
+            <ValutazioneSoggetto valutazione={valutazione} />
           </Group>
         </Stack>
       </Group>

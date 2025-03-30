@@ -1,41 +1,42 @@
 - **Eliminazione soggetto**
 
-```mermaid
-sequenceDiagram
-actor Allevatore
-activate Allevatore
-Allevatore ->> Soggetto_UI: btnElimina()
-Soggetto_UI ->> Pagina: eliminaSoggetto()
-Pagina ->> ModalConferma: apriModal()
-activate ModalConferma
-ModalConferma -->> Allevatore: visualizzaModal
-Allevatore ->> ModalConferma: btnConferma()
-ModalConferma ->> Pagina: elimina()
-activate Pagina
-Pagina ->> API: eliminaSoggetto()
-activate API
-API ->>+ Auth: auth()
-Auth -->>- API: autorizzato
-API ->> DB: eliminaSoggetto()
-activate DB
-DB -->> API: soggettoEliminato
-deactivate DB
-API -->> Pagina: soggettoEliminato
-deactivate API
-Pagina -->> Allevatore: soggettoEliminato
-Pagina --X ModalConferma: chiudiModal()
-deactivate ModalConferma
-Pagina ->> API: getSoggetti()
-activate API
-API ->>+ Auth: auth()
-Auth -->>- API: autorizzato
-API ->> DB: getSoggetti()
-activate DB
-DB -->> API: soggetti
-deactivate DB
-API -->> Pagina: soggetti
-Pagina -->> Allevatore: visualizzaSoggetti
-deactivate API
-deactivate Pagina
-deactivate Allevatore
+```plantuml
+@startuml
+actor Allevatore as User
+participant "Interfaccia Utente" as UI
+participant "Server" as Server
+participant "Database" as DB
+
+User -> UI: Clicca sull'icona del menù del soggetto
+activate UI
+UI -> UI: Mostra menu contestuale con opzione "Elimina"
+User -> UI: Clicca su "Elimina"
+UI -> UI: Mostra modal di conferma eliminazione
+User -> UI: Clicca su "Conferma" per eliminare
+UI -> Server: Invia richiesta di eliminazione soggetto (ID)
+activate Server
+Server -> Server: Verifica autenticazione utente
+Server -> Server: Verifica se il soggetto appartiene all'utente
+alt Verifiche corrette
+    Server -> DB: Elimina soggetto dal database
+    activate DB
+    DB --> Server: Conferma eliminazione
+    deactivate DB
+    Server --> UI: Restituisce dati del soggetto eliminato
+    UI -> UI: Chiude il modal
+    UI -> User: Mostra notifica di successo
+    UI -> Server: Richiesta lista soggetti aggiornata
+    Server -> DB: Recupera lista soggetti aggiornata
+    activate DB
+    DB --> Server: Restituisce lista soggetti aggiornata
+    deactivate DB
+    Server --> UI: Restituisce lista soggetti aggiornata
+    UI -> UI: Ricarica pagina per visualizzare soggetti
+else Errore nelle verifiche
+    Server --> UI: Restituisce errore
+    UI -> User: Mostra notifica di errore
+end
+deactivate Server
+deactivate UI
+@enduml
 ```

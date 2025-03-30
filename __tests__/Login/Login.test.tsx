@@ -1,11 +1,23 @@
 import { screen, fireEvent, waitFor } from "@testing-library/react";
-import { useRouter } from "next/navigation";
+import { redirect, RedirectType, useRouter } from "next/navigation";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { Mock, vi } from "vitest";
 import Login from "@/components/login/Login";
 import { render } from "@/setup-test";
+import { createClient } from "@/lib/supabase/server";
+import LoginPage from "@/app/auth/login/page";
+
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(),
+}));
 
 vi.mock("next/navigation", () => ({
+  redirect: vi.fn(),
+  RedirectType: { replace: "replace" },
   useRouter: vi.fn(),
   useSearchParams: () => ({
     get: vi.fn(() => null), // Mock del parametro di ricerca
@@ -27,6 +39,56 @@ const mockSupabase = {
     single: vi.fn(),
   },
 };
+
+describe("Pagina Login", () => {
+  it("deve fare il redirect all'URL di callback o alla home se l'utente è già loggato", async () => {
+    const mockSupabase = {
+      auth: {
+        getSession: vi.fn().mockResolvedValue({
+          data: { session: { user: { id: "user-123" } } },
+        }),
+      },
+    };
+
+    (createClient as Mock).mockReturnValue(mockSupabase);
+
+    render(await LoginPage({ searchParams: { callbackUrl: "/dashboard" } }));
+
+    expect(redirect).toHaveBeenCalledWith("/dashboard", expect.anything());
+  });
+
+  it("deve fare il redirect alla /app/home se non viene fornito un URL di callback e l'utente è loggato", async () => {
+    const mockSupabase = {
+      auth: {
+        getSession: vi.fn().mockResolvedValue({
+          data: { session: { user: { id: "user-123" } } },
+        }),
+      },
+    };
+
+    (createClient as Mock).mockReturnValue(mockSupabase);
+
+    render(await LoginPage({ searchParams: { callbackUrl: "" } }));
+
+    expect(redirect).toHaveBeenCalledWith("/app/home", expect.anything());
+  });
+
+  it("deve renderizzare il componente Login se l'utente non è loggato", async () => {
+    const mockSupabase = {
+      auth: {
+        getSession: vi.fn().mockResolvedValue({
+          data: { session: null },
+        }),
+      },
+    };
+
+    (createClient as Mock).mockReturnValue(mockSupabase);
+
+    render(await LoginPage({ searchParams: { callbackUrl: "/dashboard" } }));
+
+    expect(screen.getByRole("button", { name: /accedi/i })).toBeInTheDocument();
+  });
+});
 
 describe("Componente Login", () => {
   let router;
@@ -67,12 +129,8 @@ describe("Componente Login", () => {
     fireEvent.click(screen.getByRole("button", { name: /accedi/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/si è verificato un errore/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/se non ricordi le credenziali/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/si è verificato un errore/i)).toBeInTheDocument();
+      expect(screen.getByText(/se non ricordi le credenziali/i)).toBeInTheDocument();
     });
   });
 

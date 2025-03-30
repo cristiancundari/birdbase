@@ -1,5 +1,5 @@
 import React from "react";
-import Breadcrumb from "@/components/Breadcrumb"; // Assicurati che il percorso sia corretto
+import Breadcrumb from "@/components/Breadcrumb";
 import { describe, expect, it } from "vitest";
 import { render } from "@/setup-test";
 

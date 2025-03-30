@@ -1,5 +1,5 @@
 import React from "react";
-import GaraNonValida from "@/components/GaraNonValida"; // Assicurati che il percorso sia corretto
+import GaraNonValida from "@/components/GaraNonValida";
 import { render } from "@/setup-test";
 
 describe("GaraNonValida", () => {

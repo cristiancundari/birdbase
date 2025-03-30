@@ -1,3 +1,4 @@
+import { mockProfilo } from "@/__tests__/Profilo";
 import { soggetti } from "@/__tests__/Soggetti/Soggetti";
 import { IscrizioneWithSoggettoAndProfiloWithAllevatore } from "@/types/types";
 
@@ -14,18 +15,7 @@ export const mockIscrizione: IscrizioneWithSoggettoAndProfiloWithAllevatore = {
     anno: "2023",
   },
   profiloId: "profilo-1",
-  profilo: {
-    id: "profilo-1",
-    budget: 100,
-    googleRefreshToken: "token",
-    rna: "RNA123",
-    ruolo: "USER",
-    allevatore: {
-      rna: "RNA123",
-      nome: "Mario",
-      cognome: "Rossi",
-    },
-  },
+  profilo: mockProfilo,
   voto: 10,
   posizione: 1,
 };

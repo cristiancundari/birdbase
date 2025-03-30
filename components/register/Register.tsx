@@ -145,7 +145,7 @@ function Register() {
                       size="sm"
                       label="Email"
                       placeholder="mariorossi@mail.com"
-                      description="Riceverai un link per creare le tue credenziali di accesso"
+                      description="Riceverai qui le tue credenziali di accesso"
                       {...form.getInputProps("email")}
                     />
                   </Stack>

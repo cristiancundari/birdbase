@@ -2,6 +2,7 @@ import GaraNonValida from "@/components/GaraNonValida";
 import InfoGara from "@/components/gare/id/InfoGara";
 import { prisma } from "@/lib/prisma";
 import { getServerUser, getServerUserProfile } from "@/lib/supabase/helper";
+import { Box } from "@mantine/core";
 import { Role } from "@prisma/client";
 import assert from "assert";
 import { cookies } from "next/headers";
@@ -25,7 +26,11 @@ async function IscrizioneGara({ params }: InfoGaraPageProps) {
   if (!gara || (profile.ruolo !== Role.ADMIN && gara.isDeleted)) {
     return <GaraNonValida />;
   }
-  return <InfoGara gara={gara} />;
+  return (
+    <Box data-testid="info_gara">
+      <InfoGara gara={gara} />;
+    </Box>
+  );
 }
 
 export default IscrizioneGara;

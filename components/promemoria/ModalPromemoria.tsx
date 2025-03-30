@@ -1,22 +1,9 @@
 "use client";
-import {
-  Button,
-  Group,
-  Modal,
-  Select,
-  SimpleGrid,
-  Switch,
-  TextInput,
-} from "@mantine/core";
+import { Button, Group, Modal, Select, SimpleGrid, Switch, TextInput } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { $Enums, Priorita, Promemoria } from "@prisma/client";
-import {
-  IconCalendar,
-  IconCheck,
-  IconDeviceFloppy,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCalendar, IconCheck, IconDeviceFloppy, IconX } from "@tabler/icons-react";
 import { it } from "date-fns/locale";
 import React, { useEffect, useState } from "react";
 
@@ -33,12 +20,7 @@ interface ModalPromemoriaProps {
   submit: (value: FormValues) => Promise<void>;
   modalData: Promemoria | null;
 }
-function ModalPromemoria({
-  isOpen,
-  annulla,
-  submit,
-  modalData,
-}: ModalPromemoriaProps) {
+function ModalPromemoria({ isOpen, annulla, submit, modalData }: ModalPromemoriaProps) {
   useEffect(() => {
     if (isOpen) {
       if (modalData) {
@@ -76,12 +58,7 @@ function ModalPromemoria({
     },
   });
   return (
-    <Modal
-      title={modalData == null ? "Aggiungi Promemoria" : "Modifica Promemoria"}
-      opened={isOpen}
-      onClose={annulla}
-      centered
-    >
+    <Modal title={modalData == null ? "Aggiungi Promemoria" : "Modifica Promemoria"} opened={isOpen} onClose={annulla} centered>
       <form
         onSubmit={form.onSubmit(async () => {
           setIsLoading(true);
@@ -92,22 +69,15 @@ function ModalPromemoria({
       >
         <Switch
           checked={form.values.completato}
-          onChange={(event) =>
-            form.setFieldValue("completato", event.currentTarget.checked)
-          }
+          onChange={(event) => form.setFieldValue("completato", event.currentTarget.checked)}
           color="teal"
           size="sm"
           label="completato"
-          thumbIcon={
-            form.values.completato && <IconCheck size={14} color="teal" />
-          }
+          thumbIcon={form.values.completato && <IconCheck size={14} color="teal" />}
         />
         <SimpleGrid cols={2} mt={"md"}>
           <TextInput label="Titolo" {...form.getInputProps("titolo")} />
-          <TextInput
-            label="Descrizione"
-            {...form.getInputProps("descrizione")}
-          />
+          <TextInput label="Descrizione" {...form.getInputProps("descrizione")} />
           <DateTimePicker
             label="Data e Ora"
             {...form.getInputProps("dataOra")}
@@ -124,20 +94,10 @@ function ModalPromemoria({
         </SimpleGrid>
 
         <Group mt={"lg"} gap="md" justify="flex-end">
-          <Button
-            variant="outline"
-            color="gray"
-            onClick={annulla}
-            leftSection={<IconX size={14} />}
-          >
+          <Button variant="outline" color="gray" onClick={annulla} leftSection={<IconX size={14} />}>
             Annulla
           </Button>
-          <Button
-            color="green"
-            leftSection={<IconDeviceFloppy size={14} />}
-            type="submit"
-            loading={isLoading}
-          >
+          <Button color="green" leftSection={<IconDeviceFloppy size={14} />} type="submit" loading={isLoading}>
             Salva
           </Button>
         </Group>

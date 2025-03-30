@@ -1,4 +1,4 @@
-import { GaraWithNazioneAndCountIscrizioni } from "@/types/types"; // Assicurati di importare il tipo corretto
+import { GaraWithNazioneAndCountIscrizioni } from "@/types/types";
 
 export const mockGara: GaraWithNazioneAndCountIscrizioni = {
   id: "1",

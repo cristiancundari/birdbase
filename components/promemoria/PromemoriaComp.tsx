@@ -1,23 +1,7 @@
 import { coloriPriorita, formatData } from "@/lib/helper";
-import {
-  ActionIcon,
-  Box,
-  Group,
-  Menu,
-  MenuDropdown,
-  MenuItem,
-  MenuTarget,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { ActionIcon, Box, Group, Menu, MenuDropdown, MenuItem, MenuTarget, Stack, Text } from "@mantine/core";
 import { Promemoria } from "@prisma/client";
-import {
-  IconCircleCheck,
-  IconCircleCheckFilled,
-  IconDotsVertical,
-  IconEdit,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconCircleCheck, IconCircleCheckFilled, IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
 import { format } from "date-fns";
 
 interface PromemoriaCompProps {
@@ -26,11 +10,7 @@ interface PromemoriaCompProps {
   modalModifica: (promemoria: Promemoria) => void;
 }
 
-function PromemoriaComp({
-  value,
-  modalElimina,
-  modalModifica,
-}: PromemoriaCompProps) {
+function PromemoriaComp({ value, modalElimina, modalModifica }: PromemoriaCompProps) {
   return (
     <>
       <Group align="center">
@@ -39,11 +19,7 @@ function PromemoriaComp({
         </Text>
       </Group>
 
-      <Box
-        style={{ alignSelf: "stretch" }}
-        w={"4px"}
-        bg={coloriPriorita[value.priorita]}
-      ></Box>
+      <Box style={{ alignSelf: "stretch" }} w={"4px"} bg={coloriPriorita[value.priorita]}></Box>
 
       <Stack gap={0}>
         <Text c="dimmed" fw={700}>
@@ -54,19 +30,11 @@ function PromemoriaComp({
 
       <Group justify="space-between">
         {value?.completato ? (
-          <ActionIcon
-            variant="transparent"
-            aria-label="Settings"
-            data-testid="completato-test"
-          >
+          <ActionIcon variant="transparent" aria-label="Settings" data-testid="completato-test">
             <IconCircleCheckFilled />
           </ActionIcon>
         ) : (
-          <ActionIcon
-            variant="transparent"
-            aria-label="Settings"
-            data-testid="non-completato-test"
-          >
+          <ActionIcon variant="transparent" aria-label="Settings" data-testid="non-completato-test">
             <IconCircleCheck />
           </ActionIcon>
         )}

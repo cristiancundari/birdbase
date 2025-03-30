@@ -37,8 +37,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     };
   }, [client, callback]);
 
-  const messaggiBadge =
-    unreadCount > 0 ? <Badge color="red">{unreadCount}</Badge> : null;
+  const messaggiBadge = unreadCount > 0 ? <Badge color="red">{unreadCount}</Badge> : null;
 
   const links = [
     {
@@ -73,14 +72,14 @@ function Layout({ children }: { children: React.ReactNode }) {
       badge: messaggiBadge,
     },
     {
-      icon: <IconSettings />,
-      label: "Impostazioni",
-      url: "/app/impostazioni",
-    },
-    {
       icon: <IconBuildingStore />,
       label: "Marketplace",
       url: "/app/marketplace",
+    },
+    {
+      icon: <IconSettings />,
+      label: "Impostazioni",
+      url: "/app/impostazioni",
     },
   ];
 

@@ -46,6 +46,15 @@ export async function GET(request: NextRequest) {
         { preferito: "desc" },
         { dataNascita: "desc" },
       ],
+      include: {
+        inserzioniVendita: {
+          where: {
+            NOT: {
+              soggettoCopiaId: null,
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json({ result: result, error: false }, { status: 200 });
