@@ -1,0 +1,106 @@
+@startuml BirdBase Component Diagram
+
+skinparam backgroundColor white
+skinparam componentStyle uml2
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam defaultFontColor black
+
+title BirdBase Component Diagram
+
+' Main Components
+package "Frontend" #LightBlue {
+  [Next.js App] as nextjs
+  [React Components] as components
+  [Mantine UI] as mantine
+  [Tailwind CSS] as tailwind
+}
+
+package "Backend" #LightGreen {
+  [API Routes] as api
+  [Server Components] as server
+  [Middleware] as middleware
+}
+
+package "Data Layer" #LightYellow {
+  [Prisma Client] as prisma
+  [Database Models] as models
+}
+
+package "External Services" #LightGray {
+  [Supabase Auth] as supabaseAuth
+  [Supabase Storage] as supabaseStorage
+  [PayPal API] as paypal
+  [Google Calendar API] as google
+  [Stream Chat API] as stream
+  [Resend API] as resend
+}
+
+package "State Management" #LightPink {
+  [Zustand] as zustand
+}
+
+' Component Relationships
+nextjs --> components : renders
+nextjs --> mantine : uses
+nextjs --> tailwind : styles with
+nextjs --> api : calls
+nextjs --> server : uses
+nextjs --> zustand : state management
+
+api --> prisma : queries
+api --> supabaseAuth : authenticates
+api --> supabaseStorage : stores files
+api --> paypal : processes payments
+api --> google : calendar integration
+api --> stream : chat functionality
+api --> resend : sends emails
+
+server --> prisma : queries
+
+middleware --> supabaseAuth : protects routes
+
+prisma --> models : manages
+
+' Component Details
+note right of nextjs
+  - App Router
+  - Server/Client Components
+  - Dynamic Routes
+end note
+
+note right of components
+  - UI Components
+  - Forms
+  - Tables
+  - Charts
+end note
+
+note right of api
+  - RESTful Endpoints
+  - Authentication
+  - Authorization
+  - Data Validation
+end note
+
+note right of models
+  - Profili
+  - Soggetti
+  - Gare
+  - Iscrizioni
+  - Covate
+  - Allevatori
+  - Transazioni
+  - Inserzioni
+end note
+
+legend right
+  |= Color |= Component Type |
+  |<#LightBlue>| Frontend |
+  |<#LightGreen>| Backend |
+  |<#LightYellow>| Data Layer |
+  |<#LightGray>| External Services |
+  |<#LightPink>| State Management |
+endlegend
+
+@enduml 

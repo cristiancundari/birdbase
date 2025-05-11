@@ -1,0 +1,64 @@
+@startuml BirdBase Deployment Diagram
+
+skinparam backgroundColor white
+skinparam componentStyle uml2
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam defaultFontColor black
+
+title BirdBase Deployment Diagram
+
+' Nodes
+node "Client Browser" as browser #LightBlue {
+  component "Next.js Frontend" as frontend #LightBlue {
+    component "React Components" as components #LightBlue
+    component "Mantine UI" as mantine #LightBlue
+    component "Tailwind CSS" as tailwind #LightBlue
+  }
+}
+
+node "Vercel" as vercel #LightGreen {
+  component "Next.js Server" as nextjs #LightGreen {
+    component "API Routes" as api #LightGreen
+    component "Server Components" as server #LightGreen
+  }
+}
+
+database "Database" as db #LightYellow {
+  [PostgreSQL] as postgres #LightYellow
+  [Prisma Client] as prisma #LightYellow
+}
+
+cloud "External Services" as external #LightGray {
+  [Supabase] as supabase #LightGray
+  [PayPal] as paypal #LightGray
+  [Google Calendar] as google #LightGray
+  [Stream Chat] as stream #LightGray
+  [Resend] as resend #LightGray
+}
+
+' Connections
+browser --> vercel : HTTP/HTTPS
+vercel --> db : Prisma ORM
+prisma ..> postgres : Connects to
+vercel --> external : API Calls
+
+' Database Schema
+note bottom of postgres : Tables:\n- Profili\n- Soggetti\n- Gare\n- Iscrizioni\n- Covate\n- Allevatori\n- Transazioni\n- Inserzioni
+
+' External Services Details
+note bottom of supabase : - Authentication\n- Storage
+note bottom of paypal : Payment Processing
+note bottom of google : Calendar Integration
+note bottom of stream : Real-time Chat
+note bottom of resend : Email Service
+
+legend right
+  |= Color |= Component |
+  |<#LightBlue>| Frontend |
+  |<#LightGreen>| Backend |
+  |<#LightYellow>| Database |
+  |<#LightGray>| External Services |
+endlegend
+
+@enduml

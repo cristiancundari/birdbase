@@ -60,6 +60,7 @@ Abbiamo dunque realizzato: una sezione **Budget** dove l'utente può inserire la
 </div>
 
 #### Rilascio #4
+
 Dopo il rilascio di questa feature, il cliente ha richiesto la possibilità di poter effettuare report di qualsiasi arco temporale e per qualsiasi tipo di transazione (spese, incassi o entrambi).
 Abbiamo dunque aggiunto un pulsante che apre una finestra in cui l'utente può personalizzare il report che vuole generare scegliendo l'arco temporale di interesse e la tipologia di transazione. Il report potrà all'occorrenza essere stampato.
 
@@ -119,6 +120,7 @@ Una volta che il numero dei figli di una covata è uguale al numero di uova depo
 </div>
 
 #### Rilascio #8
+
 Il seguente rilascio si è concentrato sull'implementazione delle funzioni di Creazione, Modifica ed Eliminazione di promemoria: Gli utenti possono ora creare nuovi promemoria, modificarli o eliminarli direttamente dall'interfaccia. Ogni promemoria può includere un titolo, una descrizione, una data e una priorità ed è inoltre possibile per l'allevatore impostare il promemoria come completato.
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 100px">
@@ -142,6 +144,7 @@ Fatto questo, se l'utente completa la procedura di associazione a Google Calenda
 Ogni qualvolta il sistema opera sui promemoria, verifica se esiste già su Google un calendario dedicato all'applicazione ("BirdBase"). Se il calendario non esiste, il sistema lo crea automaticamente prima di effettuare le operazioni sui promemoria.
 
 #### Rilascio #9
+
 In questo rilascio abbiamo introdotto la funzionalità di compravendita dei soggetti. Gli allevatori hanno ora la possibilità di creare annunci di vendita per i propri soggetti direttamente dalla piattaforma. Un altro allevatore può visualizzare gli annunci e acquistare i soggetti in vendita tramite un processo di pagamento integrato. L'acquisto avviene comodamente tramite PayPal, garantendo transazioni sicure e senza interruzioni. Una volta effettuato l'acquisto, l'acquirente vedrà il soggetto acquistato nella propria pagina di gestione dei soggetti; mentre a entrambi gli allevatori viene aggiunta una transazione nella propria sezione portafoglio di spesa (per l'acquirente) e incasso (per il venditore).
 
 <div style="text-align: center;">
@@ -152,6 +155,7 @@ In questo rilascio abbiamo introdotto la funzionalità di compravendita dei sogg
 </div>
 
 #### Rilascio #10
+
 Nel seguente rilascio abbiamo introdotto una nuova funzionalità per permettere agli allevatori di registrarsi facilmente sulla piattaforma. Gli allevatori possono adesso completare il processo di registrazione inviando tutti i dati richiesti, insieme alla documentazione necessaria: il certificato di registrazione alla FOI e un documento di identità valido.
 
 Una volta inviata la richiesta, l’amministratore avrà la possibilità di visionare i documenti e decidere se accettare o rifiutare la registrazione. In caso di esito positivo, il sistema invierà automaticamente un’email di benvenuto all’allevatore con la password di accesso. Se invece la documentazione risulta incompleta o non conforme, verrà inviata una comunicazione via email che spiega il motivo del rifiuto, indicando la documentazione mancante.
@@ -171,6 +175,7 @@ Una volta inviata la richiesta, l’amministratore avrà la possibilità di visi
 </div>
 
 #### Rilascio #11
+
 In questo rilascio abbiamo implementato una funzionalità che consente all’amministratore di creare, eliminare e modificare le gare all’interno della piattaforma. Grazie a questa nuova gestione, l’amministratore ha il pieno controllo sulle gare, con la possibilità di definire uno stato per ogni evento. In particolare, l’amministratore può ad esempio marcare una gara come “bozza”.
 Le gare in stato di bozza non saranno visibili agli allevatori, mentre solo quelle confermate saranno visibili e accessibili, evitando così che gli utenti visualizzino eventi non ancora definitivi o pronti per la partecipazione.
 
@@ -189,6 +194,7 @@ Le gare in stato di bozza non saranno visibili agli allevatori, mentre solo quel
 </div>
 
 #### Rilascio #12
+
 Una volta che abbiamo reso possibile all'amministratore la gestione delle gare, abbiamo deciso, insieme al cliente, di implementare la possibilità che gli allevatori iscrivano i propri soggetti alle gare. Ora gli allevatori possono accedere alla gara di interesse, selezionare i soggetti che desiderano iscrivere tramite un comodo menu a tendina e completare il pagamento tramite PayPal in autonomia.
 
 <div style="text-align: center;">
@@ -199,6 +205,7 @@ Una volta che abbiamo reso possibile all'amministratore la gestione delle gare, 
 </div>
 
 #### Rilascio #13
+
 Per completare la gestione delle gare, abbiamo implementato la funzionalità che permette all’amministratore di inserire le valutazioni per i soggetti partecipanti così da generare una classifica finale e segnare la gara come completata. Una volta che la gara è stata conclusa, la classifica sarà visibile agli allevatori, mostrando non solo le posizioni generali, ma anche i posizionamenti specifici dei propri soggetti, consentendo un monitoraggio dettagliato dei risultati.
 
 Inoltre, su richiesta dello stakeholder, è stata aggiunta in ultimo una nuova funzionalità: la possibilità di condividere i risultati sui social. Gli allevatori che vedranno i propri soggetti posizionarsi nella gara potranno ora condividere facilmente i risultati sui principali social, dando visibilità ai successi raggiunti e promuovendo ulteriormente il proprio allevamento.
@@ -218,6 +225,7 @@ Inoltre, su richiesta dello stakeholder, è stata aggiunta in ultimo una nuova f
 </div>
 
 #### Rilascio #14
+
 In questo rilascio abbiamo introdotto la funzionalità della chat, che permette sia agli amministratori che agli allevatori di comunicare facilmente tra di loro. Entrambi gli utenti possono inviare e ricevere messaggi in tempo reale, con la possibilità di visualizzare un badge di notifica ogni volta che ricevono un nuovo messaggio, migliorando la tempestività e l’efficienza delle comunicazioni.
 
 Inoltre, è stata introdotta la possibilità di creare canali di chat. Sia gli amministratori che gli allevatori possono creare delle chat di gruppo assegnando un nome al canale e aggiungendo i partecipanti desiderati. Questa funzionalità può essere ad esempio utile all'amministratore per creare un canale inerente a una determinata gara per gestire la logistica.
@@ -237,6 +245,7 @@ Inoltre, è stata introdotta la possibilità di creare canali di chat. Sia gli a
 </div>
 
 #### Rilascio #15
+
 Nel rilascio di oggi, abbiamo introdotto due nuove funzionalità pensate per migliorare l’esperienza degli utenti sulla piattaforma. La prima riguarda la possibilità per gli utenti di modificare la propria password in modo semplice e sicuro, rendendo più facile la gestione dell’accesso e garantendo una maggiore protezione dei dati personali.
 
 <div style="text-align: center;">
@@ -257,107 +266,255 @@ Inoltre, seguendo una richiesta dello stakeholder, abbiamo aggiunto una nuova se
   <sup style="font-style: italic;">Sezione commenti di una gara<sup>
 </div>
 
-#### Rilascio #16
+#### Rilascio #16: Sistema di Valutazione Automatica per Allevatori
 
 #### Introduzione
-Questa release permette agli allevatori di ottenere una valutazione automatica dei soggetti sulla base di una media pesata calcolata dai voti ricevuti nelle mostre.
 
-La valutazione tiene conto sia dei voti diretti del soggetto sia di quelli ottenuti dai suoi parenti, con un peso che dipende da:
-- La distanza temporale della gara rispetto alla data attuale
-- Il grado di parentela tra il soggetto e il parente
+Il rilascio numero 16 introduce una funzionalità avanzata di valutazione automatica degli uccelli in allevamento, basata sui voti ricevuti nelle gare. Il sistema calcola un punteggio personalizzato considerando sia i voti diretti del soggetto che quelli dei suoi parenti, applicando pesi che variano in base a:
 
-L’allevatore ha la possibilità di personalizzare il calcolo scegliendo le formule per determinare i pesi e definendo la loro importanza relativa tramite uno slider.
+- Fattore temporale: quanto è recente la gara
+- Grado di parentela: quanto è stretto il legame genetico
 
-#### Iterazione 1 – Definizione delle User Stories e Pianificazione
+Gli allevatori possono personalizzare completamente il sistema definendo le formule matematiche per il calcolo dei pesi e bilanciando l'importanza relativa dei due fattori.
 
-Abbiamo iniziato lo sviluppo con la raccolta dei requisiti e la definizione delle User Stories, identificando i seguenti casi d’uso principali:
+#### Approccio XP
 
-##### User Stories
-1. **Inserimento delle formule per il calcolo dei pesi**
-   - L’allevatore deve poter inserire due formule per il calcolo dei pesi:
-     - Una per la distanza temporale della gara
-     - Una per il grado di parentela
+Seguendo i principi dell'Extreme Programming, abbiamo:
 
-2. **Definizione dell’importanza relativa dei due parametri**
-   - L’allevatore deve poter decidere tramite uno slider quale percentuale assegnare a ciascun peso nella media pesata.
+- Sviluppato iterativamente con cicli brevi
+- Mantenuto comunicazione costante con lo stakeholder
+- Utilizzato il pair programming per le componenti critiche
+- Adottato test-driven development
+- Effettuato refactoring continuo
 
-3. **Calcolo della valutazione finale del soggetto**
-   - Il sistema deve applicare le formule scelte, calcolare i pesi e ottenere il punteggio finale di ogni soggetto.
+#### Iterazione 1: Planning e User Stories
 
-4. **Interfaccia utente per la gestione della valutazione**
-   - Sezione nelle impostazioni per inserire le formule
-   - Visualizzazione della valutazione finale dei soggetti nell’interfaccia principale
+##### Attività
 
-Abbiamo suddiviso il lavoro in task specifici e pianificato le iterazioni.
+1. **Sessione di planning con lo stakeholder**
 
-#### Iterazione 2 – Implementazione del Parser Matematico
+   - Incontro con l'allevatore nonchè stakeholder del progetto
+   - Identificazione delle esigenze chiave e aspettative
 
-##### Task principali
-- **Tokenizzazione delle formule**
-  - Creazione di un tokenizer per separare numeri, variabili, operatori e funzioni
+2. **Definizione delle user stories**
 
-- **Conversione in Reverse Polish Notation (RPN) con l’algoritmo Shunting-yard**
-  - Implementazione del parser per convertire l’espressione da notazione infissa a RPN
+   - Elaborazione dei requisiti in forma di user stories
+   - Prioritizzazione delle funzionalità
 
-- **Creazione dell’evaluator per il calcolo delle espressioni**
-  - Implementazione della valutazione delle espressioni con operatori matematici (+, -, *, /, ^) e funzioni (log, ln, sqrt, sin, cos, tan, cot)
+3. **Stima e pianificazione delle iterazioni**
+   - Stima dello sforzo per ogni user story
+   - Definizione della roadmap di sviluppo
 
-##### Risultati dell’iterazione
-Abbiamo ottenuto un parser funzionante in grado di interpretare e valutare correttamente le formule inserite dall’utente e di segnalare eventuali errori di sintassi nella formula.
+##### User Stories Identificate
 
-#### Iterazione 3 – Implementazione della Logica di Calcolo della Valutazione
+1. **Formula Temporale**: "Come allevatore, voglio definire una formula matematica che assegni un peso in base all'età del voto, così che i voti più recenti possano avere maggiore o minore importanza."
 
-##### Task principali
-1. **Recupero dei dati necessari per il calcolo**
-   - Lettura dei voti assegnati ai soggetti nelle mostre passate
-   - Recupero dei dati relativi ai parenti di ogni soggetto e ai loro voti
+2. **Formula di Parentela**: "Come allevatore, voglio definire una formula matematica che assegni un peso in base al grado di parentela, così che i voti di parenti stretti o lontani abbiano l'importanza che ritengo appropriata."
 
-2. **Calcolo dei pesi per ogni voto**
-   - Applicazione della formula scelta dall’allevatore per il peso temporale
-   - Applicazione della formula scelta per il peso legato al grado di parentela
+3. **Bilanciamento dei Fattori**: "Come allevatore, voglio regolare l'importanza relativa tra fattore temporale e parentela, così da personalizzare la valutazione in base alla mia strategia di allevamento."
 
-3. **Combinazione dei due pesi con le proporzioni definite dall’utente**
-   - Implementazione della logica per combinare i due pesi con la percentuale scelta tramite slider
+4. **Visualizzazione Risultati**: "Come allevatore, voglio vedere la valutazione calcolata per ogni soggetto, così da identificare facilmente gli esemplari più promettenti."
 
-##### Risultati dell’iterazione
-Abbiamo implementato con successo la logica di calcolo della valutazione dei soggetti, garantendo flessibilità nell’assegnazione dei pesi.
+5. **Anteprima Formule**: "Come allevatore, voglio visualizzare graficamente l'effetto delle mie formule, così da comprendere meglio come influenzano il calcolo."
 
-#### Iterazione 4 – Sviluppo dell’Interfaccia Utente
+##### Output
 
-##### Task principali
-1. **Aggiunta di una sezione apposita nella pagina impostazioni**
-   - Due campi di testo per l’inserimento delle formule
-   - Slider per scegliere la proporzione tra i due pesi
-   - Grafici aggiornati in tempo reale per la visualizzazione delle formule inserite
+- Backlog di user stories prioritizzate
+- Piano di iterazioni settimanali
 
-2. **Visualizzazione della valutazione dei soggetti**
-   - Modifica del componente relativo alla visualizzazione delle informazioni del soggetto per mostrare la valutazione calcolata
+#### Iterazione 2: Sviluppo del Parser Matematico
 
-3. **Gestione degli errori nell’inserimento delle formule**
-   - Messaggi di errore per formule non valide o con sintassi errata
+##### Attività
 
-##### Risultati dell’iterazione
-L’interfaccia è stata completata con un design intuitivo, garantendo all’allevatore un’esperienza d’uso fluida.
+1. **Analisi e progettazione del parser**
 
-#### Iterazione 5 – Testing Finale e Rilascio
+   - Definizione dei requisiti del parser
+   - Individuazione degli algoritmi appropriati
+   - Creazione dei test di accettazione
 
-Prima del rilascio, abbiamo eseguito una serie di test:
+2. **Implementazione del tokenizer**
 
-1. **Test unitari** per verificare il corretto funzionamento del parser e del calcolo della valutazione
-2. **Test di integrazione** per assicurare la compatibilità con il resto del sistema
-3. **Test di usabilità** con utenti reali per raccogliere feedback
-4. **Refactoring finale** per ottimizzare il codice e migliorare le prestazioni
+   - Sviluppo TDD del tokenizer per identificare:
+     - Numeri (interi e decimali)
+     - Variabili (tempo, parentela)
+     - Operatori matematici (+, -, \*, /, ^)
+     - Funzioni (log, sin, cos, ecc.)
+     - Parentesi
 
-##### Risultati finali
-✅ Il sistema calcola correttamente la valutazione dei soggetti considerando i voti diretti e quelli dei parenti
-✅ L’allevatore può inserire formule personalizzate per il calcolo dei pesi
-✅ L’interfaccia è semplice da usare e offre un alto livello di personalizzazione
-✅ Il software è stato testato con successo ed è pronto per il rilascio
+3. **Implementazione dell'algoritmo Shunting-yard**
+
+   - Sviluppo TDD della conversione da notazione infissa a RPN
+   - Gestione delle precedenze tra operatori
+   - Supporto per funzioni nidificate
+
+4. **Sviluppo dell'evaluator RPN**
+
+   - Implementazione del valutatore di espressioni
+   - Supporto per funzioni matematiche avanzate
+   - Gestione degli errori di calcolo
+
+5. **Refactoring e ottimizzazione**
+   - Revisione del codice per migliorare leggibilità e prestazioni
+   - Eliminazione di duplicazioni
+
+##### Test
+
+- Unit test per ogni componente del parser
+- Test di integrazione per valutare espressioni complete
+- Test di edge case e gestione errori
+
+##### Output
+
+- Parser matematico funzionante
+- Documentazione tecnica del parser
+- Suite di test automatizzati
+
+#### Iterazione 3: Logica di Calcolo della Valutazione
+
+##### Attività
+
+1. **Progettazione dell'algoritmo di valutazione**
+
+   - Definizione del flusso di calcolo
+   - Identificazione dei dati necessari
+   - Creazione dei test di accettazione
+
+2. **Implementazione dell'accesso ai dati**
+
+   - Sviluppo dell'interfaccia per recuperare:
+     - Voti storici degli esemplari
+     - Relazioni di parentela
+     - Date delle mostre
+
+3. **Implementazione del calcolo dei pesi**
+
+   - Sviluppo della logica per calcolare:
+     - Peso temporale tramite la formula utente
+     - Peso di parentela tramite la formula utente
+     - Combinazione pesata dei due fattori
+
+4. **Refactoring e finalizzazione**
+   - Miglioramento della struttura del codice
+   - Risoluzione dei bug identificati
+
+##### Test
+
+- Unit test per i singoli componenti di calcolo
+- Test di integrazione per il flusso completo
+- Test di performance con dataset di grandi dimensioni
+
+##### Output
+
+- Sistema di calcolo funzionante
+- Documentazione algoritmica
+- Suite di test automatizzati
+
+#### Iterazione 4: Sviluppo dell'Interfaccia Utente
+
+##### Attività
+
+1. **Progettazione dell'esperienza utente**
+
+   - Wireframing della sezione di configurazione
+   - Definizione del flusso di interazione
+   - Creazione dei mockup interattivi
+
+2. **Implementazione sezione di configurazione**
+
+   - Sviluppo dei campi di input per le formule
+   - Implementazione dello slider di bilanciamento
+   - Creazione del sistema di validazione in tempo reale
+
+3. **Implementazione visualizzazione grafica**
+
+   - Sviluppo dei grafici per l'anteprima delle formule
+   - Implementazione dell'aggiornamento in tempo reale
+   - Ottimizzazione della reattività dell'interfaccia
+
+4. **Implementazione visualizzazione risultati**
+
+   - Integrazione della valutazione nella scheda dell'esemplare
+   - Implementazione di tooltip informativi
+
+5. **Refactoring e accessibilità**
+   - Miglioramento dell'accessibilità dell'interfaccia
+   - Ottimizzazione per diverse dimensioni dello schermo
+   - Pulizia del codice dell'interfaccia
+
+##### Test
+
+- Test di usabilità con utenti reali
+- Test di accessibilità
+- Test di compatibilità cross-browser
+
+##### Output
+
+- Interfaccia utente completa e funzionante
+- Documentazione dell'interfaccia
+- Feedback degli utenti
+
+#### Iterazione 5: Integrazione, Testing e Rilascio
+
+##### Attività
+
+1. **Integrazione completa del sistema**
+
+   - Connessione di tutti i componenti
+   - Risoluzione dei conflitti di integrazione
+   - Verifica della coerenza del sistema
+
+2. **Testing approfondito**
+
+   - Esecuzione di test di regressione
+   - Test di accettazione con utenti finali
+
+3. **Preparazione al rilascio**
+
+   - Creazione dello script di migrazione
+   - Pianificazione del deployment
+
+4. **Rilascio e monitoraggio**
+   - Deployment in produzione
+   - Monitoraggio attivo del sistema
+   - Raccolta feedback iniziali
+
+##### Test
+
+- Test di accettazione finali
+
+##### Output
+
+- Sistema completo pronto per il rilascio
+- Documentazione completa
+
+#### Retrospettiva del Progetto
+
+##### Successi
+
+- Il sistema di valutazione funziona correttamente e offre alta personalizzazione
+- L'interfaccia utente è risultata intuitiva nei test con gli utenti
+
+##### Sfide
+
+- La complessità del parser matematico ha richiesto più tempo del previsto
+- Alcuni edge case nelle formule hanno richiesto gestione specifica
+- L'integrazione con il sistema esistente ha presentato alcune difficoltà impreviste
+
+##### Lezioni Apprese
+
+- Il pair programming è stato fondamentale per risolvere i problemi complessi
+- Il TDD ha ridotto significativamente i difetti nel codice finale
+- Il coinvolgimento costante degli utenti ha permesso di affinare l'interfaccia
+
+##### Prossimi Passi
+
+- Monitorare l'adozione della funzionalità
+- Raccogliere feedback per miglioramenti futuri
+- Pianificare l'espansione con funzionalità correlate
 
 #### Conclusione
-L’adozione della metodologia Extreme Programming (XP) ci ha permesso di sviluppare questa release in modo iterativo, garantendo alta qualità del codice, test continui e miglioramento costante.
 
-Il sistema ora offre agli allevatori una potente funzionalità per valutare i propri soggetti in modo personalizzato, aumentando la precisione nella selezione e nella gestione dell’allevamento.
+Grazie all'approccio XP, abbiamo consegnato una funzionalità complessa e personalizzabile che offre un valore significativo agli allevatori. La natura iterativa e collaborativa del processo ha permesso di affrontare efficacemente le sfide tecniche mantenendo il focus sul valore per l'utente finale.
 
 <div style="text-align: center;">
   <div>
