@@ -1,7 +1,7 @@
 import { Role } from "@prisma/client";
 
 export const mockProfilo = {
-  id: "profilo-1",
+  id: "318d0e65-0b13-4b3b-92c8-af2895a7e79b",
   budget: 100,
   googleRefreshToken: "token",
   rna: "RNA123",

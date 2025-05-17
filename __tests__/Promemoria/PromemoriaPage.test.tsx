@@ -39,6 +39,7 @@ describe("PromemoriaPage", () => {
   });
 
   it('dovrebbe aprire il modal quando si clicca su "Aggiungi"', async () => {
+    (apiFetch.get as Mock).mockResolvedValue({ data: promemoriaMock, error: false });
     render(<PromemoriaPage />);
 
     const button = screen.getByTestId("ButtonAggiungi");
@@ -122,7 +123,7 @@ describe("PromemoriaPage", () => {
 
   it("dovrebbe aggiungere un nuovo promemoria quando si invia il form", async () => {
     (apiFetch.get as Mock).mockResolvedValue({ data: [promemoriaMock[0]], error: false });
-    (apiFetch.post as Mock).mockResolvedValue({ data: {}, success: true });
+    (apiFetch.post as Mock).mockResolvedValue({ data: {}, error: false });
 
     render(<PromemoriaPage />);
 
