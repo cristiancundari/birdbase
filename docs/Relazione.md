@@ -46,18 +46,28 @@ In produzione su: [Vercel](https://birdbase.vercel.app)
 @import "sezioni/sequenceDiagrams/10_controlloTokenGoogle.md"
 @import "sezioni/sequenceDiagrams/11_impostazioni.md"
 
-## 7. Tecnologie utilizzate.
+## 7. Component & Deployment Diagrams
+
+<p style="text-align:center;font-weight:bold;font-size:0.9rem;">Component Diagram</p>
+
+@import "comp.drawio.pdf"
+
+<hr>
+
+@import "deployment-diagram.puml"
+
+## 8. Tecnologie utilizzate.
 
 @import "sezioni/7_tecnologieUtilizzate.md"
 
-## 8. Sviluppo
+## 9. Sviluppo
 
 @import "sezioni/8_sviluppo.md"
 
-## 9. Testing
+## 10. Testing
 
 @import "sezioni/9_testing.md"
 
-## 10. Conclusioni
+## 11. Conclusioni
 
 @import "sezioni/10_conclusioni.md"
